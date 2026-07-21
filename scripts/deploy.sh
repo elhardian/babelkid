@@ -5,7 +5,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 APP_NAME="babelkid"
-PORT=3008
+PORT=3009
 
 echo "==> Deploying ${APP_NAME} (port ${PORT})"
 echo "    Directory: ${ROOT}"
