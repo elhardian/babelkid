@@ -6,18 +6,18 @@ import { formatIDR, formatMonth } from "@/lib/format";
 import { financeSummaries } from "@/lib/mock-data";
 
 const MONTH_OPTS = [
-  { value: "01", label: "January" },
-  { value: "02", label: "February" },
-  { value: "03", label: "March" },
+  { value: "01", label: "Januari" },
+  { value: "02", label: "Februari" },
+  { value: "03", label: "Maret" },
   { value: "04", label: "April" },
-  { value: "05", label: "May" },
-  { value: "06", label: "June" },
-  { value: "07", label: "July" },
-  { value: "08", label: "August" },
+  { value: "05", label: "Mei" },
+  { value: "06", label: "Juni" },
+  { value: "07", label: "Juli" },
+  { value: "08", label: "Agustus" },
   { value: "09", label: "September" },
-  { value: "10", label: "October" },
+  { value: "10", label: "Oktober" },
   { value: "11", label: "November" },
-  { value: "12", label: "December" },
+  { value: "12", label: "Desember" },
 ];
 
 export default function FinancePage() {
@@ -68,10 +68,10 @@ export default function FinancePage() {
 
   const rows = summary
     ? [
-        { label: "Tuition collected", value: summary.tuitionCollected },
-        { label: "Tuition pending", value: summary.tuitionPending },
-        { label: "Event fees", value: summary.eventFees },
-        { label: "Expenses", value: -summary.expenses },
+        { label: "SPP terkumpul", value: summary.tuitionCollected },
+        { label: "SPP belum lunas", value: summary.tuitionPending },
+        { label: "Biaya acara", value: summary.eventFees },
+        { label: "Pengeluaran", value: -summary.expenses },
       ]
     : [];
 
@@ -79,18 +79,18 @@ export default function FinancePage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Finance report</h1>
-          <p className="mt-1 text-sm text-neutral-500">Monthly income and expenses</p>
+          <h1 className="text-2xl font-semibold tracking-tight">Laporan keuangan</h1>
+          <p className="mt-1 text-sm text-neutral-500">Pemasukan dan pengeluaran bulanan</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <FilterSelect
-            label="Year"
+            label="Tahun"
             value={year}
             onChange={onYearChange}
             options={years.map((y) => ({ value: y, label: y }))}
           />
           <FilterSelect
-            label="Month"
+            label="Bulan"
             value={monthNum}
             onChange={setMonthNum}
             options={availableMonths.length ? availableMonths : MONTH_OPTS}
@@ -100,25 +100,25 @@ export default function FinancePage() {
 
       {!summary ? (
         <div className="rounded-md border border-dashed border-neutral-200 px-4 py-12 text-center text-sm text-neutral-500">
-          No finance data for {MONTH_OPTS.find((m) => m.value === monthNum)?.label} {year}.
+          Tidak ada data keuangan untuk {MONTH_OPTS.find((m) => m.value === monthNum)?.label} {year}.
         </div>
       ) : (
         <>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div className="rounded-lg border border-neutral-200 bg-white p-4">
               <p className="text-xs uppercase tracking-wide text-neutral-500">
-                Net · {formatMonth(monthKey)}
+                Bersih · {formatMonth(monthKey)}
               </p>
               <p className="mt-2 text-2xl font-semibold tabular-nums">{formatIDR(net)}</p>
             </div>
             <div className="rounded-lg border border-neutral-200 bg-white p-4">
-              <p className="text-xs uppercase tracking-wide text-neutral-500">Inflow</p>
+              <p className="text-xs uppercase tracking-wide text-neutral-500">Pemasukan</p>
               <p className="mt-2 text-xl font-semibold tabular-nums">
                 {formatIDR(summary.tuitionCollected + summary.eventFees)}
               </p>
             </div>
             <div className="rounded-lg border border-neutral-200 bg-white p-4">
-              <p className="text-xs uppercase tracking-wide text-neutral-500">Outflow</p>
+              <p className="text-xs uppercase tracking-wide text-neutral-500">Pengeluaran</p>
               <p className="mt-2 text-xl font-semibold tabular-nums">
                 {formatIDR(summary.expenses)}
               </p>
@@ -129,8 +129,8 @@ export default function FinancePage() {
             <table className="w-full text-left text-sm">
               <thead className="border-b border-neutral-100 bg-neutral-50 text-xs uppercase tracking-wide text-neutral-500">
                 <tr>
-                  <th className="px-4 py-3 font-medium">Category</th>
-                  <th className="px-4 py-3 text-right font-medium">Amount</th>
+                  <th className="px-4 py-3 font-medium">Kategori</th>
+                  <th className="px-4 py-3 text-right font-medium">Jumlah</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-100">
@@ -149,7 +149,7 @@ export default function FinancePage() {
       )}
 
       <section className="rounded-lg border border-neutral-200 bg-white p-5">
-        <h2 className="text-sm font-semibold">Trend · {year}</h2>
+        <h2 className="text-sm font-semibold">Tren · {year}</h2>
         <div className="mt-4 flex items-end gap-3">
           {yearSummaries
             .slice()
@@ -174,10 +174,10 @@ export default function FinancePage() {
               );
             })}
           {yearSummaries.length === 0 ? (
-            <p className="w-full text-center text-sm text-neutral-500">No data for this year</p>
+            <p className="w-full text-center text-sm text-neutral-500">Tidak ada data untuk tahun ini</p>
           ) : null}
         </div>
-        <p className="mt-3 text-xs text-neutral-500">Bars show tuition collected · click to select month</p>
+        <p className="mt-3 text-xs text-neutral-500">Batang menunjukkan SPP terkumpul · klik untuk pilih bulan</p>
       </section>
     </div>
   );

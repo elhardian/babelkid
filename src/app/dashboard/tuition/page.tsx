@@ -20,6 +20,7 @@ import {
   formatIDR,
   formatMonth,
   paymentMethodLabel,
+  tuitionStatusLabel,
 } from "@/lib/format";
 import { getStudent, students, tuitionRecords as initial } from "@/lib/mock-data";
 import type { PaymentMethod, TuitionRecord, TuitionStatus } from "@/lib/types";
@@ -143,9 +144,9 @@ export default function TuitionPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Tuition</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">SPP</h1>
           <p className="mt-1 text-sm text-neutral-500">
-            Per-student fees · transfer / tunai / WhatsApp
+            Biaya per siswa · transfer / tunai / WhatsApp
           </p>
         </div>
         <button
@@ -156,30 +157,30 @@ export default function TuitionPage() {
             setAmount(2500000);
             setModal("add");
           }}
-          className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+          className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-[#1A2330] hover:bg-neutral-800"
         >
-          Add / record payment
+          Tambah / catat pembayaran
         </button>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="rounded-lg border border-neutral-200 bg-white p-4">
           <p className="text-xs uppercase tracking-wide text-neutral-500">
-            Collected · {formatMonth(month)}
+            Terkumpul · {formatMonth(month)}
           </p>
           <p className="mt-1 text-xl font-semibold tabular-nums">{formatIDR(totals.paid)}</p>
         </div>
         <div className="rounded-lg border border-neutral-200 bg-white p-4">
           <p className="text-xs uppercase tracking-wide text-neutral-500">
-            Outstanding · {formatMonth(month)}
+            Belum lunas · {formatMonth(month)}
           </p>
           <p className="mt-1 text-xl font-semibold tabular-nums">{formatIDR(totals.outstanding)}</p>
         </div>
       </div>
 
-      <SearchFilterBar search={search} onSearchChange={setSearch} searchPlaceholder="Search student…">
+      <SearchFilterBar search={search} onSearchChange={setSearch} searchPlaceholder="Cari siswa…">
         <FilterSelect
-          label="Month"
+          label="Bulan"
           value={month}
           onChange={setMonth}
           options={months.map((m) => ({ value: m, label: formatMonth(m) }))}
@@ -189,19 +190,19 @@ export default function TuitionPage() {
           value={statusFilter}
           onChange={setStatusFilter}
           options={[
-            { value: "all", label: "All" },
-            { value: "paid", label: "Paid" },
-            { value: "pending", label: "Pending" },
-            { value: "submitted", label: "Submitted" },
-            { value: "overdue", label: "Overdue" },
+            { value: "all", label: "Semua" },
+            { value: "paid", label: "Lunas" },
+            { value: "pending", label: "Belum bayar" },
+            { value: "submitted", label: "Menunggu review" },
+            { value: "overdue", label: "Terlambat" },
           ]}
         />
         <FilterSelect
-          label="Method"
+          label="Metode"
           value={methodFilter}
           onChange={setMethodFilter}
           options={[
-            { value: "all", label: "All" },
+            { value: "all", label: "Semua" },
             { value: "transfer", label: "Transfer" },
             { value: "tunai", label: "Tunai" },
             { value: "whatsapp", label: "WhatsApp" },
@@ -210,18 +211,18 @@ export default function TuitionPage() {
       </SearchFilterBar>
 
       {filtered.length === 0 ? (
-        <EmptyState message="No tuition records for this month." />
+        <EmptyState message="Tidak ada data SPP untuk bulan ini." />
       ) : (
         <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-neutral-100 bg-neutral-50 text-xs uppercase tracking-wide text-neutral-500">
               <tr>
-                <th className="px-4 py-3 font-medium">Student</th>
-                <th className="px-4 py-3 font-medium">Amount</th>
+                <th className="px-4 py-3 font-medium">Siswa</th>
+                <th className="px-4 py-3 font-medium">Jumlah</th>
                 <th className="px-4 py-3 font-medium">Status</th>
-                <th className="hidden px-4 py-3 font-medium md:table-cell">Method</th>
-                <th className="hidden px-4 py-3 font-medium lg:table-cell">Proof</th>
-                <th className="px-4 py-3 font-medium text-right">Actions</th>
+                <th className="hidden px-4 py-3 font-medium md:table-cell">Metode</th>
+                <th className="hidden px-4 py-3 font-medium lg:table-cell">Bukti</th>
+                <th className="px-4 py-3 font-medium text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-100">
@@ -232,18 +233,24 @@ export default function TuitionPage() {
                     <td className="px-4 py-3 font-medium">{student?.name}</td>
                     <td className="px-4 py-3 tabular-nums">{formatIDR(t.amount)}</td>
                     <td className="px-4 py-3">
-                      <StatusBadge label={t.status} tone={toneFor(t.status)} />
+                      <StatusBadge label={tuitionStatusLabel(t.status)} tone={toneFor(t.status)} />
                     </td>
                     <td className="hidden px-4 py-3 text-neutral-600 md:table-cell">
                       {paymentMethodLabel(t.paymentMethod)}
                     </td>
-                    <td className="hidden px-4 py-3 capitalize text-neutral-600 lg:table-cell">
-                      {t.proofStatus ?? "—"}
+                    <td className="hidden px-4 py-3 text-neutral-600 lg:table-cell">
+                      {t.proofStatus === "approved"
+                        ? "Disetujui"
+                        : t.proofStatus === "pending"
+                          ? "Menunggu"
+                          : t.proofStatus === "rejected"
+                            ? "Ditolak"
+                            : "—"}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex flex-wrap justify-end gap-2 text-xs font-medium">
                         <button type="button" onClick={() => { setActive(t); setModal("view"); }} className="text-neutral-600 hover:text-neutral-900">
-                          View
+                          Lihat
                         </button>
                         <button type="button" onClick={() => { setActive(t); setAmount(t.amount); setModal("edit"); }} className="text-neutral-600 hover:text-neutral-900">
                           Edit
@@ -254,12 +261,12 @@ export default function TuitionPage() {
                             onClick={() => { setActive(t); setModal("record"); }}
                             className="text-neutral-900 underline-offset-2 hover:underline"
                           >
-                            Record pay
+                            Catat bayar
                           </button>
                         ) : null}
                         {t.status === "submitted" ? (
                           <button type="button" onClick={() => approve(t.id)} className="text-neutral-900 underline-offset-2 hover:underline">
-                            Approve
+                            Setujui
                           </button>
                         ) : null}
                       </div>
@@ -277,16 +284,16 @@ export default function TuitionPage() {
         onClose={() => setModal(null)}
         title={
           modal === "record"
-            ? "Record payment (cash / WA / transfer)"
+            ? "Catat pembayaran (tunai / WA / transfer)"
             : modal === "edit"
-              ? "Edit tuition"
-              : "Add tuition / payment"
+              ? "Edit SPP"
+              : "Tambah SPP / pembayaran"
         }
       >
         <form onSubmit={saveRecord} className="space-y-3">
           {modal === "add" ? (
             <>
-              <Field label="Student">
+              <Field label="Siswa">
                 <StudentSearchSelect
                   students={students.filter((s) => s.status === "active")}
                   value={studentId}
@@ -294,10 +301,10 @@ export default function TuitionPage() {
                   required
                 />
               </Field>
-              <Field label="Month (YYYY-MM)">
+              <Field label="Bulan (YYYY-MM)">
                 <input name="month" required defaultValue={month} className={inputClass} />
               </Field>
-              <Field label="Amount">
+              <Field label="Jumlah">
                 <CurrencyInput value={amount} onChange={setAmount} required />
               </Field>
             </>
@@ -306,15 +313,15 @@ export default function TuitionPage() {
           {modal === "edit" && active ? (
             <>
               <p className="text-sm text-neutral-600">{getStudent(active.studentId)?.name}</p>
-              <Field label="Amount">
+              <Field label="Jumlah">
                 <CurrencyInput value={amount} onChange={setAmount} required />
               </Field>
               <Field label="Status">
                 <select name="status" defaultValue={active.status} className={inputClass}>
-                  <option value="paid">Paid</option>
-                  <option value="pending">Pending</option>
-                  <option value="submitted">Submitted</option>
-                  <option value="overdue">Overdue</option>
+                  <option value="paid">Lunas</option>
+                  <option value="pending">Belum bayar</option>
+                  <option value="submitted">Menunggu review</option>
+                  <option value="overdue">Terlambat</option>
                 </select>
               </Field>
             </>
@@ -326,7 +333,7 @@ export default function TuitionPage() {
             </p>
           ) : null}
 
-          <Field label="Payment method">
+          <Field label="Metode pembayaran">
             <select
               name="paymentMethod"
               required={modal === "record"}
@@ -334,13 +341,13 @@ export default function TuitionPage() {
               className={inputClass}
             >
               <option value="transfer">Transfer</option>
-              <option value="tunai">Tunai (cash)</option>
-              <option value="whatsapp">WhatsApp (direct confirm)</option>
+              <option value="tunai">Tunai</option>
+              <option value="whatsapp">WhatsApp (konfirmasi langsung)</option>
             </select>
           </Field>
 
           {(modal === "record" || modal === "add") ? (
-            <Field label="Paid date">
+            <Field label="Tanggal bayar">
               <input
                 name="paidAt"
                 type="date"
@@ -350,7 +357,7 @@ export default function TuitionPage() {
             </Field>
           ) : null}
 
-          <Field label="Note (e.g. WA chat / cash receipt)">
+          <Field label="Catatan (mis. chat WA / kwitansi tunai)">
             <textarea
               name="note"
               rows={2}
@@ -362,34 +369,34 @@ export default function TuitionPage() {
 
           <ModalActions
             onCancel={() => setModal(null)}
-            submitLabel={modal === "record" ? "Mark as paid" : modal === "edit" ? "Update" : "Save"}
+            submitLabel={modal === "record" ? "Tandai lunas" : "Simpan"}
           />
         </form>
       </Modal>
 
-      <Modal open={modal === "view"} onClose={() => setModal(null)} title="Tuition detail">
+      <Modal open={modal === "view"} onClose={() => setModal(null)} title="Detail SPP">
         {active ? (
           <div className="space-y-3 text-sm">
             <p className="text-lg font-semibold">{getStudent(active.studentId)?.name}</p>
             <dl className="grid grid-cols-2 gap-3">
-              <div><dt className="text-xs text-neutral-500">Month</dt><dd>{formatMonth(active.month)}</dd></div>
-              <div><dt className="text-xs text-neutral-500">Amount</dt><dd className="tabular-nums">{formatIDR(active.amount)}</dd></div>
-              <div><dt className="text-xs text-neutral-500">Status</dt><dd className="capitalize">{active.status}</dd></div>
-              <div><dt className="text-xs text-neutral-500">Method</dt><dd>{paymentMethodLabel(active.paymentMethod)}</dd></div>
-              <div><dt className="text-xs text-neutral-500">Due</dt><dd>{formatDate(active.dueDate)}</dd></div>
-              <div><dt className="text-xs text-neutral-500">Paid at</dt><dd>{active.paidAt ? formatDate(active.paidAt) : "—"}</dd></div>
-              <div><dt className="text-xs text-neutral-500">Proof</dt><dd className="capitalize">{active.proofStatus ?? "—"}</dd></div>
-              <div><dt className="text-xs text-neutral-500">Recorded by</dt><dd>{active.recordedBy ?? "—"}</dd></div>
+              <div><dt className="text-xs text-neutral-500">Bulan</dt><dd>{formatMonth(active.month)}</dd></div>
+              <div><dt className="text-xs text-neutral-500">Jumlah</dt><dd className="tabular-nums">{formatIDR(active.amount)}</dd></div>
+              <div><dt className="text-xs text-neutral-500">Status</dt><dd>{tuitionStatusLabel(active.status)}</dd></div>
+              <div><dt className="text-xs text-neutral-500">Metode</dt><dd>{paymentMethodLabel(active.paymentMethod)}</dd></div>
+              <div><dt className="text-xs text-neutral-500">Jatuh tempo</dt><dd>{formatDate(active.dueDate)}</dd></div>
+              <div><dt className="text-xs text-neutral-500">Dibayar</dt><dd>{active.paidAt ? formatDate(active.paidAt) : "—"}</dd></div>
+              <div><dt className="text-xs text-neutral-500">Bukti</dt><dd>{active.proofStatus === "approved" ? "Disetujui" : active.proofStatus === "pending" ? "Menunggu" : active.proofStatus === "rejected" ? "Ditolak" : "—"}</dd></div>
+              <div><dt className="text-xs text-neutral-500">Dicatat oleh</dt><dd>{active.recordedBy ?? "—"}</dd></div>
             </dl>
             {active.note ? <p className="rounded-md bg-neutral-50 p-3 text-neutral-700">{active.note}</p> : null}
             <div className="flex justify-end gap-2 border-t border-neutral-100 pt-4">
-              <button type="button" onClick={() => setModal(null)} className="rounded-md px-3 py-2 text-sm text-neutral-600 hover:bg-neutral-100">Close</button>
+              <button type="button" onClick={() => setModal(null)} className="rounded-md px-3 py-2 text-sm text-neutral-600 hover:bg-neutral-100">Tutup</button>
               {active.status !== "paid" ? (
-                <button type="button" onClick={() => setModal("record")} className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white">
-                  Record payment
+                <button type="button" onClick={() => setModal("record")} className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-[#1A2330]">
+                  Catat pembayaran
                 </button>
               ) : (
-                <button type="button" onClick={() => { setAmount(active.amount); setModal("edit"); }} className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white">
+                <button type="button" onClick={() => { setAmount(active.amount); setModal("edit"); }} className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-[#1A2330]">
                   Edit
                 </button>
               )}

@@ -4,52 +4,90 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   CalendarDays,
-  ClipboardList,
   FileText,
-  Home,
+  LayoutDashboard,
   Receipt,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/format";
 
-const tabs = [
-  { href: "/parents", label: "Home", icon: Home },
-  { href: "/parents/tuition", label: "Tuition", icon: Receipt },
-  { href: "/parents/events", label: "Events", icon: CalendarDays },
-  { href: "/parents/presence", label: "Presence", icon: ClipboardList },
-  { href: "/parents/reports", label: "Reports", icon: FileText },
+const leftTabs = [
+  { href: "/parents/presence", label: "Absensi", icon: CalendarDays },
+  { href: "/parents/tuition", label: "SPP", icon: Receipt },
+];
+
+const rightTabs = [
+  { href: "/parents/events", label: "Acara", icon: Sparkles },
+  { href: "/parents/reports", label: "Laporan", icon: FileText },
 ];
 
 export function ParentsBottomNav() {
   const pathname = usePathname();
 
+  const isActive = (href: string) =>
+    href === "/parents" ? pathname === "/parents" : pathname.startsWith(href);
+
   return (
-    <nav className="fixed bottom-0 left-1/2 z-30 w-full max-w-md -translate-x-1/2 border-t border-black/5 bg-white/95 backdrop-blur-md">
-      <ul className="grid grid-cols-5 px-1 pb-[env(safe-area-inset-bottom)] pt-1">
-        {tabs.map((tab) => {
+    <nav className="pointer-events-none fixed bottom-0 left-1/2 z-30 w-full max-w-md -translate-x-1/2 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      <div className="pointer-events-auto relative flex items-end justify-between rounded-[1.75rem] bg-white/95 px-2 pb-2 pt-2.5 shadow-[0_12px_40px_rgba(26,35,48,0.12)] backdrop-blur-md">
+        {leftTabs.map((tab) => {
           const Icon = tab.icon;
-          const active =
-            tab.href === "/parents"
-              ? pathname === "/parents"
-              : pathname.startsWith(tab.href);
+          const active = isActive(tab.href);
           return (
-            <li key={tab.href}>
-              <Link
-                href={tab.href}
-                className={cn(
-                  "flex flex-col items-center gap-0.5 rounded-xl px-1 py-2 text-[10px] font-medium transition",
-                  active ? "text-[#00B894]" : "text-neutral-400",
-                )}
-              >
-                <Icon
-                  className={cn("size-5", active && "stroke-[2.25]")}
-                  aria-hidden
-                />
-                {tab.label}
-              </Link>
-            </li>
+            <Link
+              key={tab.href}
+              href={tab.href}
+              className={cn(
+                "flex w-14 flex-col items-center gap-0.5 rounded-2xl py-1 transition",
+                active ? "text-[#2E7DFF]" : "text-[#A0AAB8]",
+              )}
+            >
+              <Icon className="size-5" strokeWidth={active ? 2.2 : 1.7} />
+              <span className="text-[10px] font-medium">{tab.label}</span>
+            </Link>
           );
         })}
-      </ul>
+
+        <Link
+          href="/parents"
+          className="relative -mt-8 flex w-16 flex-col items-center"
+        >
+          <span
+            className={cn(
+              "flex size-14 items-center justify-center rounded-full bg-[#2E7DFF] text-white shadow-lg shadow-[#2E7DFF]/35 transition hover:scale-105 active:scale-95",
+              pathname === "/parents" && "ring-4 ring-[#2E7DFF]/25",
+            )}
+          >
+            <LayoutDashboard className="size-6" strokeWidth={2} />
+          </span>
+          <span
+            className={cn(
+              "mt-1 text-[10px] font-medium",
+              pathname === "/parents" ? "text-[#2E7DFF]" : "text-[#A0AAB8]",
+            )}
+          >
+            Dashboard
+          </span>
+        </Link>
+
+        {rightTabs.map((tab) => {
+          const Icon = tab.icon;
+          const active = isActive(tab.href);
+          return (
+            <Link
+              key={tab.href}
+              href={tab.href}
+              className={cn(
+                "flex w-14 flex-col items-center gap-0.5 rounded-2xl py-1 transition",
+                active ? "text-[#2E7DFF]" : "text-[#A0AAB8]",
+              )}
+            >
+              <Icon className="size-5" strokeWidth={active ? 2.2 : 1.7} />
+              <span className="text-[10px] font-medium">{tab.label}</span>
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 }

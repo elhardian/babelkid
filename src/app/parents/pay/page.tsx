@@ -20,18 +20,16 @@ export default function ParentsPayPage() {
   if (!unpaid) {
     return (
       <div className="space-y-4 py-8 text-center">
-        <p className="font-[family-name:var(--font-fredoka)] text-xl font-semibold">
-          All caught up
-        </p>
-        <p className="text-sm text-neutral-500">
-          No pending tuition for {selectedChild.nickname}.
+        <p className="text-xl font-medium text-[#1F1F1F]">Sudah lunas</p>
+        <p className="text-sm text-[#8A857C]">
+          Tidak ada SPP tertunda untuk {selectedChild.nickname}.
         </p>
         <button
           type="button"
           onClick={() => router.push("/parents/tuition")}
-          className="text-sm font-medium text-[#00B894]"
+          className="text-sm font-medium text-[#F28B4C]"
         >
-          Back to history
+          Kembali ke riwayat
         </button>
       </div>
     );
@@ -40,22 +38,22 @@ export default function ParentsPayPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="font-[family-name:var(--font-fredoka)] text-2xl font-semibold">
-          Submit payment
+        <h1 className="text-2xl font-medium tracking-tight text-[#1F1F1F]">
+          Kirim pembayaran
         </h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          {selectedChild.nickname} · upload proof for admin approval
+        <p className="mt-1 text-sm text-[#8A857C]">
+          {selectedChild.nickname} · unggah bukti untuk disetujui admin
         </p>
       </div>
 
-      <div className="rounded-2xl bg-white p-4 shadow-sm">
-        <p className="text-xs text-neutral-500">{formatMonth(unpaid.month)}</p>
-        <p className="mt-1 text-2xl font-bold tabular-nums text-[#00B894]">
+      <div className="rounded-[1.75rem] bg-white p-5 shadow-sm">
+        <p className="text-xs text-[#8A857C]">{formatMonth(unpaid.month)}</p>
+        <p className="mt-1 text-2xl font-medium tabular-nums text-[#F28B4C]">
           {formatIDR(unpaid.amount)}
         </p>
-        <p className="mt-3 text-xs leading-relaxed text-neutral-500">
-          Transfer to BCA 1234567890 a/n Yayasan BabelKids. Then upload your
-          receipt below.
+        <p className="mt-3 text-xs leading-relaxed text-[#8A857C]">
+          Transfer ke BCA 1234567890 a/n Yayasan BabelKids. Lalu unggah bukti
+          transfer di bawah.
         </p>
       </div>
 
@@ -64,14 +62,14 @@ export default function ParentsPayPage() {
         onSubmit={(e) => {
           e.preventDefault();
           alert(
-            `Payment proof for ${selectedChild.nickname} submitted${fileName ? `: ${fileName}` : ""} (demo). Admin will review.`,
+            `Bukti pembayaran untuk ${selectedChild.nickname} telah dikirim${fileName ? `: ${fileName}` : ""} (demo). Admin akan meninjau.`,
           );
           router.push("/parents/tuition");
         }}
       >
         <label className="block">
-          <span className="text-xs font-medium text-neutral-500">
-            Payment method
+          <span className="text-xs font-medium text-[#8A857C]">
+            Metode pembayaran
           </span>
           <select
             required
@@ -79,16 +77,16 @@ export default function ParentsPayPage() {
             defaultValue="transfer"
           >
             <option value="transfer">Transfer</option>
-            <option value="tunai">Tunai (cash at school)</option>
-            <option value="whatsapp">WhatsApp confirm</option>
+            <option value="tunai">Tunai (di sekolah)</option>
+            <option value="whatsapp">Konfirmasi WhatsApp</option>
           </select>
         </label>
 
         <label className="block">
-          <span className="text-xs font-medium text-neutral-500">
-            Payment proof
+          <span className="text-xs font-medium text-[#8A857C]">
+            Bukti pembayaran
           </span>
-          <div className="mt-1 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#00B894]/30 bg-white px-4 py-10">
+          <div className="mt-1 flex flex-col items-center justify-center rounded-[1.75rem] border-2 border-dashed border-[#F28B4C]/35 bg-white px-4 py-10">
             <input
               type="file"
               accept="image/*,.pdf"
@@ -97,29 +95,29 @@ export default function ParentsPayPage() {
               onChange={(e) => setFileName(e.target.files?.[0]?.name ?? null)}
             />
             {fileName ? (
-              <p className="mt-2 text-xs text-neutral-600">{fileName}</p>
+              <p className="mt-2 text-xs text-[#8A857C]">{fileName}</p>
             ) : null}
           </div>
         </label>
 
         <label className="block">
-          <span className="text-xs font-medium text-neutral-500">
-            Note (optional)
+          <span className="text-xs font-medium text-[#8A857C]">
+            Catatan (opsional)
           </span>
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
             rows={3}
-            placeholder="e.g. Transfer from BCA, 02 Jul 10:15"
+            placeholder="cth. Transfer dari BCA, 02 Jul 10:15"
             className="mt-1 w-full rounded-2xl border-0 bg-white px-4 py-3 text-sm shadow-sm outline-none"
           />
         </label>
 
         <button
           type="submit"
-          className="w-full rounded-2xl bg-[#00B894] py-3.5 text-sm font-semibold text-white"
+          className="w-full rounded-[1.5rem] bg-[#1C1C1C] py-3.5 text-sm font-medium text-white"
         >
-          Submit for approval
+          Kirim untuk disetujui
         </button>
       </form>
     </div>

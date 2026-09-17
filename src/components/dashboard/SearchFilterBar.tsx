@@ -19,7 +19,7 @@ export function SearchFilterBar({
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="relative w-full sm:max-w-xs">
         <Search
-          className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
+          className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#A0AAB8]"
           aria-hidden
         />
         <input
@@ -27,7 +27,7 @@ export function SearchFilterBar({
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder={searchPlaceholder}
-          className="w-full rounded-md border border-neutral-200 bg-white py-2 pl-9 pr-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-400"
+          className="w-full rounded-xl border border-[#E5ECF5] bg-white py-2 pl-9 pr-3 text-sm text-[#1A2330] outline-none transition placeholder:text-[#A0AAB8] focus:border-[#2E7DFF]/40 focus:ring-2 focus:ring-[#2E7DFF]/15"
         />
       </div>
       {children ? (
@@ -51,12 +51,12 @@ export function FilterSelect({
   options,
 }: FilterSelectProps) {
   return (
-    <label className="flex items-center gap-2 text-sm text-neutral-600">
+    <label className="flex items-center gap-2 text-sm text-[#8A96A8]">
       <span className="whitespace-nowrap">{label}</span>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-md border border-neutral-200 bg-white px-2.5 py-2 text-sm text-neutral-900 outline-none focus:border-neutral-400"
+        className="rounded-xl border border-[#E5ECF5] bg-white px-2.5 py-2 text-sm text-[#1A2330] outline-none focus:border-[#2E7DFF]/40"
       >
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
@@ -76,15 +76,15 @@ export function StatusBadge({
   tone?: "neutral" | "success" | "warning" | "danger" | "info";
 }) {
   const tones = {
-    neutral: "bg-neutral-100 text-neutral-700",
-    success: "bg-neutral-900 text-white",
-    warning: "bg-neutral-200 text-neutral-800",
-    danger: "bg-neutral-800 text-white",
-    info: "bg-neutral-100 text-neutral-600 ring-1 ring-neutral-300",
+    neutral: "bg-[#EEF3FA] text-[#5B6B7C]",
+    success: "bg-emerald-500/15 text-emerald-700",
+    warning: "bg-amber-500/15 text-amber-800",
+    danger: "bg-rose-500/15 text-rose-700",
+    info: "bg-sky-500/15 text-sky-700",
   };
   return (
     <span
-      className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-medium capitalize ${tones[tone]}`}
+      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${tones[tone]}`}
     >
       {label}
     </span>
@@ -93,7 +93,7 @@ export function StatusBadge({
 
 export function EmptyState({ message }: { message: string }) {
   return (
-    <div className="rounded-md border border-dashed border-neutral-200 px-4 py-12 text-center text-sm text-neutral-500">
+    <div className="rounded-2xl border border-dashed border-[#D5E0EE] bg-white px-4 py-12 text-center text-sm text-[#8A96A8]">
       {message}
     </div>
   );

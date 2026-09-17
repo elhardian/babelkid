@@ -15,10 +15,27 @@ import {
 } from "@/components/dashboard/Modal";
 import { CurrencyInput } from "@/components/dashboard/CurrencyInput";
 import { useKas } from "@/components/dashboard/KasProvider";
-import { formatDate, formatIDR, kasAccountLabel } from "@/lib/format";
+import { formatDate, formatIDR } from "@/lib/format";
 import type { KasAccount, KasEntry } from "@/lib/types";
 
 const inflowSources = ["donation", "gift", "sponsor", "other"] as const;
+
+const inflowSourceLabel: Record<(typeof inflowSources)[number], string> = {
+  donation: "Donasi",
+  gift: "Hadiah",
+  sponsor: "Sponsor",
+  other: "Lainnya",
+};
+
+const kasSourceLabel: Record<string, string> = {
+  tuition: "SPP",
+  event: "Acara",
+  donation: "Donasi",
+  gift: "Hadiah",
+  sponsor: "Sponsor",
+  expense: "Pengeluaran",
+  other: "Lainnya",
+};
 
 type ModalMode = "in" | "out" | null;
 
@@ -95,9 +112,9 @@ export default function KasPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Kas Balance</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Kas</h1>
           <p className="mt-1 text-sm text-neutral-500">
-            Separate cash (tunai) and bank balances · tuition posts here when approved
+            Saldo tunai dan bank terpisah · SPP masuk ke sini setelah disetujui
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -106,14 +123,14 @@ export default function KasPage() {
             onClick={openOut}
             className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
           >
-            Record expense
+            Catat pengeluaran
           </button>
           <button
             type="button"
             onClick={openIn}
-            className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+            className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-[#1A2330] hover:bg-neutral-800"
           >
-            Add balance
+            Tambah saldo
           </button>
         </div>
       </div>
@@ -121,7 +138,7 @@ export default function KasPage() {
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-lg border border-neutral-200 bg-white p-4">
           <p className="text-xs uppercase tracking-wide text-neutral-500">
-            Cash (tunai)
+            Tunai
           </p>
           <p className="mt-1 text-xl font-semibold tabular-nums">
             {formatIDR(balances.cash)}
@@ -137,8 +154,8 @@ export default function KasPage() {
         </div>
         <div className="rounded-lg border border-neutral-200 bg-white p-4">
           <p className="text-xs uppercase tracking-wide text-neutral-500">
-            Total in
-            {accountFilter !== "all" ? ` · ${accountFilter}` : ""}
+            Total masuk
+            {accountFilter !== "all" ? ` · ${accountFilter === "cash" ? "tunai" : "bank"}` : ""}
           </p>
           <p className="mt-1 text-xl font-semibold tabular-nums text-emerald-700">
             {formatIDR(totalIn)}
@@ -146,8 +163,8 @@ export default function KasPage() {
         </div>
         <div className="rounded-lg border border-neutral-200 bg-white p-4">
           <p className="text-xs uppercase tracking-wide text-neutral-500">
-            Total out
-            {accountFilter !== "all" ? ` · ${accountFilter}` : ""}
+            Total keluar
+            {accountFilter !== "all" ? ` · ${accountFilter === "cash" ? "tunai" : "bank"}` : ""}
           </p>
           <p className="mt-1 text-xl font-semibold tabular-nums text-rose-700">
             {formatIDR(totalOut)}
@@ -156,86 +173,82 @@ export default function KasPage() {
       </div>
 
       <div className="rounded-lg border border-dashed border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-600">
-        Combined total:{" "}
+        Total gabungan:{" "}
         <span className="font-semibold tabular-nums text-neutral-900">
           {formatIDR(balances.total)}
         </span>
         <span className="text-neutral-400">
           {" "}
-          · Tunai payments → Cash · Transfer / WhatsApp → Bank
+          · Pembayaran tunai → Tunai · Transfer / WhatsApp → Bank
         </span>
       </div>
 
       <SearchFilterBar
         search={search}
         onSearchChange={setSearch}
-        searchPlaceholder="Search note or source…"
+        searchPlaceholder="Cari catatan atau sumber…"
       >
         <FilterSelect
-          label="Account"
+          label="Akun"
           value={accountFilter}
           onChange={setAccountFilter}
           options={[
-            { value: "all", label: "All" },
-            { value: "cash", label: "Cash" },
+            { value: "all", label: "Semua" },
+            { value: "cash", label: "Tunai" },
             { value: "bank", label: "Bank" },
           ]}
         />
         <FilterSelect
-          label="Source"
+          label="Sumber"
           value={sourceFilter}
           onChange={setSourceFilter}
           options={[
-            { value: "all", label: "All" },
-            { value: "tuition", label: "Tuition" },
-            { value: "event", label: "Event" },
-            { value: "donation", label: "Donation" },
-            { value: "gift", label: "Gift" },
+            { value: "all", label: "Semua" },
+            { value: "tuition", label: "SPP" },
+            { value: "event", label: "Acara" },
+            { value: "donation", label: "Donasi" },
+            { value: "gift", label: "Hadiah" },
             { value: "sponsor", label: "Sponsor" },
-            { value: "expense", label: "Expense" },
-            { value: "other", label: "Other" },
+            { value: "expense", label: "Pengeluaran" },
+            { value: "other", label: "Lainnya" },
           ]}
         />
       </SearchFilterBar>
 
       {filtered.length === 0 ? (
-        <EmptyState message="No kas entries match your filters." />
+        <EmptyState message="Tidak ada entri kas yang cocok dengan filter." />
       ) : (
         <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-neutral-100 bg-neutral-50 text-xs uppercase tracking-wide text-neutral-500">
               <tr>
-                <th className="px-4 py-3 font-medium">Date</th>
-                <th className="px-4 py-3 font-medium">Account</th>
-                <th className="px-4 py-3 font-medium">Type</th>
-                <th className="px-4 py-3 font-medium">Source</th>
-                <th className="px-4 py-3 font-medium">Amount</th>
-                <th className="hidden px-4 py-3 font-medium md:table-cell">
-                  Note
-                </th>
-                <th className="hidden px-4 py-3 font-medium lg:table-cell">
-                  By
-                </th>
+                <th className="px-4 py-3 font-medium">Tanggal</th>
+                <th className="hidden px-4 py-3 font-medium sm:table-cell">Akun</th>
+                <th className="px-4 py-3 font-medium">Tipe</th>
+                <th className="hidden px-4 py-3 font-medium sm:table-cell">Sumber</th>
+                <th className="px-4 py-3 font-medium">Jumlah</th>
+                <th className="hidden px-4 py-3 font-medium md:table-cell">Catatan</th>
+                <th className="hidden px-4 py-3 font-medium lg:table-cell">Oleh</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-100">
               {filtered.map((e) => (
                 <tr key={e.id} className="hover:bg-neutral-50/80">
-                  <td className="px-4 py-3">{formatDate(e.date)}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 tabular-nums">{formatDate(e.date)}</td>
+                  <td className="hidden px-4 py-3 sm:table-cell">
                     <StatusBadge
-                      label={kasAccountLabel(e.account)}
+                      label={e.account === "cash" ? "Tunai" : "Bank"}
                       tone={e.account === "cash" ? "warning" : "info"}
                     />
                   </td>
                   <td className="px-4 py-3">
                     <StatusBadge
-                      label={e.type}
+                      label={e.type === "in" ? "Masuk" : "Keluar"}
                       tone={e.type === "in" ? "success" : "danger"}
                     />
                   </td>
-                  <td className="px-4 py-3 capitalize text-neutral-600">
-                    {e.source}
+                  <td className="hidden px-4 py-3 text-neutral-600 sm:table-cell">
+                    {kasSourceLabel[e.source] ?? e.source}
                   </td>
                   <td
                     className={`px-4 py-3 font-medium tabular-nums ${
@@ -261,14 +274,14 @@ export default function KasPage() {
       <Modal
         open={modal === "in"}
         onClose={() => setModal(null)}
-        title="Add balance (inflow)"
+        title="Tambah saldo (pemasukan)"
       >
         <form onSubmit={save} className="space-y-3">
-          <Field label="Account">
+          <Field label="Akun">
             <div className="grid grid-cols-2 gap-2">
               {(
                 [
-                  { value: "cash", label: "Cash (tunai)" },
+                  { value: "cash", label: "Tunai" },
                   { value: "bank", label: "Bank" },
                 ] as const
               ).map((opt) => (
@@ -278,7 +291,7 @@ export default function KasPage() {
                   onClick={() => setAccount(opt.value)}
                   className={`rounded-md border px-3 py-2.5 text-sm font-medium transition ${
                     account === opt.value
-                      ? "border-neutral-900 bg-neutral-900 text-white"
+                      ? "border-neutral-900 bg-neutral-900 text-[#1A2330]"
                       : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300"
                   }`}
                 >
@@ -287,19 +300,19 @@ export default function KasPage() {
               ))}
             </div>
           </Field>
-          <Field label="Source">
+          <Field label="Sumber">
             <select name="source" required className={inputClass} defaultValue="donation">
               {inflowSources.map((s) => (
                 <option key={s} value={s}>
-                  {s.charAt(0).toUpperCase() + s.slice(1)}
+                  {inflowSourceLabel[s]}
                 </option>
               ))}
             </select>
           </Field>
-          <Field label="Amount">
+          <Field label="Jumlah">
             <CurrencyInput value={amount} onChange={setAmount} required />
           </Field>
-          <Field label="Date">
+          <Field label="Tanggal">
             <input
               name="date"
               type="date"
@@ -308,30 +321,30 @@ export default function KasPage() {
               className={inputClass}
             />
           </Field>
-          <Field label="Note">
+          <Field label="Catatan">
             <textarea
               name="note"
               rows={2}
               required
-              placeholder="e.g. Parent donation / cash gift"
+              placeholder="mis. Donasi orang tua / hadiah tunai"
               className={inputClass}
             />
           </Field>
-          <ModalActions onCancel={() => setModal(null)} submitLabel="Add" />
+          <ModalActions onCancel={() => setModal(null)} submitLabel="Tambah" />
         </form>
       </Modal>
 
       <Modal
         open={modal === "out"}
         onClose={() => setModal(null)}
-        title="Record expense"
+        title="Catat pengeluaran"
       >
         <form onSubmit={save} className="space-y-3">
-          <Field label="From account">
+          <Field label="Dari akun">
             <div className="grid grid-cols-2 gap-2">
               {(
                 [
-                  { value: "cash", label: "Cash (tunai)" },
+                  { value: "cash", label: "Tunai" },
                   { value: "bank", label: "Bank" },
                 ] as const
               ).map((opt) => (
@@ -341,7 +354,7 @@ export default function KasPage() {
                   onClick={() => setAccount(opt.value)}
                   className={`rounded-md border px-3 py-2.5 text-sm font-medium transition ${
                     account === opt.value
-                      ? "border-neutral-900 bg-neutral-900 text-white"
+                      ? "border-neutral-900 bg-neutral-900 text-[#1A2330]"
                       : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300"
                   }`}
                 >
@@ -350,10 +363,10 @@ export default function KasPage() {
               ))}
             </div>
           </Field>
-          <Field label="Amount">
+          <Field label="Jumlah">
             <CurrencyInput value={amount} onChange={setAmount} required />
           </Field>
-          <Field label="Date">
+          <Field label="Tanggal">
             <input
               name="date"
               type="date"
@@ -362,16 +375,16 @@ export default function KasPage() {
               className={inputClass}
             />
           </Field>
-          <Field label="Note">
+          <Field label="Catatan">
             <textarea
               name="note"
               rows={2}
               required
-              placeholder="e.g. Supplies for art week"
+              placeholder="mis. Perlengkapan minggu seni"
               className={inputClass}
             />
           </Field>
-          <ModalActions onCancel={() => setModal(null)} submitLabel="Record" />
+          <ModalActions onCancel={() => setModal(null)} submitLabel="Catat" />
         </form>
       </Modal>
     </div>

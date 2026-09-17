@@ -2,6 +2,7 @@
 
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
+import { ChildAvatar } from "@/components/parents/ChildAvatar";
 import { useParentKids } from "./ParentKidsProvider";
 import { getClass } from "@/lib/mock-data";
 
@@ -11,17 +12,11 @@ export function KidSwitcher() {
 
   if (children.length <= 1) {
     return (
-      <div className="flex items-center gap-2 rounded-full bg-white py-1 pl-1 pr-3 shadow-sm">
-        <span
-          className="flex size-8 items-center justify-center rounded-full text-xs font-bold text-white"
-          style={{ backgroundColor: selectedChild.photoColor }}
-        >
-          {selectedChild.nickname.slice(0, 1)}
-        </span>
-        <span className="text-sm font-semibold text-neutral-800">
-          {selectedChild.nickname}
-        </span>
-      </div>
+      <ChildAvatar
+        gender={selectedChild.gender}
+        nickname={selectedChild.nickname}
+        size="sm"
+      />
     );
   }
 
@@ -30,22 +25,21 @@ export function KidSwitcher() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 rounded-full bg-white py-1 pl-1 pr-2.5 shadow-sm"
+        className="relative"
         aria-expanded={open}
         aria-haspopup="listbox"
+        aria-label="Ganti anak"
       >
-        <span
-          className="flex size-8 items-center justify-center rounded-full text-xs font-bold text-white"
-          style={{ backgroundColor: selectedChild.photoColor }}
-        >
-          {selectedChild.nickname.slice(0, 1)}
-        </span>
-        <span className="text-sm font-semibold text-neutral-800">
-          {selectedChild.nickname}
-        </span>
-        <ChevronDown
-          className={`size-4 text-neutral-400 transition ${open ? "rotate-180" : ""}`}
+        <ChildAvatar
+          gender={selectedChild.gender}
+          nickname={selectedChild.nickname}
+          size="sm"
         />
+        <span className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-white shadow-sm">
+          <ChevronDown
+            className={`size-3 text-[#8A96A8] transition ${open ? "rotate-180" : ""}`}
+          />
+        </span>
       </button>
 
       {open ? (
@@ -53,12 +47,12 @@ export function KidSwitcher() {
           <button
             type="button"
             className="fixed inset-0 z-40"
-            aria-label="Close"
+            aria-label="Tutup"
             onClick={() => setOpen(false)}
           />
           <ul
             role="listbox"
-            className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-2xl bg-white py-1 shadow-xl ring-1 ring-black/5"
+            className="absolute right-0 z-50 mt-3 w-56 overflow-hidden rounded-[1.5rem] bg-white py-1.5 shadow-xl ring-1 ring-black/5"
           >
             {children.map((kid) => {
               const cls = getClass(kid.classId);
@@ -73,21 +67,20 @@ export function KidSwitcher() {
                       setSelectedChildId(kid.id);
                       setOpen(false);
                     }}
-                    className={`flex w-full items-center gap-3 px-3 py-2.5 text-left hover:bg-neutral-50 ${
-                      active ? "bg-[#D4F8EC]/60" : ""
+                    className={`flex w-full items-center gap-3 px-3 py-2.5 text-left hover:bg-[#F3F7FC] ${
+                      active ? "bg-[#EEF3FA]" : ""
                     }`}
                   >
-                    <span
-                      className="flex size-9 items-center justify-center rounded-full text-xs font-bold text-white"
-                      style={{ backgroundColor: kid.photoColor }}
-                    >
-                      {kid.nickname.slice(0, 1)}
-                    </span>
+                    <ChildAvatar
+                      gender={kid.gender}
+                      nickname={kid.nickname}
+                      size="sm"
+                    />
                     <span>
-                      <span className="block text-sm font-semibold text-neutral-900">
+                      <span className="block text-sm font-medium text-[#1A2330]">
                         {kid.nickname}
                       </span>
-                      <span className="block text-xs text-neutral-500">
+                      <span className="block text-xs text-[#8A96A8]">
                         {cls?.name}
                       </span>
                     </span>

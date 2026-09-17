@@ -8,40 +8,25 @@ export function KasOverviewCards() {
   const { balances } = useKas();
 
   return (
-    <div className="grid gap-3 sm:grid-cols-3">
-      <Link
-        href="/dashboard/kas"
-        className="rounded-lg border border-neutral-200 bg-white p-4 hover:border-neutral-300"
-      >
-        <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
-          Kas cash
-        </p>
-        <p className="mt-2 text-xl font-semibold tabular-nums">
-          {formatIDR(balances.cash)}
-        </p>
-      </Link>
-      <Link
-        href="/dashboard/kas"
-        className="rounded-lg border border-neutral-200 bg-white p-4 hover:border-neutral-300"
-      >
-        <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
-          Kas bank
-        </p>
-        <p className="mt-2 text-xl font-semibold tabular-nums">
-          {formatIDR(balances.bank)}
-        </p>
-      </Link>
-      <Link
-        href="/dashboard/kas"
-        className="rounded-lg border border-neutral-200 bg-white p-4 hover:border-neutral-300"
-      >
-        <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
-          Kas total
-        </p>
-        <p className="mt-2 text-xl font-semibold tabular-nums">
-          {formatIDR(balances.total)}
-        </p>
-      </Link>
+    <div className="grid grid-cols-3 gap-3">
+      {[
+        { label: "Kas cash", value: balances.cash },
+        { label: "Kas bank", value: balances.bank },
+        { label: "Kas total", value: balances.total },
+      ].map((item) => (
+        <Link
+          key={item.label}
+          href="/dashboard/kas"
+          className="rounded-xl border border-[#E5ECF5] bg-white p-3 transition hover:border-[#D5E0EE] sm:p-4"
+        >
+          <p className="text-[10px] font-medium uppercase tracking-wide text-[#8A96A8] sm:text-xs">
+            {item.label}
+          </p>
+          <p className="mt-1 truncate text-sm font-semibold tabular-nums text-[#1A2330] sm:mt-2 sm:text-xl">
+            {formatIDR(item.value)}
+          </p>
+        </Link>
+      ))}
     </div>
   );
 }

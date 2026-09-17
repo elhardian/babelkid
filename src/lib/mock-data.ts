@@ -1,9 +1,11 @@
 import type {
   ActivityPost,
+  ClassActivity,
   FinanceSummary,
   KasEntry,
   PresenceRecord,
   SchoolClass,
+  SchoolDayOff,
   SchoolEvent,
   Student,
   StudentReport,
@@ -442,6 +444,8 @@ export const tuitionRecords: TuitionRecord[] = [
     dueDate: "2026-07-05",
     paidAt: "2026-07-02",
     paymentMethod: "transfer",
+    proofUrl:
+      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80",
     proofStatus: "approved",
   },
   {
@@ -452,7 +456,8 @@ export const tuitionRecords: TuitionRecord[] = [
     status: "submitted",
     dueDate: "2026-07-05",
     paymentMethod: "transfer",
-    proofUrl: "/proofs/kenzo-july.jpg",
+    proofUrl:
+      "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80",
     proofStatus: "pending",
     note: "Transfer BCA 02 Jul",
   },
@@ -506,7 +511,8 @@ export const tuitionRecords: TuitionRecord[] = [
     status: "submitted",
     dueDate: "2026-07-05",
     paymentMethod: "transfer",
-    proofUrl: "/proofs/elena-july.jpg",
+    proofUrl:
+      "https://images.unsplash.com/photo-1554224154-26032ffc0d07?auto=format&fit=crop&w=800&q=80",
     proofStatus: "pending",
   },
   {
@@ -518,6 +524,8 @@ export const tuitionRecords: TuitionRecord[] = [
     dueDate: "2026-06-05",
     paidAt: "2026-06-03",
     paymentMethod: "transfer",
+    proofUrl:
+      "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80",
     proofStatus: "approved",
   },
   {
@@ -552,6 +560,8 @@ export const tuitionRecords: TuitionRecord[] = [
     dueDate: "2026-05-05",
     paidAt: "2026-05-02",
     paymentMethod: "whatsapp",
+    proofUrl:
+      "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=800&q=80",
     proofStatus: "approved",
     note: "Kirim bukti via WA",
     recordedBy: "Maya Santoso",
@@ -561,8 +571,13 @@ export const tuitionRecords: TuitionRecord[] = [
     studentId: "s9",
     month: "2026-07",
     amount: 2800000,
-    status: "pending",
+    status: "paid",
     dueDate: "2026-07-05",
+    paidAt: "2026-07-03",
+    paymentMethod: "transfer",
+    proofUrl:
+      "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=80",
+    proofStatus: "approved",
   },
   {
     id: "tu13",
@@ -573,9 +588,350 @@ export const tuitionRecords: TuitionRecord[] = [
     dueDate: "2026-06-05",
     paidAt: "2026-06-02",
     paymentMethod: "transfer",
+    proofUrl:
+      "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=80",
     proofStatus: "approved",
   },
+  {
+    id: "tu14",
+    studentId: "s1",
+    month: "2025-12",
+    amount: 2500000,
+    status: "paid",
+    dueDate: "2025-12-05",
+    paidAt: "2025-12-01",
+    paymentMethod: "transfer",
+    proofUrl:
+      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80",
+    proofStatus: "approved",
+  },
+  {
+    id: "tu15",
+    studentId: "s9",
+    month: "2025-11",
+    amount: 2800000,
+    status: "paid",
+    dueDate: "2025-11-05",
+    paidAt: "2025-11-03",
+    paymentMethod: "tunai",
+    proofStatus: "approved",
+    note: "Bayar tunai di sekolah",
+  },
+  /* Last 2 months (Aug–Sep 2026) */
+  {
+    id: "tu16",
+    studentId: "s1",
+    month: "2026-08",
+    amount: 2500000,
+    status: "paid",
+    dueDate: "2026-08-05",
+    paidAt: "2026-08-02",
+    paymentMethod: "transfer",
+    proofUrl:
+      "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80",
+    proofStatus: "approved",
+    note: "Transfer BCA a.n. Sari Rahman",
+  },
+  {
+    id: "tu17",
+    studentId: "s1",
+    month: "2026-09",
+    amount: 2500000,
+    status: "pending",
+    dueDate: "2026-09-05",
+  },
+  {
+    id: "tu18",
+    studentId: "s9",
+    month: "2026-08",
+    amount: 2800000,
+    status: "paid",
+    dueDate: "2026-08-05",
+    paidAt: "2026-08-01",
+    paymentMethod: "whatsapp",
+    proofUrl:
+      "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=800&q=80",
+    proofStatus: "approved",
+    note: "Konfirmasi via WA",
+    recordedBy: "Maya Santoso",
+  },
+  {
+    id: "tu19",
+    studentId: "s9",
+    month: "2026-09",
+    amount: 2800000,
+    status: "pending",
+    dueDate: "2026-09-05",
+  },
 ];
+
+export const classActivities: ClassActivity[] = [
+  {
+    id: "ca1",
+    classId: "c1",
+    title: "Seni lukis jari",
+    description:
+      "Anak-anak mengeksplor warna primer lewat finger painting. Karya dipajang di dinding kelas. Setiap anak mencoba mencampur kuning, biru, dan merah sampai menemukan warna favoritnya.",
+    date: "2026-09-15",
+    teacherName: "Bu Dewi",
+    location: "Ruang Seni",
+    images: [
+      "https://images.unsplash.com/photo-1596464716127-f2a82984de30?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=800&q=80",
+    ],
+    videoUrl:
+      "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+  },
+  {
+    id: "ca2",
+    classId: "c1",
+    title: "Cerita bilingual pagi",
+    description:
+      "Circle time dengan buku cerita English–Bahasa. Alya ikut membaca baris terakhir! Kelas berlatih kosakata hewan dan menyanyi lagu pendek bersama.",
+    date: "2026-09-14",
+    teacherName: "Bu Dewi",
+    location: "Circle Time",
+    images: [
+      "https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=800&q=80",
+    ],
+  },
+  {
+    id: "ca3",
+    classId: "c3",
+    title: "Eksperimen air & minyak",
+    description:
+      "Curious Minds mencoba eksperimen sederhana di lab mini. Diskusi sains yang seru tentang densitas dan warna.",
+    date: "2026-09-15",
+    teacherName: "Pak Andi",
+    location: "Lab Mini",
+    images: [
+      "https://images.unsplash.com/photo-1507048331197-7d4ac70811cf?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1466637574441-749b8f19452f?auto=format&fit=crop&w=800&q=80",
+    ],
+    videoUrl:
+      "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+  },
+  {
+    id: "ca4",
+    classId: "c1",
+    title: "Taman sayur mini",
+    description:
+      "Menanam bibit sawi di pot kelas. Setiap anak punya pot berlabel nama dan belajar menyiram dengan takaran kecil.",
+    date: "2026-09-12",
+    teacherName: "Bu Dewi",
+    location: "Kebun Sekolah",
+    images: [
+      "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=600&q=80",
+    ],
+  },
+  {
+    id: "ca5",
+    classId: "c1",
+    title: "Musik & gerak",
+    description:
+      "Senam pagi dengan lagu bilingual. Anak berlatih mengikuti irama, bertepuk tangan, dan berganti posisi dalam lingkaran.",
+    date: "2026-09-16",
+    teacherName: "Bu Dewi",
+    location: "Aula kecil",
+    images: [
+      "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1544776193-352d25ca82cd?auto=format&fit=crop&w=800&q=80",
+    ],
+  },
+  {
+    id: "ca6",
+    classId: "c1",
+    title: "Snack sehat bersama",
+    description:
+      "Menyiapkan potongan buah dan sandwich mini. Anak belajar mencuci tangan, berbagi, dan menyebut nama buah dalam dua bahasa.",
+    date: "2026-09-10",
+    teacherName: "Bu Rina",
+    location: "Meja makan kelas",
+    images: [
+      "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1490818387583-1baba5e638af?auto=format&fit=crop&w=800&q=80",
+    ],
+  },
+  {
+    id: "ca7",
+    classId: "c2",
+    title: "Blok bangunan raksasa",
+    description:
+      "Bright Stars membangun kota mini dari balok kayu. Diskusi tentang rumah, jalan, dan siapa tinggal di mana.",
+    date: "2026-09-15",
+    teacherName: "Bu Maya",
+    location: "Area bermain dalam",
+    images: [
+      "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=800&q=80",
+    ],
+  },
+  {
+    id: "ca8",
+    classId: "c2",
+    title: "Lukis dengan spons",
+    description:
+      "Teknik stempel spons untuk membuat langit dan awan. Karya dikeringkan di rak jendela kelas.",
+    date: "2026-09-11",
+    teacherName: "Bu Maya",
+    location: "Ruang Seni",
+    images: [
+      "https://images.unsplash.com/photo-1596464716127-f2a82984de30?auto=format&fit=crop&w=800&q=80",
+    ],
+  },
+  {
+    id: "ca9",
+    classId: "c2",
+    title: "Kunjungan ke perpustakaan mini",
+    description:
+      "Memilih buku favorit dan mendengarkan bacaan singkat. Setiap anak meminjam satu buku bergambar untuk dibawa pulang akhir pekan.",
+    date: "2026-09-08",
+    teacherName: "Bu Rina",
+    location: "Perpustakaan",
+    images: [
+      "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=800&q=80",
+    ],
+  },
+  {
+    id: "ca10",
+    classId: "c3",
+    title: "Peta kelas 3D",
+    description:
+      "Membuat denah kelas dari kertas dan stik es krim. Melatih arah kiri-kanan dan posisi meja teman.",
+    date: "2026-09-16",
+    teacherName: "Pak Andi",
+    location: "Kelas Curious Minds",
+    images: [
+      "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=800&q=80",
+    ],
+  },
+  {
+    id: "ca11",
+    classId: "c3",
+    title: "Olahraga lempar tangkap",
+    description:
+      "Permainan bola lembut di lapangan. Fokus koordinasi mata-tangan dan bergiliran dalam tim kecil.",
+    date: "2026-09-09",
+    teacherName: "Pak Budi",
+    location: "Lapangan",
+    images: [
+      "https://images.unsplash.com/photo-1472162072942-cd5147eb3902?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=800&q=80",
+    ],
+  },
+  {
+    id: "ca12",
+    classId: "c4",
+    title: "Eksplorasi magnit",
+    description:
+      "Explorer Path menguji benda mana yang menempel pada magnet. Catatan sederhana di lembar kerja.",
+    date: "2026-09-15",
+    teacherName: "Bu Sari",
+    location: "Lab Mini",
+    images: [
+      "https://images.unsplash.com/photo-1507048331197-7d4ac70811cf?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80",
+    ],
+  },
+  {
+    id: "ca13",
+    classId: "c4",
+    title: "Drama peran pasar",
+    description:
+      "Anak berperan sebagai penjual dan pembeli di pasar mini. Latihan percakapan sopan dan berhitung uang mainan.",
+    date: "2026-09-12",
+    teacherName: "Bu Sari",
+    location: "Sudut bermain peran",
+    images: [
+      "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=800&q=80",
+    ],
+  },
+  {
+    id: "ca14",
+    classId: "c1",
+    title: "Kolase daun kering",
+    description:
+      "Mengumpulkan daun di kebun lalu menempelkannya menjadi hewan imajiner. Latihan gunting aman dengan bantuan guru.",
+    date: "2026-08-28",
+    teacherName: "Bu Dewi",
+    location: "Kebun & Ruang Seni",
+    images: [
+      "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1596464716127-f2a82984de30?auto=format&fit=crop&w=800&q=80",
+    ],
+  },
+  {
+    id: "ca15",
+    classId: "c1",
+    title: "Hari mandiri tali sepatu",
+    description:
+      "Latihan mengikat tali sepatu dan merapikan tas. Anak yang sudah mahir membantu teman sebangku.",
+    date: "2026-08-25",
+    teacherName: "Bu Rina",
+    location: "Kelas Little Sprouts",
+    images: [
+      "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=800&q=80",
+    ],
+  },
+  {
+    id: "ca16",
+    classId: "c2",
+    title: "Parade kostum hewan",
+    description:
+      "Anak memakai topi hewan buatan sendiri dan menceritakan suara serta habitatnya di depan kelas.",
+    date: "2026-08-22",
+    teacherName: "Bu Maya",
+    location: "Aula kecil",
+    images: [
+      "https://images.unsplash.com/photo-1544776193-352d25ca82cd?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=800&q=80",
+    ],
+  },
+  {
+    id: "ca17",
+    classId: "c3",
+    title: "Menulis jurnal cuaca",
+    description:
+      "Mengamati langit pagi dan mencatat cuaca dengan simbol gambar. Membandingkan dengan hari sebelumnya.",
+    date: "2026-08-20",
+    teacherName: "Pak Andi",
+    location: "Teras kelas",
+    images: [
+      "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80",
+    ],
+  },
+  {
+    id: "ca18",
+    classId: "c4",
+    title: "Proyek jembatan sedotan",
+    description:
+      "Kerja kelompok membuat jembatan dari sedotan dan isolasi. Uji kekuatan dengan mainan kecil.",
+    date: "2026-08-18",
+    teacherName: "Bu Sari",
+    location: "Lab Mini",
+    images: [
+      "https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1507048331197-7d4ac70811cf?auto=format&fit=crop&w=800&q=80",
+    ],
+  },
+];
+
+export function classActivitiesFor(classId: string) {
+  return classActivities
+    .filter((a) => a.classId === classId)
+    .sort((a, b) => b.date.localeCompare(a.date));
+}
+
+export function getClassActivity(id: string) {
+  return classActivities.find((a) => a.id === id);
+}
 
 export const activityPosts: ActivityPost[] = [
   {
@@ -740,6 +1096,48 @@ export const events: SchoolEvent[] = [
   },
 ];
 
+export const schoolDayOffs: SchoolDayOff[] = [
+  {
+    id: "off1",
+    date: "2026-08-17",
+    title: "Hari Kemerdekaan RI",
+    description: "Libur nasional — sekolah tutup.",
+    type: "holiday",
+  },
+  {
+    id: "off2",
+    date: "2026-07-24",
+    title: "Rapat guru",
+    description: "Siswa libur, guru ada briefing kurikulum.",
+    type: "school_off",
+  },
+  {
+    id: "off3",
+    date: "2026-09-16",
+    title: "Libur bersama",
+    description: "Libur bersama setelah cuti bersama nasional.",
+    type: "other",
+  },
+];
+
+export function getDayOff(date: string, offs: SchoolDayOff[] = schoolDayOffs) {
+  return offs.find((o) => o.date === date);
+}
+
+/** Saturday (6) or Sunday (0) */
+export function isWeekend(dateIso: string): boolean {
+  const d = new Date(`${dateIso}T12:00:00`);
+  const day = d.getDay();
+  return day === 0 || day === 6;
+}
+
+export function isSchoolClosed(
+  dateIso: string,
+  offs: SchoolDayOff[] = schoolDayOffs,
+): boolean {
+  return isWeekend(dateIso) || Boolean(getDayOff(dateIso, offs));
+}
+
 export const presenceRecords: PresenceRecord[] = [
   {
     id: "pr1",
@@ -840,6 +1238,80 @@ export const presenceRecords: PresenceRecord[] = [
     status: "excused",
     note: "Family event",
     recordedBy: "t3",
+  },
+  {
+    id: "pr13",
+    studentId: "s1",
+    classId: "c1",
+    date: "2026-09-15",
+    status: "present",
+    recordedBy: "t3",
+  },
+  {
+    id: "pr14",
+    studentId: "s1",
+    classId: "c1",
+    date: "2026-09-12",
+    status: "present",
+    recordedBy: "t3",
+  },
+  {
+    id: "pr15",
+    studentId: "s1",
+    classId: "c1",
+    date: "2026-09-11",
+    status: "absent",
+    note: "Demam",
+    recordedBy: "t3",
+  },
+  {
+    id: "pr16",
+    studentId: "s1",
+    classId: "c1",
+    date: "2026-09-10",
+    status: "excused",
+    note: "Kontrol dokter",
+    recordedBy: "t3",
+  },
+  {
+    id: "pr17",
+    studentId: "s1",
+    classId: "c1",
+    date: "2026-09-09",
+    status: "late",
+    recordedBy: "t3",
+  },
+  {
+    id: "pr18",
+    studentId: "s1",
+    classId: "c1",
+    date: "2026-09-08",
+    status: "present",
+    recordedBy: "t3",
+  },
+  {
+    id: "pr19",
+    studentId: "s9",
+    classId: "c3",
+    date: "2026-09-15",
+    status: "present",
+    recordedBy: "t4",
+  },
+  {
+    id: "pr20",
+    studentId: "s9",
+    classId: "c3",
+    date: "2026-09-12",
+    status: "absent",
+    recordedBy: "t4",
+  },
+  {
+    id: "pr21",
+    studentId: "s9",
+    classId: "c3",
+    date: "2026-09-11",
+    status: "present",
+    recordedBy: "t4",
   },
 ];
 

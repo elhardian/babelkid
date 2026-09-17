@@ -2,221 +2,135 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowRight,
-  CalendarDays,
-  ClipboardList,
-  FileText,
-  Receipt,
-} from "lucide-react";
-import { HorizontalCarousel } from "@/components/parents/HorizontalCarousel";
+import { useMemo } from "react";
+import { CalendarDays, Play } from "lucide-react";
+import { ParentsKidsRow } from "@/components/parents/ParentsKidsRow";
+import { PresenceSummaryCard } from "@/components/parents/PresenceSummaryCard";
 import { useParentKids } from "@/components/parents/ParentKidsProvider";
-import {
-  events,
-  getClass,
-  presenceRecords,
-  studentReports,
-  tuitionRecords,
-} from "@/lib/mock-data";
-import { formatDate, formatIDR, formatMonth, todayISO } from "@/lib/format";
+import { useClassActivitiesStore } from "@/components/dashboard/ClassActivityProvider";
+import { getClass } from "@/lib/mock-data";
+import { formatDate, todayISO } from "@/lib/format";
 
-const menu = [
-  { href: "/parents/tuition", label: "Tuition", icon: Receipt, tone: "#00B894" },
-  { href: "/parents/events", label: "Events", icon: CalendarDays, tone: "#FF6B6B" },
-  { href: "/parents/presence", label: "Presence", icon: ClipboardList, tone: "#54C6EB" },
-  { href: "/parents/reports", label: "Reports", icon: FileText, tone: "#FFD93D" },
-];
+function daysAgoISO(n: number): string {
+  const d = new Date(`${todayISO()}T12:00:00`);
+  d.setDate(d.getDate() - n);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
 
 export default function ParentsHomePage() {
-  const { selectedChild, selectedChildId, childIds, children } = useParentKids();
+  const { selectedChild } = useParentKids();
+  const { forClass } = useClassActivitiesStore();
   const cls = getClass(selectedChild.classId);
+  const cutoff = daysAgoISO(2); // today + 2 previous = 3 days
 
-  // Family events: any kid attending; highlight selected kid's
-  const familyEvents = events.filter((e) =>
-    e.attendees.some((id) => childIds.includes(id)),
+  const activities = useMemo(
+    () => forClass(selectedChild.classId).filter((a) => a.date >= cutoff),
+    [forClass, selectedChild.classId, cutoff],
   );
-  const childEvents = familyEvents.filter((e) =>
-    e.attendees.includes(selectedChildId),
-  );
-  const carouselEvents = childEvents.length ? childEvents : familyEvents;
-
-  const upcoming = carouselEvents.filter((e) => e.status === "upcoming");
-  const latestTuition = tuitionRecords
-    .filter((t) => t.studentId === selectedChildId)
-    .sort((a, b) => b.month.localeCompare(a.month))[0];
-  const todayPresence = presenceRecords.find(
-    (p) => p.studentId === selectedChildId && p.date === todayISO(),
-  );
-  const latestReport = studentReports
-    .filter((r) => r.studentId === selectedChildId)
-    .sort((a, b) => b.date.localeCompare(a.date))[0];
 
   return (
     <div className="space-y-6">
       <section>
-        <h1 className="font-[family-name:var(--font-fredoka)] text-2xl font-semibold text-neutral-900">
-          Good day
-        </h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          {selectedChild.nickname} · {cls?.name}
-          {children.length > 1 ? (
-            <span className="text-neutral-400">
-              {" "}
-              · {children.length} kids
-            </span>
-          ) : null}
-        </p>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-lg font-medium text-[#1A2330]">Anak saya</h2>
+          <Link
+            href="/parents/profile"
+            className="text-xs font-medium text-[#8A96A8]"
+          >
+            Profil →
+          </Link>
+        </div>
+        <ParentsKidsRow showDetailButton />
       </section>
 
-      <section>
-        <div className="mb-2 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-neutral-800">Menu</h2>
-        </div>
-        <HorizontalCarousel>
-          {menu.map((m) => {
-            const Icon = m.icon;
-            return (
-              <Link
-                key={m.href}
-                href={m.href}
-                className="flex w-[4.75rem] shrink-0 snap-start flex-col items-center gap-2"
-              >
-                <span
-                  className="flex size-14 items-center justify-center rounded-2xl text-white shadow-md"
-                  style={{ backgroundColor: m.tone }}
-                >
-                  <Icon className="size-6" />
-                </span>
-                <span className="text-xs font-medium text-neutral-700">
-                  {m.label}
-                </span>
-              </Link>
-            );
-          })}
-        </HorizontalCarousel>
-      </section>
+      <PresenceSummaryCard
+        studentId={selectedChild.id}
+        nickname={selectedChild.nickname}
+        href="/parents/presence"
+        scope="month"
+      />
 
       <section>
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-neutral-800">Events</h2>
+          <h2 className="text-lg font-medium text-[#1A2330]">
+            Kegiatan kelas
+          </h2>
           <Link
-            href="/parents/events"
-            className="text-xs font-medium text-[#00B894]"
+            href="/parents/activities"
+            className="text-xs font-medium text-[#2E7DFF]"
           >
-            See all
+            Lihat semua →
           </Link>
         </div>
-        <HorizontalCarousel>
-          {carouselEvents.map((e) => (
+        <p className="mb-2 text-xs text-[#8A96A8]">
+          {cls?.name} · 3 hari terakhir
+        </p>
+        <div
+          className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-1"
+          style={{ scrollbarWidth: "none" }}
+        >
+          {activities.map((a, i) => (
             <Link
-              key={e.id}
-              href={`/parents/events/${e.id}`}
-              className="relative h-44 w-[82%] shrink-0 snap-center overflow-hidden rounded-3xl text-white shadow-lg"
+              key={a.id}
+              href={`/parents/activities/${a.id}`}
+              className="group relative h-52 w-[9.75rem] shrink-0 overflow-hidden rounded-[1.5rem] shadow-md shadow-black/10 animate-pop-in"
+              style={{ animationDelay: `${80 + i * 70}ms` }}
             >
-              <Image
-                src={e.coverImage}
-                alt={e.title}
-                fill
-                className="object-cover"
-                sizes="320px"
-                priority={e.id === carouselEvents[0]?.id}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-4">
-                <p className="text-[10px] font-medium uppercase tracking-wider text-white/80">
-                  {e.status} · {formatDate(e.date, "dd MMM")}
+              {a.images[0] ? (
+                <Image
+                  src={a.images[0]}
+                  alt={a.title}
+                  fill
+                  className="object-cover transition duration-500 group-hover:scale-105"
+                  sizes="156px"
+                />
+              ) : (
+                <div className="absolute inset-0 bg-[#C8E4F8]" />
+              )}
+              {a.videoUrl ? (
+                <span className="absolute right-2.5 top-2.5 flex size-7 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm">
+                  <Play className="size-3 fill-white" />
+                </span>
+              ) : null}
+              <div className="absolute inset-x-2 bottom-2 rounded-xl bg-white/80 p-2.5 shadow-sm backdrop-blur-md">
+                <p className="line-clamp-2 text-xs font-medium leading-snug text-[#1A2330]">
+                  {a.title}
                 </p>
-                <p className="mt-1 font-[family-name:var(--font-fredoka)] text-lg font-semibold leading-tight">
-                  {e.title}
-                </p>
-                <p className="mt-1 text-xs text-white/85">
-                  {e.feePerChild > 0 ? formatIDR(e.feePerChild) : "Free"} ·{" "}
-                  {e.location}
-                </p>
+                <span className="mt-1 inline-flex items-center gap-1 text-[10px] text-[#5B8FD9]">
+                  <CalendarDays className="size-2.5 shrink-0" />
+                  {formatDate(a.date, "d MMM")}
+                </span>
               </div>
             </Link>
           ))}
-        </HorizontalCarousel>
+          {activities.length === 0 ? (
+            <div className="flex h-36 w-full items-center justify-center rounded-[1.5rem] bg-white text-sm text-[#8A96A8]">
+              Belum ada kegiatan 3 hari terakhir
+            </div>
+          ) : null}
+        </div>
       </section>
 
-      <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-800">
-          Today · {selectedChild.nickname}
-        </h2>
-
+      <section className="grid grid-cols-2 gap-3">
         <Link
           href="/parents/presence"
-          className="flex items-center justify-between rounded-2xl bg-white p-4 shadow-sm"
+          className="rounded-[1.5rem] bg-white p-4 shadow-sm shadow-black/5 transition hover:-translate-y-0.5"
         >
-          <div>
-            <p className="text-xs text-neutral-500">Presence</p>
-            <p className="mt-0.5 font-semibold capitalize text-neutral-900">
-              {todayPresence?.status ?? "Not marked"}
-            </p>
-          </div>
-          <ArrowRight className="size-4 text-neutral-300" />
+          <p className="text-xs text-[#8A96A8]">Absensi</p>
+          <p className="mt-1 text-base font-medium text-[#1A2330]">Kehadiran</p>
         </Link>
-
-        {latestTuition ? (
-          <Link
-            href="/parents/tuition"
-            className="flex items-center justify-between rounded-2xl bg-white p-4 shadow-sm"
-          >
-            <div>
-              <p className="text-xs text-neutral-500">
-                Tuition · {formatMonth(latestTuition.month)}
-              </p>
-              <p className="mt-0.5 font-semibold text-neutral-900">
-                {formatIDR(latestTuition.amount)}{" "}
-                <span className="text-sm font-medium capitalize text-neutral-500">
-                  · {latestTuition.status}
-                </span>
-              </p>
-            </div>
-            <ArrowRight className="size-4 text-neutral-300" />
-          </Link>
-        ) : null}
-
-        {latestReport ? (
-          <Link
-            href="/parents/reports"
-            className="block rounded-2xl bg-white p-4 shadow-sm"
-          >
-            <p className="text-xs text-neutral-500">
-              Latest report · {formatDate(latestReport.date)}
-            </p>
-            <p className="mt-1 text-sm leading-relaxed text-neutral-800">
-              {latestReport.notes}
-            </p>
-          </Link>
-        ) : null}
-
-        {upcoming[0] ? (
-          <Link
-            href={`/parents/events/${upcoming[0].id}`}
-            className="block overflow-hidden rounded-2xl shadow-sm"
-          >
-            <div className="relative h-28">
-              <Image
-                src={upcoming[0].coverImage}
-                alt={upcoming[0].title}
-                fill
-                className="object-cover"
-                sizes="400px"
-              />
-              <div className="absolute inset-0 bg-[#00B894]/75" />
-              <div className="absolute inset-0 p-4 text-white">
-                <p className="text-xs text-white/70">Coming up</p>
-                <p className="mt-1 font-[family-name:var(--font-fredoka)] text-lg font-semibold">
-                  {upcoming[0].title}
-                </p>
-                <p className="mt-1 text-xs text-white/80">
-                  {formatDate(upcoming[0].date)} · {upcoming[0].location}
-                </p>
-              </div>
-            </div>
-          </Link>
-        ) : null}
+        <Link
+          href="/parents/calendar"
+          className="rounded-[1.5rem] bg-white p-4 shadow-sm shadow-black/5 transition hover:-translate-y-0.5"
+        >
+          <p className="text-xs text-[#8A96A8]">Libur & off</p>
+          <p className="mt-1 text-base font-medium text-[#1A2330]">
+            Kalender
+          </p>
+        </Link>
       </section>
     </div>
   );

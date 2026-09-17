@@ -3,11 +3,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ArrowRight, Download } from "lucide-react";
+import { ArrowRight, Download, MessageCircle, MapPin } from "lucide-react";
 import { SwipeableGallery } from "@/components/SwipeableGallery";
 import { activityPosts } from "@/lib/mock-data";
 import { formatDate } from "@/lib/format";
 import type { ActivityPost } from "@/lib/types";
+
+const WHATSAPP_URL =
+  "https://wa.me/6281210001001?text=Halo%20BabelKids%2C%20saya%20ingin%20bertanya%20tentang%20sekolah.";
+const MAPS_URL =
+  "https://www.google.com/maps/place/Babel+Kids/@-2.1252929,106.1078513,17z/data=!3m1!4b1!4m6!3m5!1s0x2e22c126527c90d9:0xc51d961435f321c8!8m2!3d-2.1252929!4d106.1078513!16s%2Fg%2F11c53n95s3";
+const MAPS_EMBED =
+  "https://www.google.com/maps?q=Babel+Kids+-2.1252929,106.1078513&z=17&output=embed";
 
 const programs = [
   {
@@ -94,6 +101,7 @@ const reviews = [
 
 const HERO_BG = "/hero.png";
 const HERO_FLOAT = "/hero-float.png";
+const HERO_FLOAT_VIDEO = "/hero-float.png";
 
 /* ——— Reusable doodle / wave helpers ——— */
 
@@ -388,12 +396,12 @@ export default function LandingPage() {
             >
               Staff
             </Link>
-            <a
-              href="#visit"
+            <Link
+              href="/register"
               className="inline-flex items-center gap-1 rounded-full bg-[var(--bk-coral)] px-4 py-2 text-sm font-semibold text-white shadow-md shadow-[#FF6B6B]/30 transition hover:scale-105 hover:brightness-105"
             >
-              Book a visit
-            </a>
+              Daftar sekarang
+            </Link>
           </div>
         </div>
       </header>
@@ -437,13 +445,13 @@ export default function LandingPage() {
                   teachers who know every child by name.
                 </p>
                 <div className="animate-fade-up delay-300 mt-5 flex flex-col gap-2.5 sm:mt-8 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
-                  <a
-                    href="#visit"
+                  <Link
+                    href="/register"
                     className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--bk-mint)] px-6 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:-translate-y-1 hover:brightness-105 hover:shadow-xl"
                   >
-                    Schedule a tour
+                    Daftar sekarang
                     <ArrowRight className="size-4" />
-                  </a>
+                  </Link>
                   <a
                     href="#programs"
                     className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-[var(--bk-ink)]/20 bg-white/70 px-6 py-3.5 text-sm font-semibold text-[var(--bk-ink)] backdrop-blur-sm transition hover:-translate-y-0.5 hover:bg-white/90"
@@ -455,16 +463,29 @@ export default function LandingPage() {
             </div>
 
             <div
-              className="hero-float-kids animate-float-mid pointer-events-none flex shrink-0 justify-center px-0 pb-32 pt-6 sm:px-0 sm:pb-0 sm:pt-0"
+              className="hero-float-kids pointer-events-none flex shrink-0 justify-center px-0 pb-32 pt-6 sm:px-0 sm:pb-0 sm:pt-0"
               aria-hidden
             >
+              <video
+                className="hero-float-video h-auto w-full object-contain object-bottom motion-reduce:hidden"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                poster={HERO_FLOAT}
+                width={1204}
+                height={760}
+              >
+                <source src={HERO_FLOAT_VIDEO} type="image/png" />
+              </video>
               <Image
                 src={HERO_FLOAT}
                 alt=""
                 width={2400}
                 height={1600}
                 priority
-                className="h-auto w-full object-contain object-bottom"
+                className="hidden h-auto w-full object-contain object-bottom motion-reduce:block"
                 sizes="(max-width: 640px) 170vw, (max-width: 1024px) 50vw, 42rem"
               />
             </div>
@@ -765,41 +786,106 @@ export default function LandingPage() {
               Come see us
             </h2>
             <p className="mt-3 text-[var(--bk-ink)]/70">
-              Tours run Tuesday & Thursday mornings. Bring your little one —
-              we’d love to meet you both.
+              Chat us on WhatsApp or find BabelKids on the map — we’d love to
+              meet you.
             </p>
-            <form
-              className="mt-10 space-y-3 text-left"
-              onSubmit={(e) => {
-                e.preventDefault();
-                alert("Thanks! We’ll be in touch soon. (Demo form)");
-              }}
-            >
-              <input
-                required
-                name="name"
-                placeholder="Parent name"
-                className="w-full rounded-2xl border-0 bg-white/90 px-4 py-3.5 text-sm outline-none transition focus:shadow-[0_0_0_4px_rgba(255,107,107,0.25)]"
-              />
-              <input
-                required
-                type="email"
-                name="email"
-                placeholder="Email"
-                className="w-full rounded-2xl border-0 bg-white/90 px-4 py-3.5 text-sm outline-none transition focus:shadow-[0_0_0_4px_rgba(255,107,107,0.25)]"
-              />
-              <input
-                name="child"
-                placeholder="Child’s age (optional)"
-                className="w-full rounded-2xl border-0 bg-white/90 px-4 py-3.5 text-sm outline-none transition focus:shadow-[0_0_0_4px_rgba(255,107,107,0.25)]"
-              />
-              <button
-                type="submit"
-                className="w-full rounded-full bg-[var(--bk-sun)] py-3.5 text-sm font-bold text-[var(--bk-ink)] shadow-md transition hover:scale-[1.02] hover:brightness-105"
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+              <a
+                href={WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 py-3.5 text-sm font-bold text-white shadow-md transition hover:scale-[1.02] hover:brightness-105"
               >
-                Request a tour
-              </button>
-            </form>
+                <MessageCircle className="size-4" />
+                Chat on WhatsApp
+              </a>
+              <a
+                href={MAPS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-[var(--bk-ink)]/15 bg-white/80 px-6 py-3.5 text-sm font-semibold text-[var(--bk-ink)] backdrop-blur-sm transition hover:bg-white"
+              >
+                <MapPin className="size-4" />
+                Open in Maps
+              </a>
+            </div>
+          </div>
+
+          <div className="relative mx-auto mt-10 max-w-5xl px-5">
+            {/* Kids-style map frame */}
+            <div className="relative">
+              <SvgStar
+                color="#FFD93D"
+                className="animate-wiggle pointer-events-none absolute -left-2 -top-3 z-20 size-10 sm:-left-4 sm:size-12"
+              />
+              <SvgStar
+                color="#54C6EB"
+                className="animate-bob pointer-events-none absolute -right-1 top-8 z-20 size-7 sm:-right-3 sm:size-9"
+              />
+              <SvgLeaf
+                color="#00B894"
+                className="animate-float-slow pointer-events-none absolute -bottom-4 -left-1 z-20 size-12 rotate-[-20deg] sm:-left-3 sm:size-14"
+              />
+              <StampBadge
+                color="#FF6B6B"
+                className="animate-wiggle pointer-events-none absolute -right-1 -bottom-3 z-20 size-20 -rotate-6 text-[11px] leading-tight sm:-right-3 sm:size-24 sm:text-sm"
+              >
+                We&apos;re
+                <br />
+                here!
+              </StampBadge>
+
+              <div
+                className="relative rounded-[2rem] p-[10px] sm:rounded-[2.25rem] sm:p-3"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #FFD93D 0%, #FF6B6B 28%, #54C6EB 55%, #00B894 78%, #FFB4C8 100%)",
+                  boxShadow:
+                    "0 16px 40px rgba(26,46,53,0.18), inset 0 0 0 3px rgba(255,253,248,0.55)",
+                }}
+              >
+                <div
+                  className="relative overflow-hidden rounded-[1.55rem] bg-[#FFFDF8] sm:rounded-[1.85rem]"
+                  style={{
+                    boxShadow: "inset 0 0 0 3px rgba(26,46,53,0.06)",
+                  }}
+                >
+                  {/* Soft paper dots */}
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 z-10 opacity-[0.12]"
+                    style={{
+                      backgroundImage:
+                        "radial-gradient(#1A2E35 1px, transparent 1px)",
+                      backgroundSize: "14px 14px",
+                    }}
+                  />
+                  {/* Warm kids tint over map tiles */}
+                  <iframe
+                    title="BabelKids on Google Maps"
+                    src={MAPS_EMBED}
+                    className="relative z-0 h-80 w-full border-0 sm:h-[28rem]"
+                    style={{
+                      filter:
+                        "saturate(1.15) contrast(0.95) brightness(1.04) sepia(0.12)",
+                    }}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    allowFullScreen
+                  />
+                  {/* Soft vignette so edges feel illustrated */}
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 z-[5] rounded-[inherit]"
+                    style={{
+                      boxShadow:
+                        "inset 0 0 60px 12px rgba(255,180,200,0.35), inset 0 0 0 1px rgba(255,253,248,0.7)",
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -815,6 +901,9 @@ export default function LandingPage() {
             © {new Date().getFullYear()} BabelKids Preschool & Kindergarten
           </p>
           <div className="flex gap-5 text-sm text-white/70">
+            <Link href="/register" className="hover:text-[var(--bk-sun)]">
+              Daftar
+            </Link>
             <Link href="/parents" className="hover:text-[var(--bk-sun)]">
               Parents
             </Link>

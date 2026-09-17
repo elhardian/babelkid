@@ -74,9 +74,9 @@ export default function EventsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Events</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Acara</h1>
           <p className="mt-1 text-sm text-neutral-500">
-            Fees, attendees, and photos
+            Biaya, peserta, dan foto
           </p>
         </div>
         <button
@@ -86,32 +86,32 @@ export default function EventsPage() {
             setFeePerChild(0);
             setModal("add");
           }}
-          className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+          className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-[#1A2330] hover:bg-neutral-800"
         >
-          Create event
+          Buat acara
         </button>
       </div>
 
       <SearchFilterBar
         search={search}
         onSearchChange={setSearch}
-        searchPlaceholder="Search events…"
+        searchPlaceholder="Cari acara…"
       >
         <FilterSelect
           label="Status"
           value={statusFilter}
           onChange={setStatusFilter}
           options={[
-            { value: "all", label: "All" },
-            { value: "upcoming", label: "Upcoming" },
-            { value: "ongoing", label: "Ongoing" },
-            { value: "past", label: "Past" },
+            { value: "all", label: "Semua" },
+            { value: "upcoming", label: "Akan datang" },
+            { value: "ongoing", label: "Berlangsung" },
+            { value: "past", label: "Selesai" },
           ]}
         />
       </SearchFilterBar>
 
       {filtered.length === 0 ? (
-        <EmptyState message="No events match your filters." />
+        <EmptyState message="Tidak ada acara yang cocok dengan filter." />
       ) : (
         <div className="grid gap-3 lg:grid-cols-2">
           {filtered.map((e) => (
@@ -133,7 +133,13 @@ export default function EventsPage() {
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="text-lg font-semibold">{e.title}</h2>
                       <StatusBadge
-                        label={e.status}
+                        label={
+                          e.status === "upcoming"
+                            ? "Akan datang"
+                            : e.status === "ongoing"
+                              ? "Berlangsung"
+                              : "Selesai"
+                        }
                         tone={e.status === "upcoming" ? "success" : "neutral"}
                       />
                     </div>
@@ -145,11 +151,11 @@ export default function EventsPage() {
                     </p>
                   </div>
                   <div className="shrink-0 text-sm sm:text-right">
-                    <p className="text-xs text-neutral-500">Fee / child</p>
+                    <p className="text-xs text-neutral-500">Biaya / anak</p>
                     <p className="font-semibold tabular-nums">
-                      {e.feePerChild > 0 ? formatIDR(e.feePerChild) : "Free"}
+                      {e.feePerChild > 0 ? formatIDR(e.feePerChild) : "Gratis"}
                     </p>
-                    <p className="mt-2 text-xs text-neutral-500">Photos</p>
+                    <p className="mt-2 text-xs text-neutral-500">Foto</p>
                     <p className="font-medium tabular-nums">
                       {e.documentation.length}
                     </p>
@@ -160,7 +166,7 @@ export default function EventsPage() {
                     href={`/dashboard/events/${e.id}`}
                     className="text-neutral-600 hover:text-neutral-900"
                   >
-                    View detail
+                    Lihat detail
                   </Link>
                   <button
                     type="button"
@@ -183,11 +189,11 @@ export default function EventsPage() {
       <Modal
         open={modal === "add" || modal === "edit"}
         onClose={() => setModal(null)}
-        title={modal === "edit" ? "Edit event" : "Create event"}
+        title={modal === "edit" ? "Edit acara" : "Buat acara"}
         wide
       >
         <form onSubmit={save} className="space-y-3">
-          <Field label="Title">
+          <Field label="Judul">
             <input
               name="title"
               required
@@ -195,7 +201,7 @@ export default function EventsPage() {
               className={inputClass}
             />
           </Field>
-          <Field label="Description">
+          <Field label="Deskripsi">
             <textarea
               name="description"
               required
@@ -205,7 +211,7 @@ export default function EventsPage() {
             />
           </Field>
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Date">
+            <Field label="Tanggal">
               <input
                 name="date"
                 type="date"
@@ -214,7 +220,7 @@ export default function EventsPage() {
                 className={inputClass}
               />
             </Field>
-            <Field label="Location">
+            <Field label="Lokasi">
               <input
                 name="location"
                 required
@@ -224,7 +230,7 @@ export default function EventsPage() {
             </Field>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Fee per child">
+            <Field label="Biaya per anak">
               <CurrencyInput
                 name="feePerChild"
                 value={feePerChild}
@@ -237,15 +243,15 @@ export default function EventsPage() {
                 defaultValue={active?.status ?? "upcoming"}
                 className={inputClass}
               >
-                <option value="upcoming">Upcoming</option>
-                <option value="ongoing">Ongoing</option>
-                <option value="past">Past</option>
+                <option value="upcoming">Akan datang</option>
+                <option value="ongoing">Berlangsung</option>
+                <option value="past">Selesai</option>
               </select>
             </Field>
           </div>
           <ModalActions
             onCancel={() => setModal(null)}
-            submitLabel={modal === "edit" ? "Update" : "Create"}
+            submitLabel={modal === "edit" ? "Simpan" : "Tambah"}
           />
         </form>
       </Modal>

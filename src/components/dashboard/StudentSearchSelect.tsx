@@ -60,7 +60,7 @@ export function StudentSearchSelect({
         {selected ? (
           <>
             <span
-              className="flex size-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
+              className="flex size-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-[#1A2330]"
               style={{ backgroundColor: selected.photoColor }}
             >
               {selected.nickname.slice(0, 1)}
@@ -107,7 +107,7 @@ export function StudentSearchSelect({
                   )}
                 >
                   <span
-                    className="flex size-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
+                    className="flex size-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-[#1A2330]"
                     style={{ backgroundColor: s.photoColor }}
                   >
                     {s.nickname.slice(0, 1)}

@@ -42,12 +42,12 @@ export default function EventDetailPage({
   if (!event) {
     return (
       <div className="space-y-4 py-12 text-center">
-        <p className="text-sm text-neutral-500">Event not found.</p>
+        <p className="text-sm text-neutral-500">Acara tidak ditemukan.</p>
         <Link
           href="/dashboard/events"
           className="text-sm font-medium text-neutral-900 underline-offset-2 hover:underline"
         >
-          Back to events
+          Kembali ke acara
         </Link>
       </div>
     );
@@ -62,7 +62,7 @@ export default function EventDetailPage({
     const fd = new FormData(e.currentTarget);
     const doc: EventDoc = {
       id: `d${Date.now()}`,
-      caption: String(fd.get("caption") || "Event photo"),
+      caption: String(fd.get("caption") || "Foto acara"),
       type: "photo",
       color: "#F4A261",
       imageUrl: String(fd.get("imageUrl") || imageUrl),
@@ -102,22 +102,28 @@ export default function EventDetailPage({
             href="/dashboard/events"
             className="text-sm text-neutral-500 hover:text-neutral-900"
           >
-            ← Events
+            ← Acara
           </Link>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-semibold tracking-tight">
               {event.title}
             </h1>
             <StatusBadge
-              label={event.status}
+              label={
+                event.status === "upcoming"
+                  ? "Akan datang"
+                  : event.status === "ongoing"
+                    ? "Berlangsung"
+                    : "Selesai"
+              }
               tone={event.status === "upcoming" ? "success" : "neutral"}
             />
           </div>
           <p className="mt-1 text-sm text-neutral-500">
             {formatDate(event.date)} · {event.location}
             {event.feePerChild > 0
-              ? ` · ${formatIDR(event.feePerChild)} / child`
-              : " · Free"}
+              ? ` · ${formatIDR(event.feePerChild)} / anak`
+              : " · Gratis"}
           </p>
         </div>
       </div>
@@ -139,7 +145,7 @@ export default function EventDetailPage({
             }}
             className="absolute bottom-4 right-4 rounded-md bg-white/95 px-3 py-1.5 text-xs font-medium text-neutral-900"
           >
-            Change cover
+            Ganti sampul
           </button>
         </div>
         <div className="space-y-4 p-5">
@@ -148,7 +154,7 @@ export default function EventDetailPage({
           </p>
           <div>
             <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
-              Attendees ({event.attendees.length})
+              Peserta ({event.attendees.length})
             </p>
             <div className="mt-2 flex flex-wrap gap-1.5">
               {event.attendees.map((sid) => {
@@ -163,7 +169,7 @@ export default function EventDetailPage({
                 );
               })}
               {event.attendees.length === 0 ? (
-                <span className="text-sm text-neutral-400">None yet</span>
+                <span className="text-sm text-neutral-400">Belum ada</span>
               ) : null}
             </div>
           </div>
@@ -172,10 +178,9 @@ export default function EventDetailPage({
 
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-sm font-semibold">Photos</h2>
+          <h2 className="text-sm font-semibold">Foto</h2>
           <p className="text-xs text-neutral-500">
-            {event.documentation.length} photo
-            {event.documentation.length === 1 ? "" : "s"} in gallery
+            {event.documentation.length} foto di galeri
           </p>
         </div>
         <button
@@ -184,15 +189,15 @@ export default function EventDetailPage({
             setImageUrl(SAMPLE_PHOTOS[0]);
             setModal("add");
           }}
-          className="inline-flex items-center gap-1.5 rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+          className="inline-flex items-center gap-1.5 rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-[#1A2330] hover:bg-neutral-800"
         >
           <ImagePlus className="size-4" />
-          Add photo
+          Tambah foto
         </button>
       </div>
 
       {event.documentation.length === 0 ? (
-        <EmptyState message="No photos yet. Add gallery photos for this event." />
+        <EmptyState message="Belum ada foto. Tambahkan foto galeri untuk acara ini." />
       ) : (
         <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {event.documentation.map((d) => (
@@ -218,15 +223,15 @@ export default function EventDetailPage({
               <div className="flex items-start justify-between gap-2 p-3">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium">{d.caption}</p>
-                  <p className="text-xs capitalize text-neutral-500">
-                    {d.type} · {formatDate(d.createdAt, "dd MMM yyyy")}
+                  <p className="text-xs text-neutral-500">
+                    {d.type === "photo" ? "Foto" : d.type} · {formatDate(d.createdAt, "dd MMM yyyy")}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => removePhoto(d.id)}
                   className="rounded-md p-1.5 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-900"
-                  aria-label="Remove photo"
+                  aria-label="Hapus foto"
                 >
                   <Trash2 className="size-4" />
                 </button>
@@ -238,7 +243,7 @@ export default function EventDetailPage({
                   disabled={!d.imageUrl}
                   className="text-xs font-medium text-neutral-600 hover:text-neutral-900 disabled:opacity-40"
                 >
-                  Use as cover
+                  Jadikan sampul
                 </button>
               </div>
             </li>
@@ -246,12 +251,12 @@ export default function EventDetailPage({
         </ul>
       )}
 
-      <Modal open={modal === "add"} onClose={() => setModal(null)} title="Add photo" wide>
+      <Modal open={modal === "add"} onClose={() => setModal(null)} title="Tambah foto" wide>
         <form onSubmit={addPhoto} className="space-y-3">
-          <Field label="Caption">
-            <input name="caption" required className={inputClass} placeholder="Short caption" />
+          <Field label="Keterangan">
+            <input name="caption" required className={inputClass} placeholder="Keterangan singkat" />
           </Field>
-          <Field label="Image URL">
+          <Field label="URL gambar">
             <input
               name="imageUrl"
               required
@@ -261,7 +266,7 @@ export default function EventDetailPage({
             />
           </Field>
           <div>
-            <p className="mb-2 text-xs text-neutral-500">Quick pick sample</p>
+            <p className="mb-2 text-xs text-neutral-500">Pilih contoh cepat</p>
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
               {SAMPLE_PHOTOS.map((src) => (
                 <button
@@ -278,13 +283,13 @@ export default function EventDetailPage({
               ))}
             </div>
           </div>
-          <ModalActions onCancel={() => setModal(null)} submitLabel="Add photo" />
+          <ModalActions onCancel={() => setModal(null)} submitLabel="Tambah foto" />
         </form>
       </Modal>
 
-      <Modal open={modal === "cover"} onClose={() => setModal(null)} title="Change cover" wide>
+      <Modal open={modal === "cover"} onClose={() => setModal(null)} title="Ganti sampul" wide>
         <form onSubmit={saveCover} className="space-y-3">
-          <Field label="Cover image URL">
+          <Field label="URL gambar sampul">
             <input
               name="imageUrl"
               required
@@ -311,10 +316,10 @@ export default function EventDetailPage({
           {imageUrl ? (
             <div className="relative h-36 overflow-hidden rounded-lg">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={imageUrl} alt="Preview" className="size-full object-cover" />
+              <img src={imageUrl} alt="Pratinjau" className="size-full object-cover" />
             </div>
           ) : null}
-          <ModalActions onCancel={() => setModal(null)} submitLabel="Save cover" />
+          <ModalActions onCancel={() => setModal(null)} submitLabel="Simpan sampul" />
         </form>
       </Modal>
     </div>

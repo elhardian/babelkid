@@ -1,149 +1,148 @@
+"use client";
+
 import Link from "next/link";
-import { KasOverviewCards } from "@/components/dashboard/KasOverviewCards";
+import { Box, CalendarCheck, ClipboardPen, Users } from "lucide-react";
+import { useRegistrations } from "@/components/dashboard/RegistrationProvider";
 import {
   classes,
+  currentParentName,
   events,
   students,
-  tuitionRecords,
+  presenceRecords,
 } from "@/lib/mock-data";
-import { formatIDR } from "@/lib/format";
+import { todayISO } from "@/lib/format";
 
 export default function DashboardOverviewPage() {
+  const { pendingCount } = useRegistrations();
+  const today = todayISO();
   const activeStudents = students.filter((s) => s.status === "active").length;
-  const pendingTuition = tuitionRecords.filter(
-    (t) => t.status === "pending" || t.status === "overdue" || t.status === "submitted",
-  );
   const upcomingEvents = events.filter((e) => e.status === "upcoming");
-  const collected = tuitionRecords
-    .filter((t) => t.month === "2026-07" && t.status === "paid")
-    .reduce((sum, t) => sum + t.amount, 0);
+  const todayPresence = presenceRecords.filter((p) => p.date === today).length;
 
-  const stats = [
-    { label: "Active students", value: String(activeStudents) },
-    { label: "Classes", value: String(classes.length) },
-    { label: "Tuition collected (Jul)", value: formatIDR(collected) },
-    { label: "Pending payments", value: String(pendingTuition.length) },
+  const masterSummary = [
+    { label: "Siswa", value: students.length, href: "/dashboard/students" },
+    { label: "Aktif", value: activeStudents, href: "/dashboard/students" },
+    { label: "Kelas", value: classes.length, href: "/dashboard/classes" },
+    {
+      label: "Pendaftaran",
+      value: pendingCount,
+      href: "/dashboard/registration",
+    },
+    {
+      label: "Acara mendatang",
+      value: upcomingEvents.length,
+      href: "/dashboard/events",
+    },
+    {
+      label: "Absensi hari ini",
+      value: todayPresence,
+      href: "/dashboard/absensi",
+    },
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Overview</h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          BabelKids operations at a glance
+        <h1 className="text-3xl font-semibold tracking-tight text-[#1A2330]">
+          Beranda
+        </h1>
+        <p className="mt-1 text-sm text-[#8A96A8]">
+          Selamat datang, Maya Santoso · data sinkron dengan Parent App (
+          {currentParentName} · Alya & Rafi)
         </p>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((s) => (
-          <div
-            key={s.label}
-            className="rounded-lg border border-neutral-200 bg-white p-4"
-          >
-            <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
-              {s.label}
-            </p>
-            <p className="mt-2 text-xl font-semibold tabular-nums">{s.value}</p>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="rounded-2xl border border-[#E5ECF5] bg-white p-4 shadow-sm">
+          <div className="flex items-start justify-between gap-2">
+            <p className="text-sm text-[#8A96A8]">Siswa aktif</p>
+            <Box className="size-4 text-[#A0AAB8]" />
           </div>
-        ))}
-      </div>
-
-      <div>
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold">Kas balance</h2>
-          <Link
-            href="/dashboard/kas"
-            className="text-xs text-neutral-500 hover:text-neutral-900"
-          >
-            Open kas
-          </Link>
+          <p className="mt-3 text-2xl font-semibold tabular-nums text-[#1A2330]">
+            {activeStudents}
+          </p>
+          <p className="mt-2 text-xs text-[#8A96A8]">
+            {classes.length} kelas berjalan
+          </p>
         </div>
-        <KasOverviewCards />
+
+        <Link
+          href="/dashboard/absensi"
+          className="rounded-2xl border border-[#E5ECF5] bg-white p-4 shadow-sm transition hover:-translate-y-0.5"
+        >
+          <div className="flex items-start justify-between gap-2">
+            <p className="text-sm text-[#8A96A8]">Absensi hari ini</p>
+            <CalendarCheck className="size-4 text-emerald-500" />
+          </div>
+          <p className="mt-3 text-2xl font-semibold tabular-nums text-emerald-600">
+            {todayPresence}
+          </p>
+          <p className="mt-2 text-xs text-[#8A96A8]">Catatan kehadiran</p>
+        </Link>
+
+        <Link
+          href="/dashboard/registration"
+          className="rounded-2xl border border-[#E5ECF5] bg-white p-4 shadow-sm transition hover:-translate-y-0.5"
+        >
+          <div className="flex items-start justify-between gap-2">
+            <p className="text-sm text-[#8A96A8]">Pendaftaran baru</p>
+            <ClipboardPen className="size-4 text-[#2E7DFF]" />
+          </div>
+          <p className="mt-3 text-2xl font-semibold tabular-nums text-[#2E7DFF]">
+            {pendingCount}
+          </p>
+          <p className="mt-2 text-xs text-[#8A96A8]">Perlu review</p>
+        </Link>
+
+        <div className="rounded-2xl border border-[#E5ECF5] bg-white p-4 shadow-sm">
+          <div className="flex items-start justify-between gap-2">
+            <p className="text-sm text-[#8A96A8]">Acara mendatang</p>
+            <Users className="size-4 text-[#F0783C]" />
+          </div>
+          <p className="mt-3 text-2xl font-semibold tabular-nums text-[#1A2330]">
+            {upcomingEvents.length}
+          </p>
+          <p className="mt-2 text-xs text-[#8A96A8]">Acara aktif</p>
+        </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-lg border border-neutral-200 bg-white">
-          <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-3">
-            <h2 className="text-sm font-semibold">Needs attention</h2>
+      <section className="rounded-2xl border border-[#E5ECF5] bg-white p-4 shadow-sm">
+        <h2 className="text-sm font-semibold text-[#1A2330]">
+          Ringkasan operasional
+        </h2>
+        <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+          {masterSummary.map((item) => (
             <Link
-              href="/dashboard/tuition"
-              className="text-xs text-neutral-500 hover:text-neutral-900"
+              key={item.label}
+              href={item.href}
+              className="rounded-xl border border-[#EEF3FA] bg-[#F7FAFD] px-3 py-3 transition hover:border-[#2E7DFF]/30"
             >
-              View tuition
-            </Link>
-          </div>
-          <ul className="divide-y divide-neutral-100">
-            {pendingTuition.slice(0, 5).map((t) => {
-              const student = students.find((s) => s.id === t.studentId);
-              return (
-                <li
-                  key={t.id}
-                  className="flex items-center justify-between px-4 py-3 text-sm"
-                >
-                  <div>
-                    <p className="font-medium">{student?.name}</p>
-                    <p className="text-xs capitalize text-neutral-500">
-                      {t.status.replace("_", " ")} · {t.month}
-                    </p>
-                  </div>
-                  <span className="tabular-nums text-neutral-700">
-                    {formatIDR(t.amount)}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-
-        <section className="rounded-lg border border-neutral-200 bg-white">
-          <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-3">
-            <h2 className="text-sm font-semibold">Upcoming events</h2>
-            <Link
-              href="/dashboard/events"
-              className="text-xs text-neutral-500 hover:text-neutral-900"
-            >
-              View events
-            </Link>
-          </div>
-          <ul className="divide-y divide-neutral-100">
-            {upcomingEvents.map((e) => (
-              <li key={e.id} className="px-4 py-3 text-sm">
-                <p className="font-medium">{e.title}</p>
-                <p className="text-xs text-neutral-500">
-                  {e.date} · {e.location}
-                  {e.feePerChild > 0
-                    ? ` · Fee ${formatIDR(e.feePerChild)}`
-                    : " · Free"}
-                </p>
-              </li>
-            ))}
-            {upcomingEvents.length === 0 ? (
-              <li className="px-4 py-8 text-center text-sm text-neutral-500">
-                No upcoming events
-              </li>
-            ) : null}
-          </ul>
-        </section>
-      </div>
-
-      <section className="rounded-lg border border-neutral-200 bg-white p-4">
-        <h2 className="text-sm font-semibold">Quick links</h2>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {[
-            ["/dashboard/presence", "Take presence"],
-            ["/dashboard/reports", "Submit report"],
-            ["/dashboard/students", "Manage students"],
-            ["/dashboard/kas", "Kas balance"],
-            ["/dashboard/finance", "Finance report"],
-          ].map(([href, label]) => (
-            <Link
-              key={href}
-              href={href}
-              className="rounded-md border border-neutral-200 px-3 py-1.5 text-sm text-neutral-700 hover:bg-neutral-50"
-            >
-              {label}
+              <p className="text-xs text-[#8A96A8]">{item.label}</p>
+              <p className="mt-1 text-xl font-semibold tabular-nums text-[#1A2330]">
+                {item.value}
+              </p>
             </Link>
           ))}
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-[#E5ECF5] bg-white p-4 shadow-sm">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className="text-sm font-semibold text-[#1A2330]">
+              Sinkron Parent App
+            </h2>
+            <p className="mt-1 text-xs text-[#8A96A8]">
+              Absensi, tanggal libur, kegiatan kelas, dan laporan guru memakai
+              data yang sama dengan /parents.
+            </p>
+          </div>
+          <Link
+            href="/parents"
+            className="shrink-0 rounded-full bg-[#EEF3FA] px-4 py-2 text-xs font-medium text-[#2E7DFF]"
+          >
+            Buka Parent App
+          </Link>
         </div>
       </section>
     </div>

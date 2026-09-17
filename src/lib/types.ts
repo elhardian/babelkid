@@ -12,12 +12,69 @@ export type PresenceStatus = "present" | "absent" | "late" | "excused";
 
 export type EventStatus = "upcoming" | "ongoing" | "past";
 
+export type DayOffType = "holiday" | "school_off" | "other";
+
+export interface SchoolDayOff {
+  id: string;
+  date: string;
+  title: string;
+  description?: string;
+  type: DayOffType;
+}
+
 export interface Parent {
   id: string;
   name: string;
   relationship: "mother" | "father" | "guardian";
   phone: string;
   email: string;
+}
+
+/** First-class parent record in the school registry */
+export interface ParentProfile extends Parent {
+  address?: string;
+  occupation?: string;
+  notes?: string;
+  createdAt: string;
+}
+
+export interface StudentDocument {
+  id: string;
+  title: string;
+  fileName: string;
+  uploadedAt: string;
+  kind: "generic";
+}
+
+export type RegistrationStatus =
+  | "pending"
+  | "reviewing"
+  | "approved"
+  | "rejected";
+
+/** Online enrollment submitted from the public registration form */
+export interface RegistrationApplication {
+  id: string;
+  status: RegistrationStatus;
+  submittedAt: string;
+  notes?: string;
+  parent: {
+    name: string;
+    relationship: "mother" | "father" | "guardian";
+    phone: string;
+    email: string;
+    address: string;
+    occupation?: string;
+  };
+  child: {
+    name: string;
+    nickname: string;
+    dateOfBirth: string;
+    gender: "male" | "female";
+    preferredClassId?: string;
+    allergies?: string;
+    notes?: string;
+  };
 }
 
 export interface ClassPlacement {
@@ -45,6 +102,7 @@ export interface Student {
   allergies?: string;
   notes?: string;
   classHistory: ClassPlacement[];
+  documents?: StudentDocument[];
 }
 
 export interface SchoolClass {
@@ -87,6 +145,20 @@ export interface ActivityPost {
   description: string;
   date: string;
   images: string[];
+}
+
+/** Daily classroom activity uploaded by teachers */
+export interface ClassActivity {
+  id: string;
+  classId: string;
+  title: string;
+  description: string;
+  date: string;
+  teacherName: string;
+  images: string[];
+  /** Optional short clip from class (URL) */
+  videoUrl?: string;
+  location?: string;
 }
 
 export interface SchoolEvent {

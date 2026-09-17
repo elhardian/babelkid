@@ -1,149 +1,118 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { AttendanceCalendar } from "@/components/AttendanceCalendar";
+import { useDayOffsStore } from "@/components/dashboard/DayOffProvider";
+import { ParentsKidsRow } from "@/components/parents/ParentsKidsRow";
+import { PresenceSummaryCard } from "@/components/parents/PresenceSummaryCard";
 import { useParentKids } from "@/components/parents/ParentKidsProvider";
-import { formatDate, formatMonth } from "@/lib/format";
-import { presenceRecords } from "@/lib/mock-data";
+import {
+  formatDate,
+  presenceStatusLabel,
+  todayISO,
+} from "@/lib/format";
+import { isWeekend, presenceRecords } from "@/lib/mock-data";
 import type { PresenceStatus } from "@/lib/types";
 
-function tone(status: PresenceStatus) {
-  if (status === "present") return "bg-[#00B894] text-white";
-  if (status === "absent") return "bg-neutral-800 text-white";
-  if (status === "late") return "bg-[#FFD93D] text-neutral-900";
-  return "bg-[#54C6EB] text-white";
-}
-
 export default function ParentsPresencePage() {
-  const { selectedChildId, selectedChild, children, setSelectedChildId } =
-    useParentKids();
-  const [search, setSearch] = useState("");
-  const [monthFilter, setMonthFilter] = useState("all");
+  const { selectedChildId, selectedChild } = useParentKids();
+  const { dayOffs, getByDate } = useDayOffsStore();
+  const [date, setDate] = useState(todayISO);
 
-  const childRecords = useMemo(
-    () =>
-      presenceRecords
-        .filter((p) => p.studentId === selectedChildId)
-        .sort((a, b) => b.date.localeCompare(a.date)),
-    [selectedChildId],
-  );
+  const presenceByDate = useMemo(() => {
+    const map: Record<string, PresenceStatus> = {};
+    for (const p of presenceRecords) {
+      if (p.studentId === selectedChildId) {
+        map[p.date] = p.status;
+      }
+    }
+    return map;
+  }, [selectedChildId]);
 
-  const monthOptions = useMemo(() => {
-    const months = Array.from(
-      new Set(childRecords.map((p) => p.date.slice(0, 7))),
-    ).sort((a, b) => b.localeCompare(a));
-    return months;
-  }, [childRecords]);
-
-  const records = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    return childRecords.filter((p) => {
-      if (monthFilter !== "all" && !p.date.startsWith(monthFilter)) return false;
-      if (!q) return true;
-      return (
-        p.date.includes(q) ||
-        p.status.includes(q) ||
-        (p.note?.toLowerCase().includes(q) ?? false)
-      );
-    });
-  }, [childRecords, search, monthFilter]);
-
-  const presentCount = records.filter((r) => r.status === "present").length;
+  const dayPresence = presenceByDate[date];
+  const off = getByDate(date);
+  const weekend = isWeekend(date);
 
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="font-[family-name:var(--font-fredoka)] text-2xl font-semibold">
-          Presence
+        <h1 className="text-2xl font-medium tracking-tight text-[#1A2330]">
+          Kehadiran
         </h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          Attendance for {selectedChild.nickname}
+        <p className="mt-1 text-sm text-[#8A96A8]">
+          Kalender absensi · {selectedChild.nickname}
         </p>
       </div>
 
-      {children.length > 1 ? (
-        <div className="flex gap-2 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
-          {children.map((kid) => (
-            <button
-              key={kid.id}
-              type="button"
-              onClick={() => {
-                setSelectedChildId(kid.id);
-                setMonthFilter("all");
-              }}
-              className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold ${
-                kid.id === selectedChildId
-                  ? "bg-[#00B894] text-white"
-                  : "bg-white text-neutral-600 shadow-sm"
-              }`}
-            >
-              {kid.nickname}
-            </button>
-          ))}
-        </div>
-      ) : null}
+      <ParentsKidsRow />
 
-      <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-2xl bg-white p-4 shadow-sm">
-          <p className="text-xs text-neutral-500">Records</p>
-          <p className="mt-1 text-2xl font-bold tabular-nums">{records.length}</p>
-        </div>
-        <div className="rounded-2xl bg-white p-4 shadow-sm">
-          <p className="text-xs text-neutral-500">Present</p>
-          <p className="mt-1 text-2xl font-bold tabular-nums text-[#00B894]">
-            {presentCount}
-          </p>
-        </div>
-      </div>
+      <PresenceSummaryCard
+        studentId={selectedChild.id}
+        nickname={selectedChild.nickname}
+      />
 
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <select
-          value={monthFilter}
-          onChange={(e) => setMonthFilter(e.target.value)}
-          className="w-full rounded-xl border-0 bg-white px-4 py-2.5 text-sm shadow-sm outline-none sm:max-w-[200px]"
-        >
-          <option value="all">All months</option>
-          {monthOptions.map((m) => (
-            <option key={m} value={m}>
-              {formatMonth(m)}
-            </option>
-          ))}
-        </select>
-        <input
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search date or status…"
-          className="w-full rounded-xl border-0 bg-white px-4 py-2.5 text-sm shadow-sm outline-none"
-        />
-      </div>
+      <AttendanceCalendar
+        selectedDate={date}
+        onSelectDate={setDate}
+        dayOffs={dayOffs}
+        presenceByDate={presenceByDate}
+        variant="parents"
+      />
 
-      <ul className="space-y-2">
-        {records.map((r) => (
-          <li
-            key={r.id}
-            className="flex items-center justify-between rounded-2xl bg-white p-4 shadow-sm"
-          >
-            <div>
-              <p className="font-semibold text-neutral-900">
-                {formatDate(r.date, "EEE, dd MMM")}
+      <div className="rounded-[1.75rem] bg-white p-5 shadow-sm shadow-black/5">
+        <p className="text-xs uppercase tracking-wide text-[#8A96A8]">
+          {formatDate(date, "EEEE, dd MMMM yyyy")}
+        </p>
+
+        {weekend ? (
+          <div className="mt-3">
+            <p className="text-lg font-medium text-[#F0783C]">Akhir pekan</p>
+            <p className="mt-1 text-sm text-[#8A96A8]">
+              Sabtu & Minggu libur. Tidak ada kegiatan sekolah.
+            </p>
+          </div>
+        ) : off ? (
+          <div className="mt-3">
+            <p className="text-lg font-medium text-[#2E7DFF]">{off.title}</p>
+            {off.description ? (
+              <p className="mt-1 text-sm leading-relaxed text-[#5B6B7C]">
+                {off.description}
               </p>
-              {r.note ? (
-                <p className="mt-0.5 text-xs text-neutral-500">{r.note}</p>
-              ) : null}
+            ) : (
+              <p className="mt-1 text-sm text-[#8A96A8]">Hari libur sekolah.</p>
+            )}
+          </div>
+        ) : dayPresence ? (
+          <div className="mt-3 flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm text-[#8A96A8]">Status absensi</p>
+              <p className="mt-1 text-xl font-medium text-[#1A2330]">
+                {presenceStatusLabel(dayPresence)}
+              </p>
             </div>
             <span
-              className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${tone(r.status)}`}
+              className={`rounded-full px-3 py-1 text-xs font-medium ${
+                dayPresence === "present"
+                  ? "bg-emerald-500/15 text-emerald-600"
+                  : dayPresence === "late"
+                    ? "bg-amber-500/15 text-amber-700"
+                    : dayPresence === "absent"
+                      ? "bg-rose-500/15 text-rose-600"
+                      : "bg-sky-500/15 text-sky-600"
+              }`}
             >
-              {r.status}
+              {presenceStatusLabel(dayPresence)}
             </span>
-          </li>
-        ))}
-        {records.length === 0 ? (
-          <li className="rounded-2xl bg-white py-10 text-center text-sm text-neutral-500 shadow-sm">
-            No presence records
-          </li>
-        ) : null}
-      </ul>
+          </div>
+        ) : (
+          <div className="mt-3">
+            <p className="text-lg font-medium text-[#1A2330]">Belum tercatat</p>
+            <p className="mt-1 text-sm text-[#8A96A8]">
+              Absensi untuk hari ini belum diisi guru.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
