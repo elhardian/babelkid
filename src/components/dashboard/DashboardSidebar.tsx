@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   Baby,
@@ -114,9 +115,13 @@ export function DashboardSidebar({
 
   const Brand = () => (
     <div className="flex items-center gap-3 px-2">
-      <div className="flex size-9 items-center justify-center rounded-full bg-[#2E7DFF] text-xs font-bold tracking-tight text-white">
-        BK
-      </div>
+      <Image
+        src="/logo.png"
+        alt="BabelKids"
+        width={40}
+        height={36}
+        className="h-10 w-auto object-contain"
+      />
       <div className="min-w-0">
         <p className="truncate text-sm font-semibold tracking-tight text-[#1A2330]">
           BabelKids
@@ -165,9 +170,13 @@ export function DashboardSidebar({
         >
           <Menu className="size-5" />
         </button>
-        <span className="font-semibold tracking-tight text-[#1A2330]">
-          BabelKids
-        </span>
+        <Image
+          src="/logo.png"
+          alt="BabelKids"
+          width={36}
+          height={32}
+          className="h-8 w-auto object-contain"
+        />
         <Link
           href="/"
           className="rounded-xl bg-[#F0783C] px-2.5 py-1.5 text-xs font-medium text-white"

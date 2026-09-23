@@ -9,11 +9,21 @@ import {
   Download,
   MessageCircle,
   MapPin,
+  Palette,
+  Sparkles,
+  Trees,
+  BookOpen,
+  Heart,
+  Sun,
+  Smartphone,
+  CalendarDays,
+  Receipt,
+  FileText,
 } from "lucide-react";
-import { SwipeableGallery } from "@/components/SwipeableGallery";
-import { activityPosts } from "@/lib/mock-data";
-import { formatDate } from "@/lib/format";
-import type { ActivityPost } from "@/lib/types";
+import {
+  ParentAppPhone,
+  parentAppScreenMeta,
+} from "@/components/ParentAppPhone";
 
 const WHATSAPP_URL =
   "https://wa.me/6281210001001?text=Halo%20BabelKids%2C%20saya%20ingin%20bertanya%20tentang%20sekolah.";
@@ -23,113 +33,142 @@ const MAPS_EMBED =
   "https://www.google.com/maps?q=Babel+Kids+-2.1252929,106.1078513&z=17&output=embed";
 const BROCHURE_URL = "/brochure.jpg";
 
+const foundations = [
+  "Student Centered learning",
+  "Bilingual Inggris & Indonesia",
+  "Multiple Intelligence sentra",
+  "Kurikulum Singapore + Diknas",
+  "Karakter & kewirausahaan dini",
+];
+
+const mindCards = [
+  {
+    title: "Early Childhood",
+    blurb:
+      "Kelompok Bermain & TK dengan pendekatan lembut yang membangun rasa aman untuk belajar.",
+    color: "#7ED6DF",
+    icon: BookOpen,
+  },
+  {
+    title: "Creative Art",
+    blurb:
+      "Art Festival, Fun Cooking, dan workshop kreatif yang mengasah ekspresi anak.",
+    color: "#F8A5C2",
+    icon: Palette,
+  },
+  {
+    title: "Active Body",
+    blurb:
+      "Senam, berenang, field trip & outbound untuk tubuh sehat dan semangat petualang.",
+    color: "#FFEAA7",
+    icon: Sun,
+  },
+];
+
+const offerings = [
+  { label: "Playful Learning", icon: Sparkles, color: "#74B9FF" },
+  { label: "Outdoor Learning", icon: Trees, color: "#55EFC4" },
+  { label: "Character First", icon: Heart, color: "#FD79A8" },
+  { label: "Modern Resources", icon: BookOpen, color: "#FDCB6E" },
+];
+
 const programs = [
   {
     title: "Kelompok Bermain",
-    ages: "2–4",
-    agesLabel: "Usia",
+    ages: "Usia 2–4",
     blurb: "Bermain sensorik, rutinitas hangat, dan persahabatan pertama.",
-    accent: "#00B894",
-    soft: "#D4F8EC",
     image: "/preschool.png",
-    rotate: "-rotate-2",
+    border: "#74B9FF",
   },
   {
     title: "Taman Kanak-Kanak",
-    ages: "4–6",
-    agesLabel: "Usia",
-    blurb: "Kesiapan sekolah, projek rasa ingin tahu, dan literasi bilingual.",
-    accent: "#FFD93D",
-    soft: "#FFF6C2",
+    ages: "Usia 4–6",
+    blurb: "Kesiapan sekolah, projek rasa ingin tahu, literasi bilingual.",
     image: "/kindergarten.jpg",
-    rotate: "rotate-1",
+    border: "#55EFC4",
   },
   {
-    title: "Bilingual",
-    ages: "Semua",
-    agesLabel: "Kami",
-    blurb: "Inggris & Indonesia dalam lagu, cerita, dan keseharian.",
-    accent: "#54C6EB",
-    soft: "#E8F7FC",
+    title: "Jalur Bilingual",
+    ages: "Semua usia",
+    blurb: "Inggris & Indonesia menyatu dalam setiap momen belajar.",
     image: "/bilingual.jpg",
-    rotate: "rotate-2",
+    border: "#FDCB6E",
   },
 ];
 
-const whyPoints = [
-  {
-    title: "Student Centered",
-    blurb:
-      "Pembelajaran berpusat pada anak — setiap anak didengar dan dikembangkan sesuai potensinya.",
-    color: "#00B894",
-  },
-  {
-    title: "Bilingual Communication",
-    blurb:
-      "Komunikasi bilingual Inggris & Indonesia dijalin dalam kegiatan sehari-hari.",
-    color: "#54C6EB",
-  },
-  {
-    title: "Multiple Intelligence",
-    blurb:
-      "Metode pembelajaran melalui sentra-sentra dengan pendekatan Multiple Intelligence.",
-    color: "#FFD93D",
-  },
-  {
-    title: "Kurikulum Terpadu",
-    blurb:
-      "Mengadopsi Kurikulum Singapore yang bergabung dengan Kurikulum Diknas & Kurikulum Mandiri.",
-    color: "#FF6B6B",
-  },
-  {
-    title: "Kewirausahaan & Karakter",
-    blurb:
-      "Pendidikan kewirausahaan dan karakter sejak dini untuk fondasi masa depan.",
-    color: "#FFB4C8",
-  },
-];
-
-const featuredPrograms = [
-  "Program Pengembangan Diri & Pendidikan Keagamaan",
-  "Art Festivals",
-  "Student Performance",
-  "Field Trip & Outbond",
-  "Pemeriksaan Kesehatan",
-  "Program Kewirausahaan",
-  "Program Edukasi Orangtua (Parenting)",
-  "Charity (Bakti Sosial)",
-  "Food Bazaar",
-  "Fun Cooking",
-];
-
-const schoolActivities = [
+const journey = [
   {
     title: "Upacara Bendera",
     image:
       "https://images.unsplash.com/photo-1509062528245-0249af9bb5b5?auto=format&fit=crop&w=800&q=80",
+    border: "#74B9FF",
   },
   {
     title: "Senam Bersama",
     image:
       "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=800&q=80",
+    border: "#FD79A8",
   },
   {
     title: "Sholat Bersama",
     image:
       "https://images.unsplash.com/photo-1544776193-352d25ca82cd?auto=format&fit=crop&w=800&q=80",
+    border: "#55EFC4",
   },
   {
     title: "Berenang",
     image:
       "https://images.unsplash.com/photo-1560089000-7433a4ebbd64?auto=format&fit=crop&w=800&q=80",
+    border: "#FDCB6E",
+  },
+  {
+    title: "Belajar Sentra",
+    image: "/preschool.png",
+    border: "#FF9F43",
+  },
+  {
+    title: "Bermain Outdoor",
+    image: "/kindergarten.jpg",
+    border: "#FF7675",
+  },
+];
+
+const events = [
+  {
+    title: "Art Festivals",
+    blurb: "Pameran karya seni anak yang penuh warna dan kebanggaan.",
+    bg: "#E8F6FF",
+    border: "#74B9FF",
+    icon: Palette,
+  },
+  {
+    title: "Field Trip & Outbond",
+    blurb: "Petualangan di luar kelas untuk eksplorasi dunia nyata.",
+    bg: "#E8FFF6",
+    border: "#55EFC4",
+    icon: Trees,
+  },
+  {
+    title: "Food Bazaar",
+    blurb: "Kewirausahaan mini: memasak, menjual, dan berbagi.",
+    bg: "#FFF8E8",
+    border: "#FDCB6E",
+    icon: Sun,
+  },
+  {
+    title: "Parenting Day",
+    blurb: "Edukasi orang tua agar tumbuh bersama di rumah.",
+    bg: "#FFE8F0",
+    border: "#FD79A8",
+    icon: Heart,
   },
 ];
 
 const facilities = [
-  "Ruang kelas yang nyaman & accessible untuk anak",
+  "Ruang kelas nyaman & accessible",
   "Pembelajaran dengan sentra-sentra",
-  "Sarana permainan edukatif indoor & outdoor",
-  "AC",
+  "Permainan edukatif indoor & outdoor",
+  "AC di seluruh ruang belajar",
   "Reading Corner",
   "Swimming Pool Kids Centre",
   "Learning Area Playground",
@@ -141,229 +180,189 @@ const reviews = [
     role: "Orang tua Alya",
     quote:
       "Guru mengenal setiap anak. Alya pulang sambil menyanyi lagu Inggris baru setiap minggu.",
-    blob: "#D4F8EC",
+    image:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
   },
   {
     name: "Budi W.",
     role: "Orang tua Kenzo",
     quote:
-      "Hari di taman bermainnya luar biasa. Akhirnya kami menemukan sekolah yang hangat dan terstruktur.",
-    blob: "#FFF6C2",
-  },
-  {
-    name: "Lina K.",
-    role: "Orang tua Sofia",
-    quote:
-      "Laporannya jelas dan hangat. Kami selalu tahu perkembangan Sofia — akademik maupun sosial.",
-    blob: "#FFB4C8",
+      "Akhirnya kami menemukan sekolah yang hangat, terstruktur, dan sangat menyenangkan untuk anak.",
+    image:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
   },
 ];
 
-const HERO_BG = "/hero.png";
-const HERO_FLOAT = "/hero-float.png";
-const HERO_FLOAT_VIDEO = "/hero-float.png";
-
-/* ——— Reusable doodle / wave helpers ——— */
-
-function WaveDivider({
-  topColor,
-  bottomColor,
-  flip = false,
-  className = "",
-}: {
-  topColor: string;
-  bottomColor: string;
-  flip?: boolean;
-  className?: string;
-}) {
-  return (
-    <div
-      className={`wave-divider relative z-10 ${flip ? "rotate-180" : ""} ${className}`}
-      style={{ backgroundColor: topColor }}
-      aria-hidden
-    >
-      <svg
-        viewBox="0 0 1440 120"
-        preserveAspectRatio="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M0,64 C240,120 480,0 720,40 C960,80 1200,100 1440,48 L1440,120 L0,120 Z"
-          fill={bottomColor}
-        />
-      </svg>
-    </div>
-  );
-}
-
-function DoodleDots({
-  className = "",
-  color = "#00B894",
-}: {
-  className?: string;
-  color?: string;
-}) {
-  return (
-    <svg
-      className={className}
-      width="72"
-      height="72"
-      viewBox="0 0 72 72"
-      fill="none"
-      aria-hidden
-    >
-      <circle cx="8" cy="8" r="5" fill={color} opacity="0.85" />
-      <circle cx="28" cy="8" r="4" fill={color} opacity="0.55" />
-      <circle cx="48" cy="8" r="5" fill={color} opacity="0.7" />
-      <circle cx="8" cy="28" r="4" fill={color} opacity="0.5" />
-      <circle cx="28" cy="28" r="5" fill={color} opacity="0.9" />
-      <circle cx="48" cy="28" r="3.5" fill={color} opacity="0.45" />
-      <circle cx="8" cy="48" r="5" fill={color} opacity="0.65" />
-      <circle cx="28" cy="48" r="3.5" fill={color} opacity="0.4" />
-      <circle cx="48" cy="48" r="5" fill={color} opacity="0.75" />
-    </svg>
-  );
-}
-
-function StampBadge({
-  children,
-  className = "",
-  color = "#FF6B6B",
-}: {
-  children: React.ReactNode;
-  className?: string;
-  color?: string;
-}) {
-  return (
-    <div
-      className={`stamp-badge flex items-center justify-center text-center font-[family-name:var(--font-fredoka)] font-semibold leading-tight ${className}`}
-      style={{ color, backgroundColor: "rgba(255,253,248,0.92)" }}
-    >
-      {children}
-    </div>
-  );
-}
-
-function SvgStar({
-  className = "",
-  color = "#FFD93D",
-}: {
-  className?: string;
-  color?: string;
-}) {
-  return (
-    <svg
-      className={className}
-      width="36"
-      height="36"
-      viewBox="0 0 36 36"
-      fill="none"
-      aria-hidden
-    >
-      <path
-        d="M18 2 L21.5 13.5 L33 14 L24 21.5 L27 33 L18 26.5 L9 33 L12 21.5 L3 14 L14.5 13.5 Z"
-        fill={color}
-      />
-    </svg>
-  );
-}
-
-function SvgLeaf({
-  className = "",
-  color = "#00B894",
-}: {
-  className?: string;
-  color?: string;
-}) {
-  return (
-    <svg
-      className={className}
-      width="40"
-      height="48"
-      viewBox="0 0 40 48"
-      fill="none"
-      aria-hidden
-    >
-      <path
-        d="M20 2 C32 12 38 28 20 46 C2 28 8 12 20 2 Z"
-        fill={color}
-        opacity="0.85"
-      />
-      <path
-        d="M20 10 L20 40"
-        stroke="#fff"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        opacity="0.5"
-      />
-    </svg>
-  );
-}
-
-function SvgBlob({
-  className = "",
-  color = "#FFB4C8",
-}: {
-  className?: string;
-  color?: string;
-}) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 200 200"
-      fill="none"
-      aria-hidden
-    >
-      <path
-        d="M44.7,-67.2C57.2,-59.3,66.1,-45.5,72.4,-30.4C78.7,-15.3,82.4,1.1,78.9,15.6C75.4,30.1,64.7,42.7,51.8,53.4C38.9,64.1,23.8,72.9,6.9,76.1C-10,79.3,-28.7,76.9,-43.9,68.4C-59.1,59.9,-70.8,45.3,-76.2,28.8C-81.6,12.3,-80.7,-6.1,-73.9,-21.4C-67.1,-36.7,-54.4,-48.9,-40.3,-56.5C-26.2,-64.1,-10.7,-67.1,3.8,-72.5C18.3,-77.9,32.2,-75.1,44.7,-67.2Z"
-        transform="translate(100 100)"
-        fill={color}
-      />
-    </svg>
-  );
-}
-
-function EventActivityCard({ post }: { post: ActivityPost }) {
-  return (
-    <article className="group relative">
-      <div
-        className="pointer-events-none absolute -inset-3 -z-10 blob-soft opacity-70 transition group-hover:scale-105"
-        style={{ backgroundColor: "#FFF6C2" }}
-      />
-      <div className="overflow-hidden rounded-[2rem] border-[6px] border-white bg-white shadow-lg shadow-black/10">
-        <SwipeableGallery
-          images={post.images}
-          alt={post.eventName}
-          rounded="rounded-none"
-          aspect="aspect-[4/3]"
-        />
-        <div className="px-5 py-4">
-          <p className="font-[family-name:var(--font-fredoka)] text-xl font-semibold text-[var(--bk-ink)]">
-            {post.eventName}
-          </p>
-          <p className="mt-1 text-xs font-medium uppercase tracking-wide text-[var(--bk-mint)]">
-            {formatDate(post.date, "dd MMM yyyy")}
-          </p>
-          <p className="mt-2 text-sm leading-relaxed text-[var(--bk-ink)]/70">
-            {post.description}
-          </p>
-        </div>
-      </div>
-      <StampBadge
-        color="#54C6EB"
-        className="absolute -right-2 -top-3 size-16 rotate-12 text-[10px] leading-tight animate-wiggle"
-      >
-        Snap!
-      </StampBadge>
-    </article>
-  );
-}
+const appFeatures = [
+  {
+    title: "Absensi harian",
+    blurb: "Pantau kehadiran anak secara real-time setiap hari.",
+    icon: CalendarDays,
+  },
+  {
+    title: "Laporan perkembangan",
+    blurb: "Catatan guru, mood, dan skill mingguan di HP Anda.",
+    icon: FileText,
+  },
+  {
+    title: "SPP & pembayaran",
+    blurb: "Cek tagihan, metode bayar, dan unggah bukti dengan mudah.",
+    icon: Receipt,
+  },
+  {
+    title: "Acara & kegiatan",
+    blurb: "Jangan lewatkan field trip, festival, dan momen kelas.",
+    icon: Sparkles,
+  },
+];
 
 function downloadBrochure() {
   const a = document.createElement("a");
   a.href = BROCHURE_URL;
   a.download = "babelkids-brochure.jpg";
   a.click();
+}
+
+function CloudDivider({
+  from = "#4EC3F7",
+  to = "#FFFFFF",
+  flip = false,
+}: {
+  from?: string;
+  to?: string;
+  flip?: boolean;
+}) {
+  return (
+    <div
+      className={`relative z-10 -mt-px leading-[0] ${flip ? "rotate-180" : ""}`}
+      style={{ backgroundColor: from }}
+      aria-hidden
+    >
+      <svg
+        viewBox="0 0 1440 160"
+        preserveAspectRatio="none"
+        className="block h-[88px] w-full sm:h-[120px]"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        {/* Fluffy cloud bumps — overlapping lobes */}
+        <path
+          d="M0,110
+            C60,110 80,70 140,70
+            C170,40 230,35 270,55
+            C300,25 370,20 420,50
+            C460,20 540,15 590,45
+            C640,15 720,25 760,55
+            C800,25 880,20 930,50
+            C980,25 1050,30 1100,55
+            C1150,30 1220,35 1270,60
+            C1320,40 1380,55 1440,70
+            L1440,160 L0,160 Z"
+          fill={to}
+        />
+        <path
+          d="M0,130
+            C90,125 130,95 190,95
+            C240,75 300,80 340,100
+            C390,75 470,70 520,95
+            C580,70 660,80 720,100
+            C790,75 870,70 930,95
+            C1000,75 1080,80 1140,100
+            C1200,80 1280,85 1340,105
+            C1380,95 1420,105 1440,110
+            L1440,160 L0,160 Z"
+          fill={to}
+          opacity="0.85"
+        />
+      </svg>
+    </div>
+  );
+}
+
+function HeroClouds() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+      {/* Soft sky wash */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#5BC8F0] via-[#3DB5E6] to-[#3DB5E6]" />
+      <div className="absolute -left-20 top-10 size-72 rounded-full bg-white/10 blur-2xl" />
+      <div className="absolute -right-16 top-32 size-80 rounded-full bg-[#FFE08A]/20 blur-3xl" />
+      <div className="absolute left-1/3 top-20 size-48 rounded-full bg-white/10 blur-2xl" />
+
+      {/* Fluffy white clouds scattered in sky */}
+      <div className="animate-cloud-drift absolute left-[4%] top-24 opacity-90 sm:top-28">
+        <FluffyCloud className="h-12 w-28 sm:h-16 sm:w-40" />
+      </div>
+      <div className="animate-cloud-drift absolute right-[6%] top-36 opacity-80 [animation-delay:2s] sm:top-32">
+        <FluffyCloud className="h-10 w-24 sm:h-14 sm:w-36" />
+      </div>
+      <div className="animate-cloud-drift absolute left-[38%] top-20 hidden opacity-70 [animation-delay:4s] md:block">
+        <FluffyCloud className="h-11 w-32" />
+      </div>
+      <div className="animate-cloud-drift absolute bottom-36 left-[12%] opacity-60 [animation-delay:1s] lg:bottom-44">
+        <FluffyCloud className="h-9 w-24" />
+      </div>
+      <div className="animate-cloud-drift absolute bottom-40 right-[18%] opacity-55 [animation-delay:3s]">
+        <FluffyCloud className="h-8 w-20" />
+      </div>
+    </div>
+  );
+}
+
+function FluffyCloud({ className = "" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 160 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="48" cy="42" rx="32" ry="22" fill="white" fillOpacity="0.92" />
+      <ellipse cx="80" cy="32" rx="36" ry="26" fill="white" fillOpacity="0.95" />
+      <ellipse cx="118" cy="42" rx="30" ry="20" fill="white" fillOpacity="0.9" />
+      <ellipse cx="70" cy="48" rx="40" ry="16" fill="white" fillOpacity="0.85" />
+    </svg>
+  );
+}
+
+function DoodleSun({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 72 72"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+    >
+      <circle cx="36" cy="36" r="12" stroke="#FFD93D" strokeWidth="2.5" fill="#FFD93D" fillOpacity="0.35" />
+      {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
+        <line
+          key={deg}
+          x1="36"
+          y1="8"
+          x2="36"
+          y2="14"
+          stroke="#FFD93D"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          transform={`rotate(${deg} 36 36)`}
+        />
+      ))}
+    </svg>
+  );
+}
+
+function DoodleCloud({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 90 50"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+    >
+      <path
+        d="M20 38 C8 38 6 26 16 22 C16 12 28 8 36 14 C42 6 58 8 60 18 C72 16 80 24 76 34 C84 36 84 44 74 44 L24 44 C16 44 14 38 20 38 Z"
+        stroke="#54C6EB"
+        strokeWidth="2"
+        fill="#54C6EB"
+        fillOpacity="0.12"
+      />
+    </svg>
+  );
 }
 
 export default function LandingPage() {
@@ -377,730 +376,623 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[var(--bk-paper)] text-[var(--bk-ink)]">
+    <div className="min-h-screen overflow-x-hidden bg-white font-[family-name:var(--font-outfit)] text-[#1F3A56]">
+      {/* ——— HEADER ——— */}
       <header
         className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
           scrolled
-            ? "border-b border-black/5 bg-white/90 shadow-sm backdrop-blur-md"
+            ? "bg-[#3DB5E6]/95 shadow-sm backdrop-blur-md"
             : "bg-transparent"
         }`}
       >
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
-          <a
-            href="#top"
-            className={`font-[family-name:var(--font-fredoka)] text-xl font-semibold tracking-tight transition ${
-              scrolled ? "text-[var(--bk-mint)]" : "text-[var(--bk-ink)]"
-            }`}
-          >
-            BabelKids
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:h-[4.5rem]">
+          <a href="#top" className="flex items-center gap-2">
+            <Image
+              src="/logo.png"
+              alt="BabelKids"
+              width={120}
+              height={110}
+              className="h-12 w-auto object-contain drop-shadow-sm sm:h-14"
+              priority
+            />
           </a>
-          <nav
-            className={`hidden items-center gap-7 text-sm font-medium md:flex ${
-              scrolled ? "text-[var(--bk-ink)]/70" : "text-[var(--bk-ink)]/75"
-            }`}
-          >
-            <a href="#why" className="hover:opacity-80">
-              Why BabelKids
+          <nav className="hidden items-center gap-7 text-sm font-medium text-white/95 md:flex">
+            <a href="#about" className="hover:opacity-80">
+              About
             </a>
             <a href="#programs" className="hover:opacity-80">
-              Program
+              Programs
             </a>
-            <a href="#kegiatan" className="hover:opacity-80">
-              Kegiatan
+            <a href="#journey" className="hover:opacity-80">
+              Journey
             </a>
-            <a href="#fasilitas" className="hover:opacity-80">
-              Fasilitas
+            <a href="#app" className="hover:opacity-80">
+              App
             </a>
             <a href="#visit" className="hover:opacity-80">
-              Visit
+              Contact
             </a>
           </nav>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/parents"
-              className={`hidden rounded-full px-3 py-2 text-sm font-medium sm:inline ${
-                scrolled
-                  ? "text-[var(--bk-ink)]/70 hover:text-[var(--bk-mint)]"
-                  : "text-[var(--bk-ink)]/75 hover:text-[var(--bk-mint)]"
-              }`}
-            >
-              Parent app
-            </Link>
-            <Link
-              href="/dashboard"
-              className={`hidden rounded-full px-3 py-2 text-sm font-medium sm:inline ${
-                scrolled
-                  ? "text-[var(--bk-ink)]/70 hover:text-[var(--bk-mint)]"
-                  : "text-[var(--bk-ink)]/75 hover:text-[var(--bk-mint)]"
-              }`}
-            >
-              Staff
-            </Link>
-            <Link
-              href="/register"
-              className="inline-flex items-center gap-1 rounded-full bg-[var(--bk-coral)] px-4 py-2 text-sm font-semibold text-white shadow-md shadow-[#FF6B6B]/30 transition hover:scale-105 hover:brightness-105"
-            >
-              Daftar Segera
-            </Link>
-          </div>
+          <Link
+            href="/register"
+            className="rounded-full bg-[#1F3A56] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#16293d]"
+          >
+            Daftar Segera
+          </Link>
         </div>
       </header>
 
       <main id="top">
         {/* ——— HERO ——— */}
-        <section className="relative min-h-[100svh] overflow-hidden bg-[#FFE8D6]">
-          <Image
-            src={HERO_BG}
-            alt="Illustrated school building on a sunny day"
-            fill
-            priority
-            className="object-cover object-left-bottom lg:object-[15%_bottom]"
-            sizes="100vw"
-          />
+        <section className="relative overflow-hidden bg-[#3DB5E6] pt-20 sm:pt-24">
+          <HeroClouds />
+          <DoodleSun className="animate-spin-slow pointer-events-none absolute right-[8%] top-24 z-[1] hidden size-16 opacity-95 sm:block md:size-20" />
 
-          <div
-            className="absolute inset-0 bg-gradient-to-b from-[#FFFDF8]/75 via-[#FFFDF8]/20 to-[#FFFDF8]/85 sm:bg-gradient-to-t sm:from-[#FFFDF8]/50 sm:via-transparent sm:to-transparent"
-            aria-hidden
-          />
+          <div className="relative z-10 mx-auto grid max-w-6xl gap-8 px-5 pb-8 pt-10 lg:grid-cols-2 lg:items-center lg:gap-12 lg:pb-4 lg:pt-16">
+            <div className="relative z-10 text-center lg:text-left">
+              <p className="animate-fade-up text-sm font-semibold uppercase tracking-[0.2em] text-white/80">
+                Playgroup · Kindergarten
+              </p>
+              <h1 className="animate-fade-up delay-100 mt-3 font-[family-name:var(--font-fredoka)] text-4xl font-semibold leading-[1.1] tracking-tight text-white sm:text-5xl md:text-6xl">
+                We play, we learn, we inspire
+              </h1>
+              <p className="animate-fade-up delay-200 mx-auto mt-4 max-w-md text-base leading-relaxed text-white/90 lg:mx-0">
+                BabelKids — Taman Kanak-Kanak & Kelompok Bermain bilingual dengan
+                pembelajaran student-centered dan kurikulum terpadu.
+              </p>
+              <div className="animate-fade-up delay-300 mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">
+                <Link
+                  href="/register"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#1F3A56] px-6 py-3.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-[#16293d]"
+                >
+                  Daftar Segera
+                  <ArrowRight className="size-4" />
+                </Link>
+                <a
+                  href="#about"
+                  className="inline-flex items-center gap-2 rounded-full bg-white/20 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/30"
+                >
+                  Pelajari lebih lanjut
+                </a>
+              </div>
+            </div>
 
-          <div className="relative z-10 flex min-h-[100svh] flex-col">
-            <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-5 pt-24 sm:justify-center sm:px-5 sm:pt-28">
-              <div className="hero-copy-blob animate-fade-up w-full max-sm:px-6 max-sm:py-7 sm:max-w-[36rem] sm:px-10 sm:py-11">
-                <SvgStar
-                  color="#FFD93D"
-                  className="animate-bob pointer-events-none absolute -bottom-3 -left-3 size-9 opacity-90"
+            <div className="animate-fade-up delay-200 relative mx-auto w-full max-w-lg lg:max-w-none">
+              <div className="relative aspect-[5/4] overflow-hidden rounded-[2.5rem] border-[6px] border-white/40 bg-white/10 shadow-[0_20px_50px_rgba(31,58,86,0.25)]">
+                <Image
+                  src="/hero-illustration.png"
+                  alt="Ilustrasi anak BabelKids bermain dan belajar"
+                  fill
+                  priority
+                  className="object-cover object-center"
+                  sizes="(max-width: 1024px) 90vw, 32rem"
                 />
-                <DoodleDots
-                  color="#00B894"
-                  className="pointer-events-none absolute -right-2 bottom-6 size-12 opacity-40"
+              </div>
+              <div className="absolute -bottom-4 -left-3 hidden size-24 overflow-hidden rounded-full border-4 border-white shadow-lg sm:block">
+                <Image
+                  src="/logo.png"
+                  alt=""
+                  fill
+                  className="object-cover"
+                  sizes="96px"
                 />
-                <p className="font-[family-name:var(--font-fredoka)] text-5xl font-bold leading-[0.9] tracking-tight text-[var(--bk-ink)] sm:text-7xl md:text-8xl">
-                  BabelKids
-                </p>
-                <h1 className="animate-fade-up delay-100 mt-4 max-w-lg text-xl font-semibold leading-snug text-[var(--bk-ink)] sm:mt-5 sm:text-2xl md:text-3xl">
-                  Taman Kanak-Kanak & Kelompok Bermain bilingual.
-                </h1>
-                <p className="animate-fade-up delay-200 mt-3 max-w-md text-sm leading-relaxed text-[var(--bk-ink)]/80 sm:mt-4 sm:text-base md:text-lg">
-                  Student-centered, kurikulum terpadu, dan guru yang mengenal
-                  setiap anak — bermain, tumbuh, dan berkarakter sejak dini.
-                </p>
-                <div className="animate-fade-up delay-300 mt-5 flex flex-col gap-2.5 sm:mt-8 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
-                  <Link
-                    href="/register"
-                    className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--bk-mint)] px-6 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:-translate-y-1 hover:brightness-105 hover:shadow-xl"
-                  >
-                    Daftar Segera
-                    <ArrowRight className="size-4" />
-                  </Link>
-                  <a
-                    href="#why"
-                    className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-[var(--bk-ink)]/20 bg-white/70 px-6 py-3.5 text-sm font-semibold text-[var(--bk-ink)] backdrop-blur-sm transition hover:-translate-y-0.5 hover:bg-white/90"
-                  >
-                    Why BabelKids
-                  </a>
+              </div>
+            </div>
+          </div>
+
+          <CloudDivider from="#3DB5E6" to="#FFFFFF" />
+        </section>
+
+        {/* ——— FOUNDATIONS / ABOUT ——— */}
+        <section id="about" className="relative bg-white py-16 sm:py-24">
+          <DoodleCloud className="pointer-events-none absolute left-6 top-10 size-20 opacity-40" />
+          <div className="relative mx-auto grid max-w-6xl gap-12 px-5 lg:grid-cols-2 lg:items-center lg:gap-16">
+            <div className="relative mx-auto w-full max-w-md lg:max-w-none">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] border-[5px] border-[#74B9FF]">
+                <Image
+                  src="/preschool.png"
+                  alt="Anak belajar di BabelKids"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 90vw, 28rem"
+                />
+              </div>
+              <div className="absolute -bottom-8 -right-2 w-[55%] overflow-hidden rounded-[1.75rem] border-[5px] border-[#FDCB6E] shadow-lg sm:-right-6">
+                <div className="relative aspect-[4/3]">
+                  <Image
+                    src="/kindergarten.jpg"
+                    alt="Kegiatan kelas BabelKids"
+                    fill
+                    className="object-cover"
+                    sizes="240px"
+                  />
                 </div>
               </div>
             </div>
 
-            <div
-              className="hero-float-kids pointer-events-none flex shrink-0 justify-center px-0 pb-32 pt-6 sm:px-0 sm:pb-0 sm:pt-0"
-              aria-hidden
-            >
-              <video
-                className="hero-float-video h-auto w-full object-contain object-bottom motion-reduce:hidden"
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                poster={HERO_FLOAT}
-                width={1204}
-                height={760}
+            <div className="lg:pl-4">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#3DB5E6]">
+                Why BabelKids
+              </p>
+              <h2 className="mt-2 font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight text-[#1F3A56] sm:text-4xl">
+                Building foundations for future leaders
+              </h2>
+              <p className="mt-4 text-[#5B6B7C] leading-relaxed">
+                Babel Kids adalah Taman Kanak-Kanak / Kelompok Bermain dengan
+                berbagai keunggulan dan kekhasan untuk tumbuh kembang anak.
+              </p>
+              <ul className="mt-8 space-y-3">
+                {foundations.map((item) => (
+                  <li key={item} className="flex items-start gap-3 text-sm sm:text-base">
+                    <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-[#55EFC4] text-[#1F3A56]">
+                      <Check className="size-3.5" strokeWidth={3} />
+                    </span>
+                    <span className="font-medium text-[#1F3A56]">{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <button
+                type="button"
+                onClick={downloadBrochure}
+                className="mt-8 inline-flex items-center gap-2 rounded-full border-2 border-[#3DB5E6] px-5 py-3 text-sm font-semibold text-[#3DB5E6] transition hover:bg-[#3DB5E6] hover:text-white"
               >
-                <source src={HERO_FLOAT_VIDEO} type="image/png" />
-              </video>
-              <Image
-                src={HERO_FLOAT}
-                alt=""
-                width={2400}
-                height={1600}
-                priority
-                className="hidden h-auto w-full object-contain object-bottom motion-reduce:block"
-                sizes="(max-width: 640px) 170vw, (max-width: 1024px) 50vw, 42rem"
-              />
+                <Download className="size-4" />
+                Unduh brosur
+              </button>
             </div>
-          </div>
-
-          <StampBadge
-            color="#FF6B6B"
-            className="animate-wiggle absolute left-[6%] top-[32%] z-20 hidden size-24 text-xs sm:flex sm:size-28 sm:text-sm md:left-[10%] md:top-[28%] md:size-32 md:text-base"
-          >
-            Play · Grow
-            <br />
-            Belong
-          </StampBadge>
-
-          <div className="absolute bottom-0 left-0 right-0 z-20">
-            <WaveDivider topColor="transparent" bottomColor="#FFFDF8" />
           </div>
         </section>
 
-        {/* ——— PROGRAMS ——— */}
-        <section id="programs" className="relative bg-[var(--bk-paper)] pb-8 pt-8">
-          <div className="pointer-events-none absolute left-4 top-16 opacity-40 sm:left-10">
-            <DoodleDots color="#FFB4C8" />
-          </div>
-          <div className="mx-auto max-w-6xl px-5">
-            <p className="font-[family-name:var(--font-fredoka)] text-7xl font-bold leading-none text-[var(--bk-mint)]/20 sm:text-8xl">
-              Kami
-            </p>
-            <h2 className="-mt-6 max-w-lg font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight sm:-mt-8 sm:text-5xl">
-              Program usia yang tepat untuk buah hati
-            </h2>
-            <p className="mt-3 max-w-lg text-[var(--bk-ink)]/65">
-              Kelas kecil, rasa ingin tahu besar — pilih jalur yang cocok untuk
-              anak Anda.
-            </p>
+        <CloudDivider from="#FFFFFF" to="#EAF8FF" />
 
-            <div className="relative mt-16 flex flex-col items-center gap-14 md:flex-row md:items-end md:justify-center md:gap-6 lg:gap-10">
-              {programs.map((p, idx) => (
+        {/* ——— EMPOWERING ——— */}
+        <section className="relative bg-[#EAF8FF] py-16 sm:py-24">
+          <div className="mx-auto max-w-6xl px-5">
+              <div className="mx-auto max-w-2xl text-center">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#3DB5E6]">
+                  Our approach
+                </p>
+                <h2 className="mt-2 font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight text-[#1F3A56] sm:text-4xl">
+                  Empowering young minds
+                </h2>
+                <p className="mt-3 text-[#5B6B7C]">
+                  Tiga pilar pengalaman sehari-hari di BabelKids.
+                </p>
+              </div>
+
+              <div className="mt-12 grid gap-6 md:grid-cols-3">
+                {mindCards.map((card) => {
+                  const Icon = card.icon;
+                  return (
+                    <article
+                      key={card.title}
+                      className="rounded-[2rem] border-[3px] border-white bg-white p-7 shadow-[0_12px_40px_rgba(61,181,230,0.12)] transition hover:-translate-y-1"
+                    >
+                      <div
+                        className="flex size-14 items-center justify-center rounded-[1.25rem]"
+                        style={{ backgroundColor: card.color }}
+                      >
+                        <Icon className="size-7 text-[#1F3A56]" strokeWidth={1.75} />
+                      </div>
+                      <h3 className="mt-5 font-[family-name:var(--font-fredoka)] text-xl font-semibold text-[#1F3A56]">
+                        {card.title}
+                      </h3>
+                      <p className="mt-2 text-sm leading-relaxed text-[#5B6B7C]">
+                        {card.blurb}
+                      </p>
+                    </article>
+                  );
+                })}
+              </div>
+          </div>
+        </section>
+
+        {/* ——— UNIQUE OFFERINGS ——— */}
+        <section className="bg-[#EAF8FF] pb-8 pt-8 sm:pb-12">
+          <div className="mx-auto max-w-6xl px-5">
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#3DB5E6]">
+                Fasilitas & metode
+              </p>
+              <h2 className="mt-2 font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight text-[#1F3A56] sm:text-4xl">
+                Discover the unique offerings
+              </h2>
+            </div>
+
+            <div className="relative mx-auto mt-14 grid max-w-3xl grid-cols-2 gap-6 sm:gap-10">
+              {offerings.map((o, i) => {
+                const Icon = o.icon;
+                return (
+                  <div
+                    key={o.label}
+                    className={`flex flex-col items-center gap-3 text-center ${
+                      i % 2 === 0 ? "sm:-translate-y-2" : "sm:translate-y-6"
+                    }`}
+                  >
+                    <div
+                      className="flex size-16 items-center justify-center rounded-full border-[3px] border-white shadow-md sm:size-20"
+                      style={{ backgroundColor: o.color }}
+                    >
+                      <Icon className="size-7 text-[#1F3A56] sm:size-8" strokeWidth={1.75} />
+                    </div>
+                    <p className="font-[family-name:var(--font-fredoka)] text-sm font-semibold text-[#1F3A56] sm:text-base">
+                      {o.label}
+                    </p>
+                  </div>
+                );
+              })}
+
+              <div className="absolute left-1/2 top-1/2 z-10 hidden size-40 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full border-[5px] border-white shadow-xl sm:block sm:size-48">
+                <Image
+                  src="/bilingual.jpg"
+                  alt="Anak BabelKids"
+                  fill
+                  className="object-cover"
+                  sizes="192px"
+                />
+              </div>
+            </div>
+
+            <ul className="mx-auto mt-16 grid max-w-3xl gap-2 sm:grid-cols-2">
+              {facilities.map((f) => (
+                <li
+                  key={f}
+                  className="flex items-center gap-2 rounded-full bg-white/80 px-4 py-2.5 text-sm text-[#1F3A56]"
+                >
+                  <Check className="size-4 shrink-0 text-[#3DB5E6]" strokeWidth={3} />
+                  {f}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        <CloudDivider from="#EAF8FF" to="#FFFFFF" />
+
+        {/* ——— PROGRAMS ——— */}
+        <section id="programs" className="bg-white py-16 sm:py-24">
+          <div className="mx-auto max-w-6xl px-5">
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#3DB5E6]">
+                Programs
+              </p>
+              <h2 className="mt-2 font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight text-[#1F3A56] sm:text-4xl">
+                Highly recommended courses
+              </h2>
+              <p className="mt-3 text-[#5B6B7C]">
+                Pilih jalur usia yang paling cocok untuk buah hati Anda.
+              </p>
+            </div>
+
+            <div className="mt-12 grid gap-6 md:grid-cols-3">
+              {programs.map((p) => (
                 <article
                   key={p.title}
-                  className={`relative w-full max-w-xs ${p.rotate} transition duration-300 hover:-translate-y-3 hover:rotate-0 ${
-                    idx === 1 ? "md:-translate-y-8" : ""
-                  } ${idx === 2 ? "md:translate-y-4" : ""}`}
-                  style={{ zIndex: 3 - idx }}
+                  className="overflow-hidden rounded-[2rem] bg-white shadow-[0_12px_36px_rgba(31,58,86,0.08)] transition hover:-translate-y-1"
+                  style={{ border: `4px solid ${p.border}` }}
                 >
-                  <div
-                    className="absolute -left-4 -top-6 z-20 font-[family-name:var(--font-fredoka)] text-5xl font-bold leading-none sm:text-6xl"
-                    style={{ color: p.accent }}
-                  >
-                    <span className="block text-lg font-semibold uppercase tracking-widest opacity-70">
-                      {p.agesLabel}
-                    </span>
-                    {p.ages}
-                  </div>
-                  <div className="photo-frame relative aspect-[3/4]">
+                  <div className="relative aspect-[4/3]">
                     <Image
                       src={p.image}
                       alt={p.title}
                       fill
                       className="object-cover"
-                      sizes="(max-width: 768px) 80vw, 280px"
+                      sizes="(max-width: 768px) 100vw, 33vw"
                     />
-                    <div
-                      className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent p-5 pt-16"
-                    >
-                      <h3 className="font-[family-name:var(--font-fredoka)] text-2xl font-semibold text-white">
-                        {p.title}
-                      </h3>
-                      <p className="mt-1 text-sm text-white/85">{p.blurb}</p>
-                    </div>
                   </div>
-                  <SvgStar
-                    color={p.accent}
-                    className={`pointer-events-none absolute -right-3 top-1/3 size-8 ${
-                      idx % 2 === 0 ? "animate-bob" : "animate-float-mid"
-                    }`}
-                  />
+                  <div className="p-6">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-[#3DB5E6]">
+                      {p.ages}
+                    </p>
+                    <h3 className="mt-1 font-[family-name:var(--font-fredoka)] text-xl font-semibold text-[#1F3A56]">
+                      {p.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-[#5B6B7C]">
+                      {p.blurb}
+                    </p>
+                  </div>
                 </article>
               ))}
             </div>
           </div>
         </section>
 
-        <WaveDivider topColor="#FFFDF8" bottomColor="#D4F8EC" />
+        {/* ——— JOURNEY GALLERY ——— */}
+        <section id="journey" className="bg-[#FFF9F0] py-16 sm:py-24">
+          <div className="mx-auto max-w-6xl px-5">
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#F0783C]">
+                Kegiatan sekolah
+              </p>
+              <h2 className="mt-2 font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight text-[#1F3A56] sm:text-4xl">
+                Our colourful journey
+              </h2>
+            </div>
 
-        {/* ——— WHY BABEL KIDS ——— */}
-        <section id="why" className="relative bg-[#D4F8EC] py-20">
-          <SvgBlob
-            color="#54C6EB"
-            className="animate-float-slow pointer-events-none absolute -right-20 top-10 size-64 opacity-30"
-          />
-          <SvgLeaf
-            color="#019875"
-            className="animate-wiggle pointer-events-none absolute bottom-16 left-8 size-12 opacity-50"
-          />
-          <div className="relative mx-auto max-w-6xl px-5">
-            <p className="font-[family-name:var(--font-fredoka)] text-7xl font-bold leading-none text-[#00B894]/25 sm:text-8xl">
-              Why
-            </p>
-            <h2 className="-mt-6 max-w-2xl font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight sm:-mt-8 sm:text-5xl">
-              Why BabelKids
-            </h2>
-            <p className="mt-3 max-w-2xl text-[var(--bk-ink)]/65">
-              Babel Kids adalah Taman Kanak-Kanak / Kelompok Bermain dengan
-              berbagai keunggulan dan kekhasan.
-            </p>
-
-            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {whyPoints.map((c, i) => (
-                <div
-                  key={c.title}
-                  className={`relative overflow-hidden rounded-[2rem] bg-white/90 p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-md ${
-                    i % 2 === 0 ? "-rotate-1" : "rotate-1"
+            <div className="mt-12 columns-1 gap-4 sm:columns-2 lg:columns-3">
+              {journey.map((item, i) => (
+                <figure
+                  key={item.title}
+                  className={`mb-4 break-inside-avoid overflow-hidden rounded-[1.75rem] ${
+                    i % 3 === 0 ? "aspect-[4/5]" : i % 3 === 1 ? "aspect-square" : "aspect-[5/4]"
                   }`}
+                  style={{ border: `4px solid ${item.border}` }}
                 >
-                  <div
-                    className="mb-4 size-4 rounded-full"
-                    style={{ backgroundColor: c.color }}
-                  />
-                  <h3 className="font-[family-name:var(--font-fredoka)] text-xl font-semibold">
-                    {c.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-[var(--bk-ink)]/70">
-                    {c.blurb}
-                  </p>
-                  <DoodleDots
-                    color={c.color}
-                    className="pointer-events-none absolute -bottom-2 -right-2 size-14 opacity-30"
-                  />
-                </div>
+                  <div className="relative h-full min-h-[12rem] w-full">
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 100vw, 33vw"
+                    />
+                    <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#1F3A56]/80 to-transparent px-4 pb-3 pt-10 font-[family-name:var(--font-fredoka)] text-sm font-semibold text-white">
+                      {item.title}
+                    </figcaption>
+                  </div>
+                </figure>
               ))}
             </div>
-
-            <div className="mt-12 flex flex-wrap items-center gap-4">
-              <button
-                type="button"
-                onClick={downloadBrochure}
-                className="inline-flex items-center gap-2 rounded-full bg-[var(--bk-ink)] px-6 py-3.5 text-sm font-semibold text-white transition hover:scale-105 hover:bg-[var(--bk-mint-deep)]"
-              >
-                <Download className="size-4" />
-                Unduh brosur
-              </button>
-              <StampBadge
-                color="#00B894"
-                className="size-20 rotate-[-8deg] text-[11px] animate-bob"
-              >
-                Free
-                <br />
-                JPG
-              </StampBadge>
-            </div>
           </div>
         </section>
-
-        <WaveDivider topColor="#D4F8EC" bottomColor="#E8F7FC" />
-
-        {/* ——— PROGRAM & KEGIATAN ——— */}
-        <section id="kegiatan" className="relative bg-[#E8F7FC] py-20">
-          <DoodleDots
-            color="#FF6B6B"
-            className="animate-float-mid pointer-events-none absolute right-10 top-12 opacity-50"
-          />
-          <div className="mx-auto max-w-6xl px-5">
-            <p className="font-[family-name:var(--font-fredoka)] text-7xl font-bold leading-none text-[#54C6EB]/35 sm:text-8xl">
-              Fun
-            </p>
-            <h2 className="-mt-6 font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight sm:-mt-8 sm:text-5xl">
-              Program & Kegiatan
-            </h2>
-            <p className="mt-3 max-w-lg text-[var(--bk-ink)]/65">
-              Program unggulan dan kegiatan sekolah yang membentuk karakter,
-              kreativitas, dan kebersamaan.
-            </p>
-
-            <div className="mt-12">
-              <h3 className="font-[family-name:var(--font-fredoka)] text-xl font-semibold text-[#FF6B6B] sm:text-2xl">
-                Program Unggulan
-              </h3>
-              <ul className="mt-6 columns-1 gap-x-10 sm:columns-2">
-                {featuredPrograms.map((item) => (
-                  <li
-                    key={item}
-                    className="mb-3 break-inside-avoid text-sm leading-relaxed text-[var(--bk-ink)]/80"
-                  >
-                    <span className="mr-2 inline-block size-1.5 rounded-full bg-[#FFD93D] align-middle" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="mt-14">
-              <h3 className="font-[family-name:var(--font-fredoka)] text-xl font-semibold text-[#FF6B6B] sm:text-2xl">
-                Kegiatan Sekolah
-              </h3>
-              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {schoolActivities.map((a, i) => (
-                  <figure
-                    key={a.title}
-                    className={`relative overflow-hidden rounded-[1.5rem] ${
-                      i % 2 === 0 ? "-rotate-1" : "rotate-1"
-                    } transition hover:-translate-y-1 hover:rotate-0`}
-                  >
-                    <div className="relative aspect-[4/3]">
-                      <Image
-                        src={a.image}
-                        alt={a.title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 640px) 100vw, 25vw"
-                      />
-                    </div>
-                    <figcaption className="absolute inset-x-0 bottom-0 bg-[#FFD93D] px-3 py-2 text-center font-[family-name:var(--font-fredoka)] text-sm font-semibold text-[var(--bk-ink)]">
-                      {a.title}
-                    </figcaption>
-                  </figure>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <WaveDivider topColor="#E8F7FC" bottomColor="#FFF6C2" />
-
-        {/* ——— FASILITAS ——— */}
-        <section id="fasilitas" className="relative bg-[#FFF6C2] py-20">
-          <SvgStar
-            color="#FF6B6B"
-            className="animate-bob pointer-events-none absolute left-[5%] top-16 size-10 opacity-70"
-          />
-          <div className="mx-auto max-w-6xl px-5">
-            <p className="font-[family-name:var(--font-fredoka)] text-7xl font-bold leading-none text-[#FFD93D]/50 sm:text-8xl">
-              Ada
-            </p>
-            <h2 className="-mt-6 font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight sm:-mt-8 sm:text-5xl">
-              Fasilitas
-            </h2>
-            <p className="mt-3 max-w-lg text-[var(--bk-ink)]/65">
-              Lingkungan belajar yang nyaman, aman, dan menyenangkan untuk anak.
-            </p>
-
-            <div className="mt-12 grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-              <ul className="space-y-3">
-                {facilities.map((f) => (
-                  <li
-                    key={f}
-                    className="flex items-start gap-3 rounded-full bg-white/80 px-4 py-3 text-sm text-[var(--bk-ink)]/85 shadow-sm"
-                  >
-                    <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-[#00B894] text-white">
-                      <Check className="size-3.5" strokeWidth={3} />
-                    </span>
-                    <span>{f}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="relative mx-auto grid max-w-md grid-cols-2 gap-4">
-                <div className="relative aspect-square overflow-hidden rounded-full border-4 border-white shadow-lg -rotate-3">
-                  <Image
-                    src="/kindergarten.jpg"
-                    alt="Playground BabelKids"
-                    fill
-                    className="object-cover"
-                    sizes="200px"
-                  />
-                </div>
-                <div className="relative mt-8 aspect-square overflow-hidden rounded-full border-4 border-white shadow-lg rotate-3">
-                  <Image
-                    src="/preschool.png"
-                    alt="Ruang kelas BabelKids"
-                    fill
-                    className="object-cover"
-                    sizes="200px"
-                  />
-                </div>
-                <StampBadge
-                  color="#FF6B6B"
-                  className="absolute -bottom-2 left-1/2 size-24 -translate-x-1/2 text-sm animate-wiggle sm:size-28"
-                >
-                  Daftar
-                  <br />
-                  Segera
-                </StampBadge>
-              </div>
-            </div>
-
-            <div className="mt-14 flex justify-center">
-              <Link
-                href="/register"
-                className="inline-flex items-center gap-2 rounded-full bg-[var(--bk-coral)] px-8 py-4 text-sm font-semibold text-white shadow-lg shadow-[#FF6B6B]/30 transition hover:-translate-y-1 hover:brightness-105"
-              >
-                Daftar Segera
-                <ArrowRight className="size-4" />
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        <WaveDivider topColor="#FFF6C2" bottomColor="#FFFDF8" />
 
         {/* ——— EVENTS ——— */}
-        <section id="events" className="relative bg-[var(--bk-paper)] py-20">
-          <DoodleDots
-            color="#FFB4C8"
-            className="animate-float-mid pointer-events-none absolute right-10 top-12 opacity-50"
-          />
+        <section id="events" className="bg-white py-16 sm:py-24">
           <div className="mx-auto max-w-6xl px-5">
-            <p className="font-[family-name:var(--font-fredoka)] text-7xl font-bold leading-none text-[#FFB4C8]/40 sm:text-8xl">
-              Momen
-            </p>
-            <h2 className="-mt-6 font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight sm:-mt-8 sm:text-5xl">
-              Cuplikan acara terbaru
-            </h2>
-            <p className="mt-3 max-w-lg text-[var(--bk-ink)]/65">
-              Foto dari kegiatan sekolah — nama acara, tanggal, dan cerita
-              singkat.
-            </p>
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#3DB5E6]">
+                Program unggulan
+              </p>
+              <h2 className="mt-2 font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight text-[#1F3A56] sm:text-4xl">
+                Fun-filled learning events
+              </h2>
+            </div>
 
-            <div className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-              {activityPosts.slice(0, 3).map((post, i) => (
-                <div
-                  key={post.id}
-                  className={`animate-pop-in ${i === 1 ? "lg:mt-8" : ""} ${i === 2 ? "lg:-mt-4" : ""}`}
-                  style={{ animationDelay: `${i * 0.08}s` }}
-                >
-                  <EventActivityCard post={post} />
+            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {events.map((e) => {
+                const Icon = e.icon;
+                return (
+                  <article
+                    key={e.title}
+                    className="rounded-[1.75rem] p-6 transition hover:-translate-y-1"
+                    style={{
+                      backgroundColor: e.bg,
+                      border: `3px solid ${e.border}`,
+                    }}
+                  >
+                    <Icon className="size-8 text-[#1F3A56]" strokeWidth={1.75} />
+                    <h3 className="mt-4 font-[family-name:var(--font-fredoka)] text-lg font-semibold text-[#1F3A56]">
+                      {e.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-[#5B6B7C]">
+                      {e.blurb}
+                    </p>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <CloudDivider from="#FFFFFF" to="#1F3A56" />
+
+        {/* ——— PARENT APP ——— */}
+        <section id="app" className="relative overflow-hidden bg-[#1F3A56] py-16 text-white sm:py-24">
+          <DoodleSun className="pointer-events-none absolute right-8 top-10 size-16 opacity-40" />
+          <DoodleCloud className="pointer-events-none absolute -left-4 bottom-20 size-28 opacity-30" />
+
+          <div className="relative mx-auto max-w-6xl px-5">
+            <div className="grid gap-12 lg:grid-cols-[1fr_1.15fr] lg:items-center lg:gap-16">
+              <div>
+                <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#7ED6DF]">
+                  <Smartphone className="size-3.5" />
+                  Parent app
+                </p>
+                <h2 className="mt-4 font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
+                  Sekolah di genggaman orang tua
+                </h2>
+                <p className="mt-4 max-w-md text-base leading-relaxed text-white/75">
+                  Aplikasi digital BabelKids untuk pantau absensi, laporan guru,
+                  SPP, dan acara sekolah — sama seperti pengalaman di Play Store,
+                  langsung di HP Anda.
+                </p>
+
+                <ul className="mt-8 grid gap-4 sm:grid-cols-2">
+                  {appFeatures.map((f) => {
+                    const Icon = f.icon;
+                    return (
+                      <li key={f.title} className="flex gap-3">
+                        <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-[#3DB5E6]/25 text-[#7ED6DF]">
+                          <Icon className="size-5" strokeWidth={1.85} />
+                        </span>
+                        <div>
+                          <p className="font-[family-name:var(--font-fredoka)] font-semibold">
+                            {f.title}
+                          </p>
+                          <p className="mt-0.5 text-sm text-white/65">{f.blurb}</p>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+
+                <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <Link
+                    href="/parents"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-[#3DB5E6] px-6 py-3.5 text-sm font-semibold text-[#1F3A56] transition hover:-translate-y-0.5 hover:bg-[#6bc9ef]"
+                  >
+                    Buka Parent App
+                    <ArrowRight className="size-4" />
+                  </Link>
+                  <p className="text-xs text-white/50 sm:max-w-[14rem]">
+                    Demo web app · tersedia untuk orang tua siswa BabelKids
+                  </p>
                 </div>
+              </div>
+
+              {/* Real app UI phone cluster */}
+              <div className="relative flex items-end justify-center gap-3 sm:gap-4 lg:justify-end">
+                <ParentAppPhone
+                  screen="presence"
+                  className="hidden translate-y-8 opacity-95 sm:block lg:-rotate-6"
+                />
+                <ParentAppPhone
+                  screen="home"
+                  className="z-10 scale-110"
+                />
+                <ParentAppPhone
+                  screen="tuition"
+                  className="translate-y-6 opacity-95 sm:translate-y-8 lg:rotate-6"
+                />
+              </div>
+            </div>
+
+            <div className="mt-10 flex flex-wrap justify-center gap-3 lg:justify-end">
+              {parentAppScreenMeta.map((s) => (
+                <span
+                  key={s.label}
+                  className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-white/80"
+                >
+                  {s.label} · {s.caption}
+                </span>
               ))}
             </div>
           </div>
         </section>
 
-        <WaveDivider topColor="#FFFDF8" bottomColor="#FFFDF8" />
+        <CloudDivider from="#1F3A56" to="#3DB5E6" />
 
-        {/* ——— REVIEWS ——— */}
-        <section id="reviews" className="relative bg-[var(--bk-paper)] pt-4 pb-20">
-          <SvgStar
-            color="#FFD93D"
-            className="animate-bob pointer-events-none absolute left-[5%] top-20 size-10 opacity-70"
-          />
+        {/* ——— TESTIMONIALS ——— */}
+        <section className="relative bg-[#3DB5E6] py-16 text-white sm:py-24">
           <div className="mx-auto max-w-6xl px-5">
-            <p className="font-[family-name:var(--font-fredoka)] text-7xl font-bold leading-none text-[#FFB4C8]/40 sm:text-8xl">
-              Love
-            </p>
-            <h2 className="-mt-6 max-w-lg font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight sm:-mt-8 sm:text-5xl">
-              Kata orang tua
-            </h2>
-            <p className="mt-3 max-w-lg text-[var(--bk-ink)]/65">
-              Suara nyata dari keluarga yang mempercayakan buah hatinya ke
-              BabelKids.
-            </p>
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/80">
+                Testimonials
+              </p>
+              <h2 className="mt-2 font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight sm:text-4xl">
+                Words of trust and gratitude
+              </h2>
+            </div>
 
-            <div className="mt-14 grid gap-10 md:grid-cols-3">
-              {reviews.map((r, i) => (
-                <blockquote key={r.name} className="relative pt-6">
-                  <div
-                    className="blob-soft absolute -inset-x-2 -inset-y-1 -z-10 opacity-80"
-                    style={{ backgroundColor: r.blob }}
-                  />
-                  <p className="font-[family-name:var(--font-fredoka)] text-5xl leading-none text-[var(--bk-coral)]/40">
-                    “
-                  </p>
-                  <p className="-mt-4 text-sm leading-relaxed text-[var(--bk-ink)]/80 sm:text-base">
-                    {r.quote}
-                  </p>
-                  <footer className="mt-5 flex items-center gap-3">
-                    <StampBadge
-                      color={i === 0 ? "#00B894" : i === 1 ? "#FF6B6B" : "#54C6EB"}
-                      className="size-12 shrink-0 text-[10px]"
-                    >
-                      ★★★
-                    </StampBadge>
-                    <div>
-                      <p className="text-sm font-semibold">{r.name}</p>
-                      <p className="text-xs text-[var(--bk-ink)]/50">{r.role}</p>
+            <div className="mt-12 grid gap-6 md:grid-cols-2">
+              {reviews.map((r) => (
+                <blockquote
+                  key={r.name}
+                  className="rounded-[2rem] bg-white p-7 text-[#1F3A56] shadow-lg"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="relative size-14 overflow-hidden rounded-full border-[3px] border-[#FDCB6E]">
+                      <Image
+                        src={r.image}
+                        alt={r.name}
+                        fill
+                        className="object-cover"
+                        sizes="56px"
+                      />
                     </div>
-                  </footer>
+                    <div>
+                      <p className="font-[family-name:var(--font-fredoka)] font-semibold">
+                        {r.name}
+                      </p>
+                      <p className="text-xs text-[#5B6B7C]">{r.role}</p>
+                      <p className="mt-0.5 text-sm text-[#FDCB6E]">★★★★★</p>
+                    </div>
+                  </div>
+                  <p className="mt-5 text-sm leading-relaxed text-[#5B6B7C] sm:text-base">
+                    “{r.quote}”
+                  </p>
                 </blockquote>
               ))}
             </div>
           </div>
         </section>
 
-        <WaveDivider topColor="#FFFDF8" bottomColor="#00B894" />
-
-        {/* ——— PARENT APP CTA ——— */}
-        <section className="relative bg-[var(--bk-mint)] py-20 text-white">
-          <SvgBlob
-            color="#54C6EB"
-            className="animate-float-mid pointer-events-none absolute -left-16 top-0 size-56 opacity-40"
-          />
-          <SvgStar
-            color="#FFD93D"
-            className="animate-wiggle pointer-events-none absolute right-12 top-10 size-12"
-          />
-          <DoodleDots
-            color="#FFB4C8"
-            className="pointer-events-none absolute bottom-10 right-[20%] opacity-60"
-          />
-          <div className="relative mx-auto max-w-6xl px-5">
-            <p className="font-[family-name:var(--font-fredoka)] text-6xl font-bold leading-none text-white/25 sm:text-7xl">
-              Stay
-            </p>
-            <h2 className="-mt-4 max-w-xl font-[family-name:var(--font-fredoka)] text-3xl font-semibold sm:-mt-6 sm:text-5xl">
-              Orang tua tetap dekat — meski tidak di ruang kelas.
-            </h2>
-            <p className="mt-4 max-w-md text-white/90">
-              Presensi harian, laporan mingguan, acara, dan SPP — semua di parent
-              app yang simpel di HP Anda.
-            </p>
-            <Link
-              href="/parents"
-              className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-[var(--bk-mint-deep)] transition hover:scale-105 hover:bg-[var(--bk-sun-soft)]"
-            >
-              Buka parent app
-              <ArrowRight className="size-4" />
-            </Link>
-          </div>
-        </section>
-
-        <WaveDivider topColor="#00B894" bottomColor="#FFB4C8" />
+        <CloudDivider from="#3DB5E6" to="#FFFFFF" />
 
         {/* ——— VISIT ——— */}
-        <section id="visit" className="relative bg-[#FFB4C8] py-20">
-          <SvgLeaf
-            color="#FF6B6B"
-            className="animate-float-slow pointer-events-none absolute left-6 top-12 size-14 opacity-50"
-          />
-          <SvgStar
-            color="#FFD93D"
-            className="animate-bob pointer-events-none absolute right-8 bottom-24 size-9"
-          />
-          <div className="relative mx-auto max-w-xl px-5 text-center">
-            <StampBadge
-              color="#FF6B6B"
-              className="mx-auto mb-6 size-24 rotate-6 text-sm animate-wiggle"
-            >
-              Come
-              <br />
-              visit!
-            </StampBadge>
-            <h2 className="font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight sm:text-5xl">
-              Yuk datang berkunjung
-            </h2>
-            <p className="mt-3 text-[var(--bk-ink)]/70">
-              Chat kami di WhatsApp atau temukan BabelKids di peta — kami senang
-              bertemu Anda.
-            </p>
-
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-              <a
-                href={WHATSAPP_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 py-3.5 text-sm font-bold text-white shadow-md transition hover:scale-[1.02] hover:brightness-105"
-              >
-                <MessageCircle className="size-4" />
-                Chat WhatsApp
-              </a>
-              <a
-                href={MAPS_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-[var(--bk-ink)]/15 bg-white/80 px-6 py-3.5 text-sm font-semibold text-[var(--bk-ink)] backdrop-blur-sm transition hover:bg-white"
-              >
-                <MapPin className="size-4" />
-                Buka di Maps
-              </a>
-            </div>
-            <Link
-              href="/register"
-              className="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-[var(--bk-coral)] px-6 py-3.5 text-sm font-semibold text-white shadow-md transition hover:scale-[1.02] hover:brightness-105"
-            >
-              Daftar Segera
-              <ArrowRight className="size-4" />
-            </Link>
-          </div>
-
-          <div className="relative mx-auto mt-10 max-w-5xl px-5">
-            {/* Kids-style map frame */}
-            <div className="relative">
-              <SvgStar
-                color="#FFD93D"
-                className="animate-wiggle pointer-events-none absolute -left-2 -top-3 z-20 size-10 sm:-left-4 sm:size-12"
-              />
-              <SvgStar
-                color="#54C6EB"
-                className="animate-bob pointer-events-none absolute -right-1 top-8 z-20 size-7 sm:-right-3 sm:size-9"
-              />
-              <SvgLeaf
-                color="#00B894"
-                className="animate-float-slow pointer-events-none absolute -bottom-4 -left-1 z-20 size-12 rotate-[-20deg] sm:-left-3 sm:size-14"
-              />
-              <StampBadge
-                color="#FF6B6B"
-                className="animate-wiggle pointer-events-none absolute -right-1 -bottom-3 z-20 size-20 -rotate-6 text-[11px] leading-tight sm:-right-3 sm:size-24 sm:text-sm"
-              >
-                We&apos;re
-                <br />
-                here!
-              </StampBadge>
-
-              <div
-                className="relative rounded-[2rem] p-[10px] sm:rounded-[2.25rem] sm:p-3"
-                style={{
-                  background:
-                    "linear-gradient(135deg, #FFD93D 0%, #FF6B6B 28%, #54C6EB 55%, #00B894 78%, #FFB4C8 100%)",
-                  boxShadow:
-                    "0 16px 40px rgba(26,46,53,0.18), inset 0 0 0 3px rgba(255,253,248,0.55)",
-                }}
-              >
-                <div
-                  className="relative overflow-hidden rounded-[1.55rem] bg-[#FFFDF8] sm:rounded-[1.85rem]"
-                  style={{
-                    boxShadow: "inset 0 0 0 3px rgba(26,46,53,0.06)",
-                  }}
-                >
-                  {/* Soft paper dots */}
-                  <div
-                    aria-hidden
-                    className="pointer-events-none absolute inset-0 z-10 opacity-[0.12]"
-                    style={{
-                      backgroundImage:
-                        "radial-gradient(#1A2E35 1px, transparent 1px)",
-                      backgroundSize: "14px 14px",
-                    }}
-                  />
-                  {/* Warm kids tint over map tiles */}
-                  <iframe
-                    title="BabelKids on Google Maps"
-                    src={MAPS_EMBED}
-                    className="relative z-0 h-80 w-full border-0 sm:h-[28rem]"
-                    style={{
-                      filter:
-                        "saturate(1.15) contrast(0.95) brightness(1.04) sepia(0.12)",
-                    }}
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    allowFullScreen
-                  />
-                  {/* Soft vignette so edges feel illustrated */}
-                  <div
-                    aria-hidden
-                    className="pointer-events-none absolute inset-0 z-[5] rounded-[inherit]"
-                    style={{
-                      boxShadow:
-                        "inset 0 0 60px 12px rgba(255,180,200,0.35), inset 0 0 0 1px rgba(255,253,248,0.7)",
-                    }}
-                  />
+        <section id="visit" className="bg-white py-16 sm:py-24">
+          <div className="mx-auto max-w-6xl px-5">
+            <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#3DB5E6]">
+                  Contact
+                </p>
+                <h2 className="mt-2 font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight text-[#1F3A56] sm:text-4xl">
+                  Yuk datang berkunjung
+                </h2>
+                <p className="mt-4 text-[#5B6B7C] leading-relaxed">
+                  Chat kami di WhatsApp atau temukan BabelKids di peta — kami
+                  senang bertemu Anda.
+                </p>
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <a
+                    href={WHATSAPP_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-5 py-3.5 text-sm font-semibold text-white transition hover:brightness-105"
+                  >
+                    <MessageCircle className="size-4" />
+                    Chat WhatsApp
+                  </a>
+                  <a
+                    href={MAPS_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-[#3DB5E6] px-5 py-3.5 text-sm font-semibold text-[#3DB5E6] transition hover:bg-[#3DB5E6] hover:text-white"
+                  >
+                    <MapPin className="size-4" />
+                    Buka di Maps
+                  </a>
                 </div>
+                <Link
+                  href="/register"
+                  className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#1F3A56] px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-[#16293d]"
+                >
+                  Daftar Segera
+                  <ArrowRight className="size-4" />
+                </Link>
+              </div>
+
+              <div className="overflow-hidden rounded-[2rem] border-[4px] border-[#74B9FF]">
+                <iframe
+                  title="BabelKids on Google Maps"
+                  src={MAPS_EMBED}
+                  className="h-72 w-full border-0 sm:h-80"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                />
               </div>
             </div>
           </div>
         </section>
-
-        <WaveDivider topColor="#FFB4C8" bottomColor="#1A2E35" />
       </main>
 
-      <footer className="bg-[var(--bk-ink)] py-12 text-white">
-        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-5 sm:flex-row sm:items-center">
-          <p className="font-[family-name:var(--font-fredoka)] text-2xl font-semibold text-[var(--bk-mint)]">
-            BabelKids
-          </p>
-          <p className="text-sm text-white/50">
-            © {new Date().getFullYear()} BabelKids Preschool & Kindergarten
-          </p>
-          <div className="flex gap-5 text-sm text-white/70">
-            <Link href="/register" className="hover:text-[var(--bk-sun)]">
+      <footer className="border-t border-[#E8F0F5] bg-[#EAF8FF] py-10">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-5 sm:flex-row">
+          <div className="flex items-center gap-3">
+            <Image
+              src="/logo.png"
+              alt="BabelKids"
+              width={80}
+              height={72}
+              className="h-14 w-auto object-contain"
+            />
+            <p className="text-sm text-[#5B6B7C]">
+              © {new Date().getFullYear()} BabelKids
+              <br />
+              Playgroup · Kindergarten
+            </p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-5 text-sm font-medium text-[#1F3A56]">
+            <Link href="/register" className="hover:text-[#3DB5E6]">
               Daftar Segera
             </Link>
-            <Link href="/parents" className="hover:text-[var(--bk-sun)]">
-              Parents
+            <Link href="/parents" className="hover:text-[#3DB5E6]">
+              Parent app
             </Link>
-            <Link href="/dashboard" className="hover:text-[var(--bk-sun)]">
-              Dashboard
+            <Link href="/dashboard" className="hover:text-[#3DB5E6]">
+              Staff
             </Link>
           </div>
         </div>

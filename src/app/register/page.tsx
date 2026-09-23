@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { RegistrationForm } from "@/components/RegistrationForm";
 
@@ -7,8 +8,15 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-[#F3F7FC] font-[family-name:var(--font-outfit)] text-[#1A2330]">
       <div className="mx-auto max-w-lg px-5 py-8">
-        <Link href="/" className="text-sm font-medium text-[#2E7DFF]">
-          ← BabelKids
+        <Link href="/" className="inline-flex items-center gap-2">
+          <Image
+            src="/logo.png"
+            alt="BabelKids"
+            width={40}
+            height={36}
+            className="h-10 w-auto object-contain"
+          />
+          <span className="text-sm font-medium text-[#5B6B7C]">← Beranda</span>
         </Link>
         <h1 className="mt-4 text-3xl font-medium tracking-tight">
           Pendaftaran siswa

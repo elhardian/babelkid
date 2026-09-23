@@ -21,9 +21,16 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "BabelKids — Preschool & Kindergarten",
+  title: "BabelKids — TK & Kelompok Bermain",
   description:
-    "A warm, bilingual early learning home where curious little minds grow through play, language, and care.",
+    "Taman Kanak-Kanak & Kelompok Bermain bilingual: student-centered, kurikulum terpadu, dan karakter sejak dini.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+    ],
+    apple: "/apple-icon.png",
+  },
 };
 
 export default function RootLayout({
