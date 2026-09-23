@@ -14,7 +14,11 @@ import {
   useClassActivities,
   type ClassActivityInput,
 } from "@/components/dashboard/ClassActivityProvider";
-import { ImageUploadField } from "@/components/dashboard/ImageUploadField";
+import { useClassesRegistry } from "@/components/dashboard/ClassesProvider";
+import { useTeachersRegistry } from "@/components/dashboard/TeachersProvider";
+import { MediaUploadField } from "@/components/dashboard/ImageUploadField";
+import { TeacherSearchSelect } from "@/components/dashboard/TeacherSearchSelect";
+import { Select } from "@/components/dashboard/Select";
 import {
   EmptyState,
   SearchFilterBar,
@@ -25,7 +29,7 @@ import {
   ModalActions,
   inputClass,
 } from "@/components/dashboard/Modal";
-import { classes, getClass, studentsInClass } from "@/lib/mock-data";
+import { studentsInClass } from "@/lib/mock-data";
 import { cn, formatDate, todayISO } from "@/lib/format";
 import type { ClassActivity } from "@/lib/types";
 
@@ -33,6 +37,8 @@ type ModalMode = "add" | "edit" | null;
 
 export default function DashboardKegiatanPage() {
   const { upsert, remove, forClassMonth } = useClassActivities();
+  const { classes, getById: getClass } = useClassesRegistry();
+  const { teachers, getById: getTeacher } = useTeachersRegistry();
   const [classId, setClassId] = useState(classes[0]?.id ?? "c1");
   const [cursor, setCursor] = useState(() =>
     startOfMonth(parseISO(todayISO())),
@@ -41,6 +47,9 @@ export default function DashboardKegiatanPage() {
   const [modal, setModal] = useState<ModalMode>(null);
   const [active, setActive] = useState<ClassActivity | null>(null);
   const [images, setImages] = useState<string[]>([]);
+  const [videoUrl, setVideoUrl] = useState<string | undefined>();
+  const [teacherId, setTeacherId] = useState("");
+  const [formClassId, setFormClassId] = useState("");
 
   const monthPrefix = format(cursor, "yyyy-MM");
 
@@ -72,12 +81,26 @@ export default function DashboardKegiatanPage() {
   function openAdd() {
     setActive(null);
     setImages([]);
+    setVideoUrl(undefined);
+    setFormClassId(classId);
+    const defaultTeacher =
+      (cls ? getTeacher(cls.teacherId)?.id : undefined) ??
+      teachers.find((t) => t.role === "teacher")?.id ??
+      "";
+    setTeacherId(defaultTeacher);
     setModal("add");
   }
 
   function openEdit(a: ClassActivity) {
     setActive(a);
     setImages([...a.images]);
+    setVideoUrl(a.videoUrl);
+    setFormClassId(a.classId);
+    setTeacherId(
+      a.teacherId ??
+        teachers.find((t) => t.name === a.teacherName)?.id ??
+        "",
+    );
     setModal("edit");
   }
 
@@ -85,27 +108,32 @@ export default function DashboardKegiatanPage() {
     setModal(null);
     setActive(null);
     setImages([]);
+    setVideoUrl(undefined);
+    setTeacherId("");
+    setFormClassId("");
   }
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    const videoUrl = String(fd.get("videoUrl") || "").trim() || undefined;
     const location = String(fd.get("location") || "").trim() || undefined;
     const date = String(fd.get("date") || todayISO());
+    const teacher = getTeacher(teacherId);
+    if (!teacher) return;
 
     const input: ClassActivityInput = {
       id: active?.id,
-      classId: String(fd.get("classId") || classId),
+      classId: formClassId || classId,
       date,
       title: String(fd.get("title") || "").trim(),
       description: String(fd.get("description") || "").trim(),
-      teacherName: String(fd.get("teacherName") || "").trim(),
+      teacherId: teacher.id,
+      teacherName: teacher.name,
       images,
       videoUrl,
       location,
     };
-    if (!input.title || !input.description || !input.teacherName) return;
+    if (!input.title || !input.description) return;
     upsert(input);
     closeModal();
     setClassId(input.classId);
@@ -120,190 +148,172 @@ export default function DashboardKegiatanPage() {
             Kegiatan kelas
           </h1>
           <p className="mt-1 text-sm text-[#8A96A8]">
-            Aktivitas harian per kelas · foto via MinIO · tampil di Parent App
+            Dokumentasi harian per kelas · foto & video
           </p>
         </div>
         <button
           type="button"
           onClick={openAdd}
-          className="inline-flex items-center justify-center gap-2 rounded-full bg-[#2E7DFF] px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-[#2E7DFF]/25"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#2E7DFF] px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-[#2E7DFF]/25 sm:w-auto"
         >
           <Plus className="size-4" />
           Tambah kegiatan
         </button>
       </div>
 
-      {/* Horizontal class chips */}
-      <section className="rounded-2xl border border-[#E5ECF5] bg-white p-4 shadow-sm">
-        <p className="text-xs font-medium uppercase tracking-wide text-[#8A96A8]">
-          Pilih kelas
-        </p>
-        <div
-          className="mt-3 -mx-1 flex gap-2 overflow-x-auto px-1 pb-1"
-          style={{ scrollbarWidth: "thin" }}
-        >
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap gap-2">
           {classes.map((c) => {
-            const activeChip = c.id === classId;
-            const count = studentsInClass(c.id).length;
+            const n = studentsInClass(c.id).length;
+            const activeCls = classId === c.id;
             return (
               <button
                 key={c.id}
                 type="button"
                 onClick={() => setClassId(c.id)}
                 className={cn(
-                  "shrink-0 rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition",
-                  activeChip
-                    ? "bg-[#2E7DFF] text-white shadow-sm shadow-[#2E7DFF]/30"
-                    : "bg-[#F3F7FC] text-[#5B6B7C] hover:bg-[#EEF3FA]",
+                  "rounded-full px-3.5 py-1.5 text-sm font-medium transition",
+                  activeCls
+                    ? "bg-[#2E7DFF] text-white shadow-sm shadow-[#2E7DFF]/25"
+                    : "bg-white text-[#5B6B7C] ring-1 ring-[#E5ECF5] hover:bg-[#EEF3FA]",
                 )}
               >
                 {c.name}
                 <span
                   className={cn(
-                    "ml-1.5 text-xs",
-                    activeChip ? "text-white/80" : "text-[#A0AAB8]",
+                    "ml-1.5 text-[11px]",
+                    activeCls ? "text-white/80" : "text-[#A0AAB8]",
                   )}
                 >
-                  ({count})
+                  {n}
                 </span>
               </button>
             );
           })}
         </div>
-      </section>
-
-      {/* Month navigator */}
-      <div className="flex items-center justify-between rounded-2xl border border-[#E5ECF5] bg-white px-2 py-2 shadow-sm">
-        <button
-          type="button"
-          onClick={() => setCursor((c) => addMonths(c, -1))}
-          className="rounded-full p-2 text-[#5B6B7C] transition hover:bg-[#EEF3FA]"
-          aria-label="Bulan sebelumnya"
-        >
-          <ChevronLeft className="size-5" />
-        </button>
-        <div className="text-center">
-          <p className="text-base font-medium capitalize text-[#1A2330]">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setCursor((d) => addMonths(d, -1))}
+            className="rounded-xl p-2 text-[#5B6B7C] hover:bg-white"
+            aria-label="Bulan sebelumnya"
+          >
+            <ChevronLeft className="size-5" />
+          </button>
+          <p className="min-w-[9rem] text-center text-sm font-medium capitalize text-[#1A2330]">
             {format(cursor, "MMMM yyyy", { locale: localeId })}
           </p>
-          <p className="text-xs text-[#8A96A8]">
-            {cls?.name} · {monthList.length} kegiatan
-          </p>
+          <button
+            type="button"
+            onClick={() => setCursor((d) => addMonths(d, 1))}
+            className="rounded-xl p-2 text-[#5B6B7C] hover:bg-white"
+            aria-label="Bulan berikutnya"
+          >
+            <ChevronRight className="size-5" />
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={() => setCursor((c) => addMonths(c, 1))}
-          className="rounded-full p-2 text-[#5B6B7C] transition hover:bg-[#EEF3FA]"
-          aria-label="Bulan berikutnya"
-        >
-          <ChevronRight className="size-5" />
-        </button>
       </div>
 
       <SearchFilterBar
         search={search}
         onSearchChange={setSearch}
-        searchPlaceholder="Cari judul, guru, atau lokasi…"
+        searchPlaceholder="Cari judul, deskripsi, guru…"
       />
 
-      <div className="space-y-5">
-        {groupedByDay.map(([date, items]) => (
-          <section key={date}>
-            <h2 className="mb-2 text-sm font-medium text-[#5B6B7C]">
-              {formatDate(date, "EEEE, d MMMM yyyy")}
-            </h2>
-            <ul className="space-y-3">
-              {items.map((a) => (
-                <li
-                  key={a.id}
-                  className="rounded-2xl border border-[#E5ECF5] bg-white p-4 shadow-sm"
-                >
-                  <div className="flex items-start gap-3">
-                    {a.images[0] ? (
-                      <div className="relative size-16 shrink-0 overflow-hidden rounded-xl bg-[#F3F7FC]">
-                        <Image
-                          src={a.images[0]}
-                          alt=""
-                          fill
-                          className="object-cover"
-                          sizes="64px"
-                          unoptimized={
-                            a.images[0].startsWith("/uploads/") ||
-                            a.images[0].includes("localhost")
-                          }
-                        />
+      {groupedByDay.length === 0 ? (
+        <EmptyState message="Belum ada kegiatan di bulan ini." />
+      ) : (
+        <div className="space-y-6">
+          {groupedByDay.map(([day, items]) => (
+            <section key={day}>
+              <h2 className="mb-3 text-sm font-semibold text-[#5B6B7C]">
+                {formatDate(day)}
+              </h2>
+              <ul className="space-y-3">
+                {items.map((a) => (
+                  <li
+                    key={a.id}
+                    className="overflow-hidden rounded-2xl border border-[#E5ECF5] bg-white shadow-sm"
+                  >
+                    <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium text-[#1A2330]">{a.title}</p>
+                        <p className="mt-1 line-clamp-2 text-sm text-[#5B6B7C]">
+                          {a.description}
+                        </p>
+                        <p className="mt-2 text-xs text-[#8A96A8]">
+                          {a.teacherName}
+                          {a.location ? ` · ${a.location}` : ""}
+                          {a.videoUrl ? " · video" : ""}
+                        </p>
+                      </div>
+                      <div className="flex shrink-0 gap-1">
+                        <button
+                          type="button"
+                          onClick={() => openEdit(a)}
+                          className="rounded-xl p-2 text-[#5B6B7C] hover:bg-[#EEF3FA]"
+                          aria-label="Edit"
+                        >
+                          <Pencil className="size-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (confirm("Hapus kegiatan ini?")) remove(a.id);
+                          }}
+                          className="rounded-xl p-2 text-rose-600 hover:bg-rose-50"
+                          aria-label="Hapus"
+                        >
+                          <Trash2 className="size-4" />
+                        </button>
+                      </div>
+                    </div>
+                    {a.images.length > 0 ? (
+                      <div
+                        className="flex gap-2 overflow-x-auto border-t border-[#EEF3FA] bg-[#F7FAFD] px-4 py-3"
+                        style={{ scrollbarWidth: "none" }}
+                      >
+                        {a.images.map((src) => (
+                          <div
+                            key={src}
+                            className="relative size-16 shrink-0 overflow-hidden rounded-lg"
+                          >
+                            <Image
+                              src={src}
+                              alt=""
+                              fill
+                              className="object-cover"
+                              sizes="64px"
+                              unoptimized={
+                                src.startsWith("/uploads/") ||
+                                src.includes("localhost")
+                              }
+                            />
+                          </div>
+                        ))}
                       </div>
                     ) : null}
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <p className="font-medium text-[#1A2330]">{a.title}</p>
-                          <p className="mt-0.5 text-xs text-[#8A96A8]">
-                            {a.teacherName}
-                            {a.location ? ` · ${a.location}` : ""}
-                            {a.images.length
-                              ? ` · ${a.images.length} foto`
-                              : ""}
-                            {a.videoUrl ? " · video" : ""}
-                          </p>
-                        </div>
-                        <div className="flex shrink-0 gap-1">
-                          <button
-                            type="button"
-                            onClick={() => openEdit(a)}
-                            className="rounded-xl p-2 text-[#5B6B7C] hover:bg-[#EEF3FA]"
-                            aria-label="Edit"
-                          >
-                            <Pencil className="size-4" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (confirm("Hapus kegiatan ini?")) remove(a.id);
-                            }}
-                            className="rounded-xl p-2 text-rose-600 hover:bg-rose-50"
-                            aria-label="Hapus"
-                          >
-                            <Trash2 className="size-4" />
-                          </button>
-                        </div>
-                      </div>
-                      <p className="mt-2 line-clamp-2 text-sm text-[#5B6B7C]">
-                        {a.description}
-                      </p>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
-        {monthList.length === 0 ? (
-          <EmptyState message="Belum ada kegiatan di bulan ini" />
-        ) : null}
-      </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      )}
 
       <Modal
-        open={modal !== null}
+        open={modal === "add" || modal === "edit"}
         onClose={closeModal}
         title={modal === "edit" ? "Edit kegiatan" : "Tambah kegiatan"}
-        wide
       >
         <form onSubmit={onSubmit} className="space-y-3">
           <div className="grid gap-3 sm:grid-cols-2">
             <Field label="Kelas">
-              <select
-                name="classId"
-                className={inputClass}
-                defaultValue={active?.classId ?? classId}
-                required
-              >
-                {classes.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
+              <Select
+                value={formClassId}
+                onChange={setFormClassId}
+                options={classes.map((c) => ({ value: c.id, label: c.name }))}
+              />
             </Field>
             <Field label="Tanggal">
               <input
@@ -339,13 +349,13 @@ export default function DashboardKegiatanPage() {
             />
           </Field>
           <div className="grid gap-3 sm:grid-cols-2">
-            <Field label="Nama guru">
-              <input
-                name="teacherName"
-                className={inputClass}
-                defaultValue={active?.teacherName ?? ""}
+            <Field label="Guru">
+              <TeacherSearchSelect
+                teachers={teachers}
+                value={teacherId}
+                onChange={setTeacherId}
                 required
-                placeholder="Bu Dewi"
+                placeholder="Cari guru…"
               />
             </Field>
             <Field label="Lokasi (opsional)">
@@ -358,16 +368,13 @@ export default function DashboardKegiatanPage() {
             </Field>
           </div>
 
-          <ImageUploadField value={images} onChange={setImages} />
+          <MediaUploadField
+            images={images}
+            videoUrl={videoUrl}
+            onImagesChange={setImages}
+            onVideoChange={setVideoUrl}
+          />
 
-          <Field label="URL video (opsional)">
-            <input
-              name="videoUrl"
-              className={inputClass}
-              defaultValue={active?.videoUrl ?? ""}
-              placeholder="https://…"
-            />
-          </Field>
           <ModalActions
             onCancel={closeModal}
             submitLabel={modal === "edit" ? "Simpan" : "Tambah"}

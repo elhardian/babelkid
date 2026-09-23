@@ -13,7 +13,7 @@ import {
   inputClass,
 } from "@/components/dashboard/Modal";
 import { formatDate, formatIDR } from "@/lib/format";
-import { getEvent, getStudent } from "@/lib/mock-data";
+import { getEvent } from "@/lib/mock-data";
 import type { EventDoc, SchoolEvent } from "@/lib/types";
 import { ImagePlus, Trash2 } from "lucide-react";
 
@@ -152,27 +152,6 @@ export default function EventDetailPage({
           <p className="text-sm leading-relaxed text-neutral-700">
             {event.description}
           </p>
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
-              Peserta ({event.attendees.length})
-            </p>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {event.attendees.map((sid) => {
-                const s = getStudent(sid);
-                return (
-                  <span
-                    key={sid}
-                    className="rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs text-neutral-700"
-                  >
-                    {s?.nickname ?? sid}
-                  </span>
-                );
-              })}
-              {event.attendees.length === 0 ? (
-                <span className="text-sm text-neutral-400">Belum ada</span>
-              ) : null}
-            </div>
-          </div>
         </div>
       </div>
 
@@ -189,7 +168,7 @@ export default function EventDetailPage({
             setImageUrl(SAMPLE_PHOTOS[0]);
             setModal("add");
           }}
-          className="inline-flex items-center gap-1.5 rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-[#1A2330] hover:bg-neutral-800"
+          className="inline-flex items-center gap-1.5 rounded-full bg-[#2E7DFF] px-4 py-2 text-sm font-medium text-white shadow-sm shadow-[#2E7DFF]/25"
         >
           <ImagePlus className="size-4" />
           Tambah foto

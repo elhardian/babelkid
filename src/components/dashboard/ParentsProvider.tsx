@@ -35,6 +35,42 @@ function seedFromStudents(): ParentProfile[] {
     budi.address = "Jl. Cendana No. 8, Bandung";
     budi.occupation = "Karyawan swasta";
   }
+  const extra: ParentProfile[] = [
+    {
+      id: "p-demo-1",
+      name: "Rina Wijaya",
+      relationship: "mother",
+      phone: "081298765432",
+      email: "rina.wijaya@email.com",
+      address: "Jl. Melati No. 5, Pangkalpinang",
+      occupation: "Guru",
+      createdAt: "2025-06-01",
+    },
+    {
+      id: "p-demo-2",
+      name: "Andi Pratama",
+      relationship: "father",
+      phone: "081355512345",
+      email: "andi.pratama@email.com",
+      address: "Jl. Merdeka No. 21, Pangkalpinang",
+      occupation: "Wiraswasta",
+      createdAt: "2025-08-12",
+    },
+    {
+      id: "p-demo-3",
+      name: "Siti Nurhaliza",
+      relationship: "guardian",
+      phone: "082112223333",
+      email: "siti.nur@email.com",
+      address: "Komplek Bumi Asri Blok B2",
+      occupation: "Pegawai negeri",
+      notes: "Wali dari sepupu",
+      createdAt: "2026-01-20",
+    },
+  ];
+  for (const p of extra) {
+    if (!map.has(p.id)) map.set(p.id, p);
+  }
   return [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
 
@@ -62,6 +98,66 @@ function setStore(
 }
 
 type ParentInput = Omit<ParentProfile, "id" | "createdAt"> & { id?: string };
+export type { ParentInput };
+
+function upsertParent(input: ParentInput): ParentProfile {
+  let saved: ParentProfile | null = null;
+  setStore((prev) => {
+    if (input.id) {
+      const next = prev.map((p) => {
+        if (p.id !== input.id) return p;
+        saved = {
+          ...p,
+          name: input.name,
+          relationship: input.relationship,
+          phone: input.phone,
+          email: input.email,
+          address: input.address,
+          occupation: input.occupation,
+          notes: input.notes,
+        };
+        return saved!;
+      });
+      if (saved) return next;
+    }
+    // match existing by email to avoid duplicates
+    const byEmail = prev.find(
+      (p) =>
+        p.email.toLowerCase() === input.email.trim().toLowerCase() &&
+        input.email.trim(),
+    );
+    if (byEmail) {
+      saved = {
+        ...byEmail,
+        name: input.name,
+        relationship: input.relationship,
+        phone: input.phone,
+        email: input.email,
+        address: input.address ?? byEmail.address,
+        occupation: input.occupation ?? byEmail.occupation,
+        notes: input.notes ?? byEmail.notes,
+      };
+      return prev.map((p) => (p.id === byEmail.id ? saved! : p));
+    }
+    saved = {
+      id: `p-${Date.now()}`,
+      name: input.name,
+      relationship: input.relationship,
+      phone: input.phone,
+      email: input.email,
+      address: input.address,
+      occupation: input.occupation,
+      notes: input.notes,
+      createdAt: new Date().toISOString().slice(0, 10),
+    };
+    return [saved, ...prev];
+  });
+  return saved!;
+}
+
+export function upsertParentFromStore(input: ParentInput) {
+  return upsertParent(input);
+}
 
 interface ParentsContextValue {
   parents: ParentProfile[];
@@ -75,41 +171,7 @@ const ParentsContext = createContext<ParentsContextValue | null>(null);
 export function ParentsProvider({ children }: { children: React.ReactNode }) {
   const parents = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
-  const upsert = useCallback((input: ParentInput) => {
-    let saved: ParentProfile | null = null;
-    setStore((prev) => {
-      if (input.id) {
-        const next = prev.map((p) => {
-          if (p.id !== input.id) return p;
-          saved = {
-            ...p,
-            name: input.name,
-            relationship: input.relationship,
-            phone: input.phone,
-            email: input.email,
-            address: input.address,
-            occupation: input.occupation,
-            notes: input.notes,
-          };
-          return saved!;
-        });
-        if (saved) return next;
-      }
-      saved = {
-        id: `p-${Date.now()}`,
-        name: input.name,
-        relationship: input.relationship,
-        phone: input.phone,
-        email: input.email,
-        address: input.address,
-        occupation: input.occupation,
-        notes: input.notes,
-        createdAt: new Date().toISOString().slice(0, 10),
-      };
-      return [saved, ...prev];
-    });
-    return saved!;
-  }, []);
+  const upsert = useCallback((input: ParentInput) => upsertParent(input), []);
 
   const remove = useCallback((id: string) => {
     setStore((prev) => prev.filter((p) => p.id !== id));
@@ -136,6 +198,19 @@ export function useParentsRegistry() {
     throw new Error("useParentsRegistry must be used within ParentsProvider");
   }
   return ctx;
+}
+
+/** Read/write without React tree — same module store as ParentsProvider */
+export function useParentsStore() {
+  const parents = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  return {
+    parents,
+    getById: (id: string) => parents.find((p) => p.id === id),
+    upsert: upsertParent,
+    remove: (id: string) => {
+      setStore((prev) => prev.filter((p) => p.id !== id));
+    },
+  };
 }
 
 export function studentsForParent(parentId: string, email: string) {

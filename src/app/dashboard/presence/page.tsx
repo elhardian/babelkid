@@ -49,8 +49,8 @@ export default function TanggalPage() {
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[22rem_minmax(0,1fr)]">
-        <div className="space-y-3">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
+        <div className="min-w-0 space-y-3">
           <AttendanceCalendar
             selectedDate={date}
             onSelectDate={setDate}
@@ -66,7 +66,7 @@ export default function TanggalPage() {
           </button>
         </div>
 
-        <div className="space-y-4">
+        <div className="min-w-0 space-y-4">
           <div className="rounded-2xl border border-[#E5ECF5] bg-white p-5 shadow-sm">
             <p className="text-xs uppercase tracking-wide text-[#8A96A8]">
               {formatDate(date, "EEEE, dd MMMM yyyy")}

@@ -14,6 +14,10 @@ import {
   inputClass,
 } from "@/components/dashboard/Modal";
 import { CurrencyInput } from "@/components/dashboard/CurrencyInput";
+import {
+  Pagination,
+  usePagination,
+} from "@/components/dashboard/Pagination";
 import { StudentSearchSelect } from "@/components/dashboard/StudentSearchSelect";
 import {
   formatDate,
@@ -60,6 +64,9 @@ export default function TuitionPage() {
       return student?.name.toLowerCase().includes(q) ?? false;
     });
   }, [rows, search, month, statusFilter, methodFilter]);
+
+  const { pageItems, page, setPage, totalPages, total, from, to } =
+    usePagination(filtered);
 
   const totals = useMemo(() => {
     const paid = filtered.filter((t) => t.status === "paid").reduce((s, t) => s + t.amount, 0);
@@ -142,8 +149,8 @@ export default function TuitionPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-        <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
           <h1 className="text-2xl font-semibold tracking-tight">SPP</h1>
           <p className="mt-1 text-sm text-neutral-500">
             Biaya per siswa · transfer / tunai / WhatsApp
@@ -157,7 +164,7 @@ export default function TuitionPage() {
             setAmount(2500000);
             setModal("add");
           }}
-          className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-[#1A2330] hover:bg-neutral-800"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#2E7DFF] px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-[#2E7DFF]/25 sm:w-auto"
         >
           Tambah / catat pembayaran
         </button>
@@ -210,9 +217,10 @@ export default function TuitionPage() {
         />
       </SearchFilterBar>
 
-      {filtered.length === 0 ? (
+      {total === 0 ? (
         <EmptyState message="Tidak ada data SPP untuk bulan ini." />
       ) : (
+        <>
         <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-neutral-100 bg-neutral-50 text-xs uppercase tracking-wide text-neutral-500">
@@ -226,7 +234,7 @@ export default function TuitionPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-100">
-              {filtered.map((t) => {
+              {pageItems.map((t) => {
                 const student = getStudent(t.studentId);
                 return (
                   <tr key={t.id} className="hover:bg-neutral-50/80">
@@ -277,6 +285,15 @@ export default function TuitionPage() {
             </tbody>
           </table>
         </div>
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          total={total}
+          from={from}
+          to={to}
+          onPageChange={setPage}
+        />
+        </>
       )}
 
       <Modal
@@ -378,7 +395,7 @@ export default function TuitionPage() {
         {active ? (
           <div className="space-y-3 text-sm">
             <p className="text-lg font-semibold">{getStudent(active.studentId)?.name}</p>
-            <dl className="grid grid-cols-2 gap-3">
+            <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div><dt className="text-xs text-neutral-500">Bulan</dt><dd>{formatMonth(active.month)}</dd></div>
               <div><dt className="text-xs text-neutral-500">Jumlah</dt><dd className="tabular-nums">{formatIDR(active.amount)}</dd></div>
               <div><dt className="text-xs text-neutral-500">Status</dt><dd>{tuitionStatusLabel(active.status)}</dd></div>
@@ -392,11 +409,11 @@ export default function TuitionPage() {
             <div className="flex justify-end gap-2 border-t border-neutral-100 pt-4">
               <button type="button" onClick={() => setModal(null)} className="rounded-md px-3 py-2 text-sm text-neutral-600 hover:bg-neutral-100">Tutup</button>
               {active.status !== "paid" ? (
-                <button type="button" onClick={() => setModal("record")} className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-[#1A2330]">
+                <button type="button" onClick={() => setModal("record")} className="rounded-full bg-[#2E7DFF] px-4 py-2 text-sm font-medium text-white">
                   Catat pembayaran
                 </button>
               ) : (
-                <button type="button" onClick={() => { setAmount(active.amount); setModal("edit"); }} className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-[#1A2330]">
+                <button type="button" onClick={() => { setAmount(active.amount); setModal("edit"); }} className="rounded-full bg-[#2E7DFF] px-4 py-2 text-sm font-medium text-white">
                   Edit
                 </button>
               )}

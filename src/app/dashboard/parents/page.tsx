@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import {
-  ParentsProvider,
   studentsForParent,
   useParentsRegistry,
 } from "@/components/dashboard/ParentsProvider";
@@ -21,6 +20,10 @@ import {
 } from "@/components/dashboard/Modal";
 import { getClass } from "@/lib/mock-data";
 import type { ParentProfile } from "@/lib/types";
+import {
+  Pagination,
+  usePagination,
+} from "@/components/dashboard/Pagination";
 
 const relLabel = {
   mother: "Ibu",
@@ -50,6 +53,9 @@ function ParentsPageInner() {
       );
     });
   }, [parents, search, relFilter]);
+
+  const { pageItems, page, setPage, totalPages, total, from, to } =
+    usePagination(list);
 
   function openAdd() {
     setActive(null);
@@ -121,7 +127,7 @@ function ParentsPageInner() {
       </SearchFilterBar>
 
       <ul className="space-y-3">
-        {list.map((p) => {
+        {pageItems.map((p) => {
           const kids = studentsForParent(p.id, p.email);
           const open = openId === p.id;
           return (
@@ -227,6 +233,15 @@ function ParentsPageInner() {
         ) : null}
       </ul>
 
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        total={total}
+        from={from}
+        to={to}
+        onPageChange={setPage}
+      />
+
       <Modal
         open={modal !== null}
         onClose={() => {
@@ -309,9 +324,5 @@ function ParentsPageInner() {
 }
 
 export default function ParentsPage() {
-  return (
-    <ParentsProvider>
-      <ParentsPageInner />
-    </ParentsProvider>
-  );
+  return <ParentsPageInner />;
 }

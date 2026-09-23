@@ -14,10 +14,16 @@ import {
   inputClass,
 } from "@/components/dashboard/Modal";
 import { StudentSearchSelect } from "@/components/dashboard/StudentSearchSelect";
+import { TeacherSearchSelect } from "@/components/dashboard/TeacherSearchSelect";
+import { useTeachersRegistry } from "@/components/dashboard/TeachersProvider";
+import { Select } from "@/components/dashboard/Select";
+import {
+  Pagination,
+  usePagination,
+} from "@/components/dashboard/Pagination";
 import { formatDate } from "@/lib/format";
 import {
   getStudent,
-  getTeacher,
   studentReports as initialReports,
   students,
 } from "@/lib/mock-data";
@@ -33,12 +39,15 @@ const moodLabel: Record<StudentReport["mood"], string> = {
 };
 
 export default function ReportsPage() {
+  const { teachers, getById: getTeacher } = useTeachersRegistry();
   const [rows, setRows] = useState<StudentReport[]>(initialReports);
   const [search, setSearch] = useState("");
   const [studentFilter, setStudentFilter] = useState("all");
   const [modal, setModal] = useState<ModalMode>(null);
   const [active, setActive] = useState<StudentReport | null>(null);
   const [studentId, setStudentId] = useState("");
+  const [teacherId, setTeacherId] = useState("");
+  const [mood, setMood] = useState<StudentReport["mood"]>("happy");
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -54,19 +63,24 @@ export default function ReportsPage() {
     });
   }, [rows, search, studentFilter]);
 
+  const { pageItems, page, setPage, totalPages, total, from, to } =
+    usePagination(filtered);
+
   function save(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const skillsRaw = String(fd.get("skills") || "");
     const sid = String(fd.get("studentId") || studentId || active?.studentId);
     if (!sid) return;
+    const tid = teacherId || active?.teacherId;
+    if (!tid) return;
     const payload: StudentReport = {
       id: active?.id ?? `r${Date.now()}`,
       studentId: sid,
-      teacherId: active?.teacherId ?? "t3",
+      teacherId: tid,
       date: String(fd.get("date") || new Date().toISOString().slice(0, 10)),
       title: String(fd.get("title") || "Perkembangan mingguan"),
-      mood: (String(fd.get("mood")) as StudentReport["mood"]) || "happy",
+      mood,
       activities: String(fd.get("activities") || ""),
       meals: String(fd.get("meals") || ""),
       naps: String(fd.get("naps") || ""),
@@ -86,8 +100,8 @@ export default function ReportsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-        <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
           <h1 className="text-2xl font-semibold tracking-tight">Laporan siswa</h1>
           <p className="mt-1 text-sm text-neutral-500">
             Catatan harian / mingguan dari guru
@@ -98,9 +112,13 @@ export default function ReportsPage() {
           onClick={() => {
             setActive(null);
             setStudentId("");
+            setTeacherId(
+              teachers.find((t) => t.role === "teacher")?.id ?? "",
+            );
+            setMood("happy");
             setModal("add");
           }}
-          className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-[#1A2330] hover:bg-neutral-800"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#2E7DFF] px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-[#2E7DFF]/25 sm:w-auto"
         >
           Laporan baru
         </button>
@@ -118,11 +136,12 @@ export default function ReportsPage() {
         />
       </SearchFilterBar>
 
-      {filtered.length === 0 ? (
+      {total === 0 ? (
         <EmptyState message="Tidak ada laporan." />
       ) : (
+        <>
         <div className="grid gap-3 lg:grid-cols-2">
-          {filtered.map((r) => {
+          {pageItems.map((r) => {
             const student = getStudent(r.studentId);
             const teacher = getTeacher(r.teacherId);
             return (
@@ -140,7 +159,17 @@ export default function ReportsPage() {
                   <button type="button" onClick={() => { setActive(r); setModal("view"); }} className="text-neutral-600 hover:text-neutral-900">
                     Lihat
                   </button>
-                  <button type="button" onClick={() => { setActive(r); setStudentId(r.studentId); setModal("edit"); }} className="text-neutral-600 hover:text-neutral-900">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActive(r);
+                      setStudentId(r.studentId);
+                      setTeacherId(r.teacherId);
+                      setMood(r.mood);
+                      setModal("edit");
+                    }}
+                    className="text-neutral-600 hover:text-neutral-900"
+                  >
                     Edit
                   </button>
                 </div>
@@ -148,6 +177,15 @@ export default function ReportsPage() {
             );
           })}
         </div>
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          total={total}
+          from={from}
+          to={to}
+          onPageChange={setPage}
+        />
+        </>
       )}
 
       <Modal open={modal === "add" || modal === "edit"} onClose={() => setModal(null)} title={modal === "edit" ? "Edit laporan" : "Laporan baru"} wide>
@@ -165,17 +203,30 @@ export default function ReportsPage() {
               <input name="date" type="date" required defaultValue={active?.date ?? new Date().toISOString().slice(0, 10)} className={inputClass} />
             </Field>
           </div>
+          <Field label="Guru">
+            <TeacherSearchSelect
+              teachers={teachers}
+              value={teacherId || active?.teacherId || ""}
+              onChange={setTeacherId}
+              required
+              placeholder="Cari guru…"
+            />
+          </Field>
           <div className="grid gap-3 sm:grid-cols-2">
             <Field label="Judul">
               <input name="title" required defaultValue={active?.title ?? "Perkembangan mingguan"} className={inputClass} />
             </Field>
             <Field label="Suasana hati">
-              <select name="mood" defaultValue={active?.mood ?? "happy"} className={inputClass}>
-                <option value="happy">Senang</option>
-                <option value="ok">Baik</option>
-                <option value="tired">Lelah</option>
-                <option value="upset">Sedih</option>
-              </select>
+              <Select
+                value={mood}
+                onChange={(v) => setMood(v as StudentReport["mood"])}
+                options={[
+                  { value: "happy", label: "Senang" },
+                  { value: "ok", label: "Baik" },
+                  { value: "tired", label: "Lelah" },
+                  { value: "upset", label: "Sedih" },
+                ]}
+              />
             </Field>
           </div>
           <Field label="Kegiatan">
@@ -222,7 +273,7 @@ export default function ReportsPage() {
             </div>
             <div className="flex justify-end gap-2 border-t border-neutral-100 pt-4">
               <button type="button" onClick={() => setModal(null)} className="rounded-md px-3 py-2 text-sm text-neutral-600 hover:bg-neutral-100">Tutup</button>
-              <button type="button" onClick={() => { setStudentId(active.studentId); setModal("edit"); }} className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-[#1A2330]">Edit</button>
+              <button type="button" onClick={() => { setStudentId(active.studentId); setTeacherId(active.teacherId); setMood(active.mood); setModal("edit"); }} className="rounded-full bg-[#2E7DFF] px-4 py-2 text-sm font-medium text-white">Edit</button>
             </div>
           </div>
         ) : null}

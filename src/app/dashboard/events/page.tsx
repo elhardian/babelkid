@@ -15,6 +15,10 @@ import {
   inputClass,
 } from "@/components/dashboard/Modal";
 import { CurrencyInput } from "@/components/dashboard/CurrencyInput";
+import {
+  Pagination,
+  usePagination,
+} from "@/components/dashboard/Pagination";
 import { formatDate, formatIDR } from "@/lib/format";
 import { events as initialEvents } from "@/lib/mock-data";
 import type { EventStatus, SchoolEvent } from "@/lib/types";
@@ -41,6 +45,9 @@ export default function EventsPage() {
       );
     });
   }, [rows, search, statusFilter]);
+
+  const { pageItems, page, setPage, totalPages, total, from, to } =
+    usePagination(filtered);
 
   function save(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -72,11 +79,11 @@ export default function EventsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-        <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
           <h1 className="text-2xl font-semibold tracking-tight">Acara</h1>
           <p className="mt-1 text-sm text-neutral-500">
-            Biaya, peserta, dan foto
+            Biaya dan foto
           </p>
         </div>
         <button
@@ -86,7 +93,7 @@ export default function EventsPage() {
             setFeePerChild(0);
             setModal("add");
           }}
-          className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-[#1A2330] hover:bg-neutral-800"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#2E7DFF] px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-[#2E7DFF]/25 sm:w-auto"
         >
           Buat acara
         </button>
@@ -110,11 +117,12 @@ export default function EventsPage() {
         />
       </SearchFilterBar>
 
-      {filtered.length === 0 ? (
+      {total === 0 ? (
         <EmptyState message="Tidak ada acara yang cocok dengan filter." />
       ) : (
+        <>
         <div className="grid gap-3 lg:grid-cols-2">
-          {filtered.map((e) => (
+          {pageItems.map((e) => (
             <article
               key={e.id}
               className="overflow-hidden rounded-lg border border-neutral-200 bg-white"
@@ -184,6 +192,15 @@ export default function EventsPage() {
             </article>
           ))}
         </div>
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          total={total}
+          from={from}
+          to={to}
+          onPageChange={setPage}
+        />
+        </>
       )}
 
       <Modal
@@ -210,7 +227,7 @@ export default function EventsPage() {
               className={inputClass}
             />
           </Field>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field label="Tanggal">
               <input
                 name="date"
@@ -229,7 +246,7 @@ export default function EventsPage() {
               />
             </Field>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field label="Biaya per anak">
               <CurrencyInput
                 name="feePerChild"

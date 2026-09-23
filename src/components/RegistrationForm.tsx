@@ -2,21 +2,38 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react";
 import { submitRegistration } from "@/components/dashboard/RegistrationProvider";
+import { Select } from "@/components/dashboard/Select";
 import { classes } from "@/lib/mock-data";
 import { cn } from "@/lib/format";
+import type { RegistrationParent } from "@/lib/types";
 
 type Step = 1 | 2 | 3;
 
-const emptyParent = {
-  name: "",
-  relationship: "mother" as const,
-  phone: "",
-  email: "",
-  address: "",
-  occupation: "",
+type ParentDraft = {
+  key: string;
+  name: string;
+  relationship: RegistrationParent["relationship"];
+  phone: string;
+  email: string;
+  address: string;
+  occupation: string;
 };
+
+function makeParent(
+  relationship: RegistrationParent["relationship"] = "mother",
+): ParentDraft {
+  return {
+    key: `p-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    name: "",
+    relationship,
+    phone: "",
+    email: "",
+    address: "",
+    occupation: "",
+  };
+}
 
 const emptyChild: {
   name: string;
@@ -42,13 +59,27 @@ const fieldClass =
 const fieldClassEmbed =
   "w-full rounded-2xl border-0 bg-white/90 px-4 py-3.5 text-sm text-[#1A2330] outline-none transition placeholder:text-[#8A96A8] focus:shadow-[0_0_0_4px_rgba(255,107,107,0.25)]";
 
+const MAX_PARENTS = 4;
+
+function isParentComplete(p: ParentDraft) {
+  return (
+    Boolean(p.name.trim()) &&
+    Boolean(p.phone.trim()) &&
+    Boolean(p.email.trim()) &&
+    Boolean(p.address.trim())
+  );
+}
+
 export function RegistrationForm({
   variant = "page",
 }: {
   variant?: "page" | "embed";
 }) {
   const [step, setStep] = useState<Step>(1);
-  const [parent, setParent] = useState(emptyParent);
+  const [parents, setParents] = useState<ParentDraft[]>(() => [
+    makeParent("mother"),
+    makeParent("father"),
+  ]);
   const [child, setChild] = useState(emptyChild);
   const [doneId, setDoneId] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -61,19 +92,37 @@ export function RegistrationForm({
     [],
   );
 
-  const canParent =
-    parent.name.trim() &&
-    parent.phone.trim() &&
-    parent.email.trim() &&
-    parent.address.trim();
+  const canParent = parents.length > 0 && parents.every(isParentComplete);
 
   const canChild =
-    child.name.trim() &&
-    child.nickname.trim() &&
-    child.dateOfBirth.trim();
+    child.name.trim() && child.nickname.trim() && child.dateOfBirth.trim();
 
   const input = variant === "embed" ? fieldClassEmbed : fieldClass;
   const embed = variant === "embed";
+
+  function updateParent(key: string, patch: Partial<ParentDraft>) {
+    setParents((list) =>
+      list.map((p) => (p.key === key ? { ...p, ...patch } : p)),
+    );
+  }
+
+  function addParent() {
+    if (parents.length >= MAX_PARENTS) return;
+    setParents((list) => [...list, makeParent("guardian")]);
+  }
+
+  function removeParent(key: string) {
+    if (parents.length <= 1) return;
+    setParents((list) => list.filter((p) => p.key !== key));
+  }
+
+  function resetForm() {
+    setDoneId(null);
+    setStep(1);
+    setParents([makeParent("mother"), makeParent("father")]);
+    setChild(emptyChild);
+    setError("");
+  }
 
   function submit() {
     setError("");
@@ -81,15 +130,17 @@ export function RegistrationForm({
       setError("Lengkapi data orang tua dan anak terlebih dahulu.");
       return;
     }
+    const parentRows: RegistrationParent[] = parents.map((p) => ({
+      name: p.name.trim(),
+      relationship: p.relationship,
+      phone: p.phone.trim(),
+      email: p.email.trim(),
+      address: p.address.trim(),
+      occupation: p.occupation.trim() || undefined,
+    }));
     const row = submitRegistration({
-      parent: {
-        name: parent.name.trim(),
-        relationship: parent.relationship,
-        phone: parent.phone.trim(),
-        email: parent.email.trim(),
-        address: parent.address.trim(),
-        occupation: parent.occupation.trim() || undefined,
-      },
+      parent: parentRows[0],
+      parents: parentRows,
       child: {
         name: child.name.trim(),
         nickname: child.nickname.trim(),
@@ -127,13 +178,7 @@ export function RegistrationForm({
           {embed ? (
             <button
               type="button"
-              onClick={() => {
-                setDoneId(null);
-                setStep(1);
-                setParent(emptyParent);
-                setChild(emptyChild);
-                setError("");
-              }}
+              onClick={resetForm}
               className="rounded-full bg-[var(--bk-sun)] px-5 py-3 text-sm font-bold text-[var(--bk-ink)]"
             >
               Daftar lagi
@@ -193,7 +238,7 @@ export function RegistrationForm({
       {step === 1 ? (
         <form
           className={cn(
-            "space-y-3",
+            "space-y-4",
             !embed &&
               "rounded-[1.75rem] bg-white p-5 shadow-sm shadow-black/5",
           )}
@@ -202,79 +247,127 @@ export function RegistrationForm({
             if (canParent) {
               setError("");
               setStep(2);
-            } else setError("Lengkapi data orang tua.");
+            } else setError("Lengkapi semua data orang tua / wali.");
           }}
         >
           {!embed ? (
-            <h2 className="text-lg font-medium text-[#1A2330]">
-              Data orang tua / wali
-            </h2>
+            <div>
+              <h2 className="text-lg font-medium text-[#1A2330]">
+                Data orang tua / wali
+              </h2>
+              <p className="mt-1 text-xs text-[#8A96A8]">
+                Isi data ibu & ayah (atau wali). Bisa ditambah hingga{" "}
+                {MAX_PARENTS} orang.
+              </p>
+            </div>
+          ) : (
+            <p className="text-xs text-[var(--bk-ink)]/60">
+              Data ibu & ayah · bisa ditambah
+            </p>
+          )}
+
+          {parents.map((p, index) => (
+            <div
+              key={p.key}
+              className={cn(
+                "space-y-3 rounded-2xl p-3",
+                embed ? "bg-white/50" : "bg-[#F7FAFD]",
+              )}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <p
+                  className={cn(
+                    "text-xs font-semibold uppercase tracking-wide",
+                    embed ? "text-[var(--bk-ink)]/50" : "text-[#8A96A8]",
+                  )}
+                >
+                  Orang tua {index + 1}
+                </p>
+                {parents.length > 1 ? (
+                  <button
+                    type="button"
+                    onClick={() => removeParent(p.key)}
+                    className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs text-rose-600 hover:bg-rose-50"
+                    aria-label={`Hapus orang tua ${index + 1}`}
+                  >
+                    <Trash2 className="size-3.5" />
+                    Hapus
+                  </button>
+                ) : null}
+              </div>
+              <input
+                required
+                placeholder="Nama lengkap"
+                className={input}
+                value={p.name}
+                onChange={(e) => updateParent(p.key, { name: e.target.value })}
+              />
+              <Select
+                value={p.relationship}
+                onChange={(v) =>
+                  updateParent(p.key, {
+                    relationship: v as RegistrationParent["relationship"],
+                  })
+                }
+                options={[
+                  { value: "mother", label: "Ibu" },
+                  { value: "father", label: "Ayah" },
+                  { value: "guardian", label: "Wali" },
+                ]}
+                className="[&_button]:rounded-2xl [&_button]:border-0 [&_button]:bg-white [&_button]:px-4 [&_button]:py-3.5"
+              />
+              <input
+                required
+                placeholder="No. HP / WhatsApp"
+                className={input}
+                value={p.phone}
+                onChange={(e) => updateParent(p.key, { phone: e.target.value })}
+              />
+              <input
+                required
+                type="email"
+                placeholder="Email"
+                className={input}
+                value={p.email}
+                onChange={(e) => updateParent(p.key, { email: e.target.value })}
+              />
+              <textarea
+                required
+                placeholder="Alamat"
+                rows={2}
+                className={cn(input, "min-h-[72px] resize-none")}
+                value={p.address}
+                onChange={(e) =>
+                  updateParent(p.key, { address: e.target.value })
+                }
+              />
+              <input
+                placeholder="Pekerjaan (opsional)"
+                className={input}
+                value={p.occupation}
+                onChange={(e) =>
+                  updateParent(p.key, { occupation: e.target.value })
+                }
+              />
+            </div>
+          ))}
+
+          {parents.length < MAX_PARENTS ? (
+            <button
+              type="button"
+              onClick={addParent}
+              className={cn(
+                "inline-flex w-full items-center justify-center gap-2 rounded-full border border-dashed py-3 text-sm font-medium",
+                embed
+                  ? "border-[var(--bk-ink)]/20 text-[var(--bk-ink)]"
+                  : "border-[#D5DEEA] text-[#2E7DFF] hover:bg-[#F3F7FC]",
+              )}
+            >
+              <Plus className="size-4" />
+              Tambah orang tua / wali
+            </button>
           ) : null}
-          <input
-            required
-            name="parentName"
-            placeholder="Nama lengkap orang tua"
-            className={input}
-            value={parent.name}
-            onChange={(e) =>
-              setParent((p) => ({ ...p, name: e.target.value }))
-            }
-          />
-          <select
-            className={input}
-            value={parent.relationship}
-            onChange={(e) =>
-              setParent((p) => ({
-                ...p,
-                relationship: e.target.value as typeof p.relationship,
-              }))
-            }
-          >
-            <option value="mother">Ibu</option>
-            <option value="father">Ayah</option>
-            <option value="guardian">Wali</option>
-          </select>
-          <input
-            required
-            name="phone"
-            placeholder="No. HP / WhatsApp"
-            className={input}
-            value={parent.phone}
-            onChange={(e) =>
-              setParent((p) => ({ ...p, phone: e.target.value }))
-            }
-          />
-          <input
-            required
-            type="email"
-            name="email"
-            placeholder="Email"
-            className={input}
-            value={parent.email}
-            onChange={(e) =>
-              setParent((p) => ({ ...p, email: e.target.value }))
-            }
-          />
-          <textarea
-            required
-            name="address"
-            placeholder="Alamat"
-            rows={2}
-            className={cn(input, "min-h-[72px] resize-none")}
-            value={parent.address}
-            onChange={(e) =>
-              setParent((p) => ({ ...p, address: e.target.value }))
-            }
-          />
-          <input
-            name="occupation"
-            placeholder="Pekerjaan (opsional)"
-            className={input}
-            value={parent.occupation}
-            onChange={(e) =>
-              setParent((p) => ({ ...p, occupation: e.target.value }))
-            }
-          />
+
           {error ? <p className="text-sm text-rose-700">{error}</p> : null}
           <button
             type="submit"
@@ -333,35 +426,34 @@ export function RegistrationForm({
               setChild((c) => ({ ...c, dateOfBirth: e.target.value }))
             }
           />
-          <select
-            className={input}
+          <Select
             value={child.gender}
-            onChange={(e) =>
+            onChange={(v) =>
               setChild((c) => ({
                 ...c,
-                gender: e.target.value as "male" | "female",
+                gender: v as "male" | "female",
               }))
             }
-          >
-            <option value="female">Perempuan</option>
-            <option value="male">Laki-laki</option>
-          </select>
-          <select
-            className={input}
+            options={[
+              { value: "female", label: "Perempuan" },
+              { value: "male", label: "Laki-laki" },
+            ]}
+            className="[&_button]:rounded-2xl [&_button]:border-0 [&_button]:bg-white [&_button]:px-4 [&_button]:py-3.5"
+          />
+          <Select
             value={child.preferredClassId}
-            onChange={(e) =>
+            onChange={(v) =>
               setChild((c) => ({
                 ...c,
-                preferredClassId: e.target.value,
+                preferredClassId: v,
               }))
             }
-          >
-            {preschool.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name} · {c.level}
-              </option>
-            ))}
-          </select>
+            options={preschool.map((c) => ({
+              value: c.id,
+              label: `${c.name} · ${c.level} · ${c.ageMinYears}–${c.ageMaxYears} thn`,
+            }))}
+            className="[&_button]:rounded-2xl [&_button]:border-0 [&_button]:bg-white [&_button]:px-4 [&_button]:py-3.5"
+          />
           <input
             name="allergies"
             placeholder="Alergi (opsional)"

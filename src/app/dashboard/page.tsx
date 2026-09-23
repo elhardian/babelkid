@@ -127,8 +127,8 @@ export default function DashboardOverviewPage() {
       </section>
 
       <section className="rounded-2xl border border-[#E5ECF5] bg-white p-4 shadow-sm">
-        <div className="flex items-center justify-between gap-3">
-          <div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
             <h2 className="text-sm font-semibold text-[#1A2330]">
               Sinkron Parent App
             </h2>
@@ -139,7 +139,7 @@ export default function DashboardOverviewPage() {
           </div>
           <Link
             href="/parents"
-            className="shrink-0 rounded-full bg-[#EEF3FA] px-4 py-2 text-xs font-medium text-[#2E7DFF]"
+            className="inline-flex w-full shrink-0 items-center justify-center rounded-full bg-[#EEF3FA] px-4 py-2 text-xs font-medium text-[#2E7DFF] sm:w-auto"
           >
             Buka Parent App
           </Link>

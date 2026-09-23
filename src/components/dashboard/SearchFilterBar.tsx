@@ -1,6 +1,7 @@
 "use client";
 
 import { Search } from "lucide-react";
+import { Select } from "@/components/dashboard/Select";
 
 interface SearchFilterBarProps {
   search: string;
@@ -16,8 +17,8 @@ export function SearchFilterBar({
   children,
 }: SearchFilterBarProps) {
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="relative w-full sm:max-w-xs">
+    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <div className="relative w-full min-w-0 lg:max-w-xs">
         <Search
           className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#A0AAB8]"
           aria-hidden
@@ -31,7 +32,9 @@ export function SearchFilterBar({
         />
       </div>
       {children ? (
-        <div className="flex flex-wrap items-center gap-2">{children}</div>
+        <div className="flex w-full min-w-0 flex-wrap items-center gap-2 lg:w-auto lg:justify-end">
+          {children}
+        </div>
       ) : null}
     </div>
   );
@@ -51,19 +54,16 @@ export function FilterSelect({
   options,
 }: FilterSelectProps) {
   return (
-    <label className="flex items-center gap-2 text-sm text-[#8A96A8]">
-      <span className="whitespace-nowrap">{label}</span>
-      <select
+    <label className="flex min-w-0 flex-1 items-center gap-2 text-sm text-[#8A96A8] sm:flex-none">
+      <span className="shrink-0 whitespace-nowrap">{label}</span>
+      <Select
+        compact
+        align="right"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="rounded-xl border border-[#E5ECF5] bg-white px-2.5 py-2 text-sm text-[#1A2330] outline-none focus:border-[#2E7DFF]/40"
-      >
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
+        onChange={onChange}
+        options={options}
+        className="min-w-0 flex-1 sm:flex-none"
+      />
     </label>
   );
 }

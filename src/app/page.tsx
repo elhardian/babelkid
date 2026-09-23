@@ -3,7 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ArrowRight, Download, MessageCircle, MapPin } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  Download,
+  MessageCircle,
+  MapPin,
+} from "lucide-react";
 import { SwipeableGallery } from "@/components/SwipeableGallery";
 import { activityPosts } from "@/lib/mock-data";
 import { formatDate } from "@/lib/format";
@@ -15,86 +21,140 @@ const MAPS_URL =
   "https://www.google.com/maps/place/Babel+Kids/@-2.1252929,106.1078513,17z/data=!3m1!4b1!4m6!3m5!1s0x2e22c126527c90d9:0xc51d961435f321c8!8m2!3d-2.1252929!4d106.1078513!16s%2Fg%2F11c53n95s3";
 const MAPS_EMBED =
   "https://www.google.com/maps?q=Babel+Kids+-2.1252929,106.1078513&z=17&output=embed";
+const BROCHURE_URL = "/brochure.jpg";
 
 const programs = [
   {
-    title: "Preschool",
+    title: "Kelompok Bermain",
     ages: "2–4",
-    agesLabel: "Ages",
-    blurb: "Sensory play, routines, and first friendships in a gentle space.",
+    agesLabel: "Usia",
+    blurb: "Bermain sensorik, rutinitas hangat, dan persahabatan pertama.",
     accent: "#00B894",
     soft: "#D4F8EC",
-    image:
-      "/preschool.png",
+    image: "/preschool.png",
     rotate: "-rotate-2",
   },
   {
-    title: "Kindergarten",
+    title: "Taman Kanak-Kanak",
     ages: "4–6",
-    agesLabel: "Ages",
-    blurb: "Phonics, curiosity projects, and readiness for primary school.",
+    agesLabel: "Usia",
+    blurb: "Kesiapan sekolah, projek rasa ingin tahu, dan literasi bilingual.",
     accent: "#FFD93D",
     soft: "#FFF6C2",
-    image:
-      "/kindergarten.jpg",
+    image: "/kindergarten.jpg",
     rotate: "rotate-1",
   },
   {
     title: "Bilingual",
-    ages: "All",
-    agesLabel: "We",
-    blurb: "English & Bahasa woven into songs, stories, and daily moments.",
+    ages: "Semua",
+    agesLabel: "Kami",
+    blurb: "Inggris & Indonesia dalam lagu, cerita, dan keseharian.",
     accent: "#54C6EB",
     soft: "#E8F7FC",
-    image:
-      "/bilingual.jpg",
+    image: "/bilingual.jpg",
     rotate: "rotate-2",
   },
 ];
 
-const curriculum = [
+const whyPoints = [
   {
-    title: "Language & literacy",
-    blurb: "Phonics, storytelling, and everyday bilingual conversation.",
+    title: "Student Centered",
+    blurb:
+      "Pembelajaran berpusat pada anak — setiap anak didengar dan dikembangkan sesuai potensinya.",
     color: "#00B894",
   },
   {
-    title: "Numeracy & curiosity",
-    blurb: "Counting through play, patterns, and hands-on experiments.",
+    title: "Bilingual Communication",
+    blurb:
+      "Komunikasi bilingual Inggris & Indonesia dijalin dalam kegiatan sehari-hari.",
+    color: "#54C6EB",
+  },
+  {
+    title: "Multiple Intelligence",
+    blurb:
+      "Metode pembelajaran melalui sentra-sentra dengan pendekatan Multiple Intelligence.",
     color: "#FFD93D",
   },
   {
-    title: "Social & emotional",
-    blurb: "Sharing, feelings vocabulary, and kind classroom habits.",
+    title: "Kurikulum Terpadu",
+    blurb:
+      "Mengadopsi Kurikulum Singapore yang bergabung dengan Kurikulum Diknas & Kurikulum Mandiri.",
     color: "#FF6B6B",
   },
   {
-    title: "Movement & outdoors",
-    blurb: "Garden time, gross-motor play, and nature walks.",
-    color: "#54C6EB",
+    title: "Kewirausahaan & Karakter",
+    blurb:
+      "Pendidikan kewirausahaan dan karakter sejak dini untuk fondasi masa depan.",
+    color: "#FFB4C8",
   },
+];
+
+const featuredPrograms = [
+  "Program Pengembangan Diri & Pendidikan Keagamaan",
+  "Art Festivals",
+  "Student Performance",
+  "Field Trip & Outbond",
+  "Pemeriksaan Kesehatan",
+  "Program Kewirausahaan",
+  "Program Edukasi Orangtua (Parenting)",
+  "Charity (Bakti Sosial)",
+  "Food Bazaar",
+  "Fun Cooking",
+];
+
+const schoolActivities = [
+  {
+    title: "Upacara Bendera",
+    image:
+      "https://images.unsplash.com/photo-1509062528245-0249af9bb5b5?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    title: "Senam Bersama",
+    image:
+      "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    title: "Sholat Bersama",
+    image:
+      "https://images.unsplash.com/photo-1544776193-352d25ca82cd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    title: "Berenang",
+    image:
+      "https://images.unsplash.com/photo-1560089000-7433a4ebbd64?auto=format&fit=crop&w=800&q=80",
+  },
+];
+
+const facilities = [
+  "Ruang kelas yang nyaman & accessible untuk anak",
+  "Pembelajaran dengan sentra-sentra",
+  "Sarana permainan edukatif indoor & outdoor",
+  "AC",
+  "Reading Corner",
+  "Swimming Pool Kids Centre",
+  "Learning Area Playground",
 ];
 
 const reviews = [
   {
     name: "Sari R.",
-    role: "Parent of Alya",
+    role: "Orang tua Alya",
     quote:
-      "Teachers know every child by name. Alya comes home singing new English songs every week.",
+      "Guru mengenal setiap anak. Alya pulang sambil menyanyi lagu Inggris baru setiap minggu.",
     blob: "#D4F8EC",
   },
   {
     name: "Budi W.",
-    role: "Parent of Kenzo",
+    role: "Orang tua Kenzo",
     quote:
-      "The garden days are magical. We finally found a school that feels warm and structured.",
+      "Hari di taman bermainnya luar biasa. Akhirnya kami menemukan sekolah yang hangat dan terstruktur.",
     blob: "#FFF6C2",
   },
   {
     name: "Lina K.",
-    role: "Parent of Sofia",
+    role: "Orang tua Sofia",
     quote:
-      "Reports are clear and kind. We always know how Sofia is growing — academically and socially.",
+      "Laporannya jelas dan hangat. Kami selalu tahu perkembangan Sofia — akademik maupun sosial.",
     blob: "#FFB4C8",
   },
 ];
@@ -300,30 +360,10 @@ function EventActivityCard({ post }: { post: ActivityPost }) {
 }
 
 function downloadBrochure() {
-  const text = `BabelKids Preschool & Kindergarten
-Brochure (demo)
-
-Programs
-- Preschool (ages 2–4): sensory play, routines, first friendships
-- Kindergarten (ages 4–6): phonics, curiosity projects, school readiness
-- Bilingual path: English & Bahasa in songs, stories, and daily moments
-
-A day at BabelKids
-Morning circle · Garden time · Story hour · Art studio
-
-Visit us
-Tours run Tuesday & Thursday mornings.
-Contact: hello@babelkids.id
-
-© BabelKids
-`;
-  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url;
-  a.download = "babelkids-brochure.txt";
+  a.href = BROCHURE_URL;
+  a.download = "babelkids-brochure.jpg";
   a.click();
-  URL.revokeObjectURL(url);
 }
 
 export default function LandingPage() {
@@ -359,17 +399,17 @@ export default function LandingPage() {
               scrolled ? "text-[var(--bk-ink)]/70" : "text-[var(--bk-ink)]/75"
             }`}
           >
+            <a href="#why" className="hover:opacity-80">
+              Why BabelKids
+            </a>
             <a href="#programs" className="hover:opacity-80">
-              Programs
+              Program
             </a>
-            <a href="#curriculum" className="hover:opacity-80">
-              Curriculum
+            <a href="#kegiatan" className="hover:opacity-80">
+              Kegiatan
             </a>
-            <a href="#events" className="hover:opacity-80">
-              Events
-            </a>
-            <a href="#reviews" className="hover:opacity-80">
-              Reviews
+            <a href="#fasilitas" className="hover:opacity-80">
+              Fasilitas
             </a>
             <a href="#visit" className="hover:opacity-80">
               Visit
@@ -400,7 +440,7 @@ export default function LandingPage() {
               href="/register"
               className="inline-flex items-center gap-1 rounded-full bg-[var(--bk-coral)] px-4 py-2 text-sm font-semibold text-white shadow-md shadow-[#FF6B6B]/30 transition hover:scale-105 hover:brightness-105"
             >
-              Daftar sekarang
+              Daftar Segera
             </Link>
           </div>
         </div>
@@ -438,25 +478,25 @@ export default function LandingPage() {
                   BabelKids
                 </p>
                 <h1 className="animate-fade-up delay-100 mt-4 max-w-lg text-xl font-semibold leading-snug text-[var(--bk-ink)] sm:mt-5 sm:text-2xl md:text-3xl">
-                  Where little voices find their world.
+                  Taman Kanak-Kanak & Kelompok Bermain bilingual.
                 </h1>
                 <p className="animate-fade-up delay-200 mt-3 max-w-md text-sm leading-relaxed text-[var(--bk-ink)]/80 sm:mt-4 sm:text-base md:text-lg">
-                  Preschool & kindergarten with bilingual play, outdoor wonder, and
-                  teachers who know every child by name.
+                  Student-centered, kurikulum terpadu, dan guru yang mengenal
+                  setiap anak — bermain, tumbuh, dan berkarakter sejak dini.
                 </p>
                 <div className="animate-fade-up delay-300 mt-5 flex flex-col gap-2.5 sm:mt-8 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
                   <Link
                     href="/register"
                     className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--bk-mint)] px-6 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:-translate-y-1 hover:brightness-105 hover:shadow-xl"
                   >
-                    Daftar sekarang
+                    Daftar Segera
                     <ArrowRight className="size-4" />
                   </Link>
                   <a
-                    href="#programs"
+                    href="#why"
                     className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-[var(--bk-ink)]/20 bg-white/70 px-6 py-3.5 text-sm font-semibold text-[var(--bk-ink)] backdrop-blur-sm transition hover:-translate-y-0.5 hover:bg-white/90"
                   >
-                    Explore programs
+                    Why BabelKids
                   </a>
                 </div>
               </div>
@@ -512,13 +552,14 @@ export default function LandingPage() {
           </div>
           <div className="mx-auto max-w-6xl px-5">
             <p className="font-[family-name:var(--font-fredoka)] text-7xl font-bold leading-none text-[var(--bk-mint)]/20 sm:text-8xl">
-              We
+              Kami
             </p>
             <h2 className="-mt-6 max-w-lg font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight sm:-mt-8 sm:text-5xl">
-              Learning that feels like play
+              Program usia yang tepat untuk buah hati
             </h2>
             <p className="mt-3 max-w-lg text-[var(--bk-ink)]/65">
-              Small classes, big curiosity — pick the path that fits your child.
+              Kelas kecil, rasa ingin tahu besar — pilih jalur yang cocok untuk
+              anak Anda.
             </p>
 
             <div className="relative mt-16 flex flex-col items-center gap-14 md:flex-row md:items-end md:justify-center md:gap-6 lg:gap-10">
@@ -570,8 +611,8 @@ export default function LandingPage() {
 
         <WaveDivider topColor="#FFFDF8" bottomColor="#D4F8EC" />
 
-        {/* ——— CURRICULUM ——— */}
-        <section id="curriculum" className="relative bg-[#D4F8EC] py-20">
+        {/* ——— WHY BABEL KIDS ——— */}
+        <section id="why" className="relative bg-[#D4F8EC] py-20">
           <SvgBlob
             color="#54C6EB"
             className="animate-float-slow pointer-events-none absolute -right-20 top-10 size-64 opacity-30"
@@ -582,18 +623,18 @@ export default function LandingPage() {
           />
           <div className="relative mx-auto max-w-6xl px-5">
             <p className="font-[family-name:var(--font-fredoka)] text-7xl font-bold leading-none text-[#00B894]/25 sm:text-8xl">
-              Our
+              Why
             </p>
-            <h2 className="-mt-6 max-w-lg font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight sm:-mt-8 sm:text-5xl">
-              Four pillars of every week
+            <h2 className="-mt-6 max-w-2xl font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight sm:-mt-8 sm:text-5xl">
+              Why BabelKids
             </h2>
-            <p className="mt-3 max-w-lg text-[var(--bk-ink)]/65">
-              A balanced mix of language, numbers, feelings, and outdoor
-              discovery.
+            <p className="mt-3 max-w-2xl text-[var(--bk-ink)]/65">
+              Babel Kids adalah Taman Kanak-Kanak / Kelompok Bermain dengan
+              berbagai keunggulan dan kekhasan.
             </p>
 
-            <div className="mt-12 grid gap-5 sm:grid-cols-2">
-              {curriculum.map((c, i) => (
+            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {whyPoints.map((c, i) => (
                 <div
                   key={c.title}
                   className={`relative overflow-hidden rounded-[2rem] bg-white/90 p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-md ${
@@ -625,7 +666,7 @@ export default function LandingPage() {
                 className="inline-flex items-center gap-2 rounded-full bg-[var(--bk-ink)] px-6 py-3.5 text-sm font-semibold text-white transition hover:scale-105 hover:bg-[var(--bk-mint-deep)]"
               >
                 <Download className="size-4" />
-                Download brochure
+                Unduh brosur
               </button>
               <StampBadge
                 color="#00B894"
@@ -633,30 +674,174 @@ export default function LandingPage() {
               >
                 Free
                 <br />
-                PDF
+                JPG
               </StampBadge>
             </div>
           </div>
         </section>
 
-        <WaveDivider topColor="#D4F8EC" bottomColor="#FFF6C2" />
+        <WaveDivider topColor="#D4F8EC" bottomColor="#E8F7FC" />
 
-        {/* ——— EVENTS ——— */}
-        <section id="events" className="relative bg-[#FFF6C2] py-20">
+        {/* ——— PROGRAM & KEGIATAN ——— */}
+        <section id="kegiatan" className="relative bg-[#E8F7FC] py-20">
           <DoodleDots
             color="#FF6B6B"
             className="animate-float-mid pointer-events-none absolute right-10 top-12 opacity-50"
           />
           <div className="mx-auto max-w-6xl px-5">
-            <p className="font-[family-name:var(--font-fredoka)] text-7xl font-bold leading-none text-[#FFD93D]/50 sm:text-8xl">
+            <p className="font-[family-name:var(--font-fredoka)] text-7xl font-bold leading-none text-[#54C6EB]/35 sm:text-8xl">
               Fun
             </p>
             <h2 className="-mt-6 font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight sm:-mt-8 sm:text-5xl">
-              Moments from our events
+              Program & Kegiatan
             </h2>
             <p className="mt-3 max-w-lg text-[var(--bk-ink)]/65">
-              Swipe through photos from recent school events — name, date, and a
-              short story.
+              Program unggulan dan kegiatan sekolah yang membentuk karakter,
+              kreativitas, dan kebersamaan.
+            </p>
+
+            <div className="mt-12">
+              <h3 className="font-[family-name:var(--font-fredoka)] text-xl font-semibold text-[#FF6B6B] sm:text-2xl">
+                Program Unggulan
+              </h3>
+              <ul className="mt-6 columns-1 gap-x-10 sm:columns-2">
+                {featuredPrograms.map((item) => (
+                  <li
+                    key={item}
+                    className="mb-3 break-inside-avoid text-sm leading-relaxed text-[var(--bk-ink)]/80"
+                  >
+                    <span className="mr-2 inline-block size-1.5 rounded-full bg-[#FFD93D] align-middle" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="mt-14">
+              <h3 className="font-[family-name:var(--font-fredoka)] text-xl font-semibold text-[#FF6B6B] sm:text-2xl">
+                Kegiatan Sekolah
+              </h3>
+              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {schoolActivities.map((a, i) => (
+                  <figure
+                    key={a.title}
+                    className={`relative overflow-hidden rounded-[1.5rem] ${
+                      i % 2 === 0 ? "-rotate-1" : "rotate-1"
+                    } transition hover:-translate-y-1 hover:rotate-0`}
+                  >
+                    <div className="relative aspect-[4/3]">
+                      <Image
+                        src={a.image}
+                        alt={a.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 100vw, 25vw"
+                      />
+                    </div>
+                    <figcaption className="absolute inset-x-0 bottom-0 bg-[#FFD93D] px-3 py-2 text-center font-[family-name:var(--font-fredoka)] text-sm font-semibold text-[var(--bk-ink)]">
+                      {a.title}
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <WaveDivider topColor="#E8F7FC" bottomColor="#FFF6C2" />
+
+        {/* ——— FASILITAS ——— */}
+        <section id="fasilitas" className="relative bg-[#FFF6C2] py-20">
+          <SvgStar
+            color="#FF6B6B"
+            className="animate-bob pointer-events-none absolute left-[5%] top-16 size-10 opacity-70"
+          />
+          <div className="mx-auto max-w-6xl px-5">
+            <p className="font-[family-name:var(--font-fredoka)] text-7xl font-bold leading-none text-[#FFD93D]/50 sm:text-8xl">
+              Ada
+            </p>
+            <h2 className="-mt-6 font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight sm:-mt-8 sm:text-5xl">
+              Fasilitas
+            </h2>
+            <p className="mt-3 max-w-lg text-[var(--bk-ink)]/65">
+              Lingkungan belajar yang nyaman, aman, dan menyenangkan untuk anak.
+            </p>
+
+            <div className="mt-12 grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+              <ul className="space-y-3">
+                {facilities.map((f) => (
+                  <li
+                    key={f}
+                    className="flex items-start gap-3 rounded-full bg-white/80 px-4 py-3 text-sm text-[var(--bk-ink)]/85 shadow-sm"
+                  >
+                    <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-[#00B894] text-white">
+                      <Check className="size-3.5" strokeWidth={3} />
+                    </span>
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="relative mx-auto grid max-w-md grid-cols-2 gap-4">
+                <div className="relative aspect-square overflow-hidden rounded-full border-4 border-white shadow-lg -rotate-3">
+                  <Image
+                    src="/kindergarten.jpg"
+                    alt="Playground BabelKids"
+                    fill
+                    className="object-cover"
+                    sizes="200px"
+                  />
+                </div>
+                <div className="relative mt-8 aspect-square overflow-hidden rounded-full border-4 border-white shadow-lg rotate-3">
+                  <Image
+                    src="/preschool.png"
+                    alt="Ruang kelas BabelKids"
+                    fill
+                    className="object-cover"
+                    sizes="200px"
+                  />
+                </div>
+                <StampBadge
+                  color="#FF6B6B"
+                  className="absolute -bottom-2 left-1/2 size-24 -translate-x-1/2 text-sm animate-wiggle sm:size-28"
+                >
+                  Daftar
+                  <br />
+                  Segera
+                </StampBadge>
+              </div>
+            </div>
+
+            <div className="mt-14 flex justify-center">
+              <Link
+                href="/register"
+                className="inline-flex items-center gap-2 rounded-full bg-[var(--bk-coral)] px-8 py-4 text-sm font-semibold text-white shadow-lg shadow-[#FF6B6B]/30 transition hover:-translate-y-1 hover:brightness-105"
+              >
+                Daftar Segera
+                <ArrowRight className="size-4" />
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <WaveDivider topColor="#FFF6C2" bottomColor="#FFFDF8" />
+
+        {/* ——— EVENTS ——— */}
+        <section id="events" className="relative bg-[var(--bk-paper)] py-20">
+          <DoodleDots
+            color="#FFB4C8"
+            className="animate-float-mid pointer-events-none absolute right-10 top-12 opacity-50"
+          />
+          <div className="mx-auto max-w-6xl px-5">
+            <p className="font-[family-name:var(--font-fredoka)] text-7xl font-bold leading-none text-[#FFB4C8]/40 sm:text-8xl">
+              Momen
+            </p>
+            <h2 className="-mt-6 font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight sm:-mt-8 sm:text-5xl">
+              Cuplikan acara terbaru
+            </h2>
+            <p className="mt-3 max-w-lg text-[var(--bk-ink)]/65">
+              Foto dari kegiatan sekolah — nama acara, tanggal, dan cerita
+              singkat.
             </p>
 
             <div className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
@@ -673,10 +858,10 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <WaveDivider topColor="#FFF6C2" bottomColor="#FFFDF8" />
+        <WaveDivider topColor="#FFFDF8" bottomColor="#FFFDF8" />
 
         {/* ——— REVIEWS ——— */}
-        <section id="reviews" className="relative bg-[var(--bk-paper)] py-20">
+        <section id="reviews" className="relative bg-[var(--bk-paper)] pt-4 pb-20">
           <SvgStar
             color="#FFD93D"
             className="animate-bob pointer-events-none absolute left-[5%] top-20 size-10 opacity-70"
@@ -686,11 +871,11 @@ export default function LandingPage() {
               Love
             </p>
             <h2 className="-mt-6 max-w-lg font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight sm:-mt-8 sm:text-5xl">
-              What parents say
+              Kata orang tua
             </h2>
             <p className="mt-3 max-w-lg text-[var(--bk-ink)]/65">
-              Real voices from families who trust BabelKids with their little
-              ones.
+              Suara nyata dari keluarga yang mempercayakan buah hatinya ke
+              BabelKids.
             </p>
 
             <div className="mt-14 grid gap-10 md:grid-cols-3">
@@ -745,17 +930,17 @@ export default function LandingPage() {
               Stay
             </p>
             <h2 className="-mt-4 max-w-xl font-[family-name:var(--font-fredoka)] text-3xl font-semibold sm:-mt-6 sm:text-5xl">
-              Parents stay close — even when they’re not in the room.
+              Orang tua tetap dekat — meski tidak di ruang kelas.
             </h2>
             <p className="mt-4 max-w-md text-white/90">
-              Daily presence, weekly reports, events, and tuition — all in a
-              simple parent app made for your phone.
+              Presensi harian, laporan mingguan, acara, dan SPP — semua di parent
+              app yang simpel di HP Anda.
             </p>
             <Link
               href="/parents"
               className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-[var(--bk-mint-deep)] transition hover:scale-105 hover:bg-[var(--bk-sun-soft)]"
             >
-              Open parent app
+              Buka parent app
               <ArrowRight className="size-4" />
             </Link>
           </div>
@@ -783,11 +968,11 @@ export default function LandingPage() {
               visit!
             </StampBadge>
             <h2 className="font-[family-name:var(--font-fredoka)] text-3xl font-semibold tracking-tight sm:text-5xl">
-              Come see us
+              Yuk datang berkunjung
             </h2>
             <p className="mt-3 text-[var(--bk-ink)]/70">
-              Chat us on WhatsApp or find BabelKids on the map — we’d love to
-              meet you.
+              Chat kami di WhatsApp atau temukan BabelKids di peta — kami senang
+              bertemu Anda.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
@@ -798,7 +983,7 @@ export default function LandingPage() {
                 className="inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 py-3.5 text-sm font-bold text-white shadow-md transition hover:scale-[1.02] hover:brightness-105"
               >
                 <MessageCircle className="size-4" />
-                Chat on WhatsApp
+                Chat WhatsApp
               </a>
               <a
                 href={MAPS_URL}
@@ -807,9 +992,16 @@ export default function LandingPage() {
                 className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-[var(--bk-ink)]/15 bg-white/80 px-6 py-3.5 text-sm font-semibold text-[var(--bk-ink)] backdrop-blur-sm transition hover:bg-white"
               >
                 <MapPin className="size-4" />
-                Open in Maps
+                Buka di Maps
               </a>
             </div>
+            <Link
+              href="/register"
+              className="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-[var(--bk-coral)] px-6 py-3.5 text-sm font-semibold text-white shadow-md transition hover:scale-[1.02] hover:brightness-105"
+            >
+              Daftar Segera
+              <ArrowRight className="size-4" />
+            </Link>
           </div>
 
           <div className="relative mx-auto mt-10 max-w-5xl px-5">
@@ -902,7 +1094,7 @@ export default function LandingPage() {
           </p>
           <div className="flex gap-5 text-sm text-white/70">
             <Link href="/register" className="hover:text-[var(--bk-sun)]">
-              Daftar
+              Daftar Segera
             </Link>
             <Link href="/parents" className="hover:text-[var(--bk-sun)]">
               Parents

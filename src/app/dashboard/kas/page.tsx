@@ -14,6 +14,10 @@ import {
   inputClass,
 } from "@/components/dashboard/Modal";
 import { CurrencyInput } from "@/components/dashboard/CurrencyInput";
+import {
+  Pagination,
+  usePagination,
+} from "@/components/dashboard/Pagination";
 import { useKas } from "@/components/dashboard/KasProvider";
 import { formatDate, formatIDR } from "@/lib/format";
 import type { KasAccount, KasEntry } from "@/lib/types";
@@ -65,6 +69,9 @@ export default function KasPage() {
       .sort((a, b) => b.date.localeCompare(a.date));
   }, [entries, search, sourceFilter, accountFilter]);
 
+  const { pageItems, page, setPage, totalPages, total, from, to } =
+    usePagination(filtered);
+
   const scoped = useMemo(() => {
     if (accountFilter === "all") return entries;
     return entries.filter((e) => e.account === accountFilter);
@@ -110,25 +117,25 @@ export default function KasPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-        <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
           <h1 className="text-2xl font-semibold tracking-tight">Kas</h1>
           <p className="mt-1 text-sm text-neutral-500">
             Saldo tunai dan bank terpisah · SPP masuk ke sini setelah disetujui
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
           <button
             type="button"
             onClick={openOut}
-            className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
+            className="inline-flex w-full items-center justify-center rounded-full border border-[#E5ECF5] bg-white px-4 py-2.5 text-sm font-medium text-[#5B6B7C] hover:bg-[#F3F7FC] sm:w-auto"
           >
             Catat pengeluaran
           </button>
           <button
             type="button"
             onClick={openIn}
-            className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-[#1A2330] hover:bg-neutral-800"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#2E7DFF] px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-[#2E7DFF]/25 sm:w-auto"
           >
             Tambah saldo
           </button>
@@ -215,11 +222,12 @@ export default function KasPage() {
         />
       </SearchFilterBar>
 
-      {filtered.length === 0 ? (
+      {total === 0 ? (
         <EmptyState message="Tidak ada entri kas yang cocok dengan filter." />
       ) : (
+        <>
         <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-          <table className="w-full text-left text-sm">
+          <table className="w-full min-w-[640px] text-left text-sm">
             <thead className="border-b border-neutral-100 bg-neutral-50 text-xs uppercase tracking-wide text-neutral-500">
               <tr>
                 <th className="px-4 py-3 font-medium">Tanggal</th>
@@ -232,7 +240,7 @@ export default function KasPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-100">
-              {filtered.map((e) => (
+              {pageItems.map((e) => (
                 <tr key={e.id} className="hover:bg-neutral-50/80">
                   <td className="px-4 py-3 tabular-nums">{formatDate(e.date)}</td>
                   <td className="hidden px-4 py-3 sm:table-cell">
@@ -269,6 +277,15 @@ export default function KasPage() {
             </tbody>
           </table>
         </div>
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          total={total}
+          from={from}
+          to={to}
+          onPageChange={setPage}
+        />
+        </>
       )}
 
       <Modal
@@ -278,7 +295,7 @@ export default function KasPage() {
       >
         <form onSubmit={save} className="space-y-3">
           <Field label="Akun">
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {(
                 [
                   { value: "cash", label: "Tunai" },
@@ -341,7 +358,7 @@ export default function KasPage() {
       >
         <form onSubmit={save} className="space-y-3">
           <Field label="Dari akun">
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {(
                 [
                   { value: "cash", label: "Tunai" },

@@ -8,6 +8,7 @@ import {
   CalendarRange,
   ClipboardList,
   ClipboardPen,
+  FileText,
   GraduationCap,
   Landmark,
   LayoutDashboard,
@@ -33,17 +34,19 @@ const navGroups = [
         label: "Pendaftaran",
         icon: ClipboardPen,
       },
+      { href: "/dashboard/parents", label: "Orang tua", icon: UserRound },
     ],
   },
   {
     title: "Akademik",
     items: [
       { href: "/dashboard/students", label: "Siswa", icon: Baby },
+      { href: "/dashboard/users", label: "Users", icon: Users },
       { href: "/dashboard/classes", label: "Kelas", icon: GraduationCap },
       { href: "/dashboard/kegiatan", label: "Kegiatan", icon: Sparkles },
       { href: "/dashboard/presence", label: "Tanggal", icon: CalendarDays },
       { href: "/dashboard/absensi", label: "Absensi", icon: ClipboardList },
-      { href: "/dashboard/reports", label: "Laporan", icon: Users },
+      { href: "/dashboard/reports", label: "Laporan", icon: FileText },
     ],
   },
   {
@@ -124,7 +127,7 @@ export function DashboardSidebar({
   );
 
   const Footer = () => (
-    <div className="mt-auto space-y-3 border-t border-[#EEF3FA] pt-4">
+    <div className="space-y-3 border-t border-[#EEF3FA] bg-white pt-4">
       <div className="px-2">
         <p className="text-sm font-medium text-[#1A2330]">Maya Santoso</p>
         <p className="text-xs text-[#8A96A8]">Pemilik</p>
@@ -150,7 +153,7 @@ export function DashboardSidebar({
 
   return (
     <>
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-[#E5ECF5] bg-white px-4 py-3 lg:hidden">
+      <header className="sticky top-0 z-30 flex w-full items-center justify-between border-b border-[#E5ECF5] bg-white px-4 py-3 lg:hidden">
         <button
           type="button"
           onClick={() => {
@@ -181,8 +184,8 @@ export function DashboardSidebar({
             aria-label="Tutup menu"
             onClick={() => setOpen(false)}
           />
-          <aside className="absolute left-0 top-0 flex h-full w-72 flex-col bg-white p-4 shadow-xl">
-            <div className="mb-6 flex items-center justify-between">
+          <aside className="absolute left-0 top-0 flex h-full w-[min(18rem,88vw)] flex-col overflow-hidden bg-white p-4 shadow-xl">
+            <div className="mb-4 flex shrink-0 items-center justify-between">
               <Brand />
               <button
                 type="button"
@@ -193,18 +196,26 @@ export function DashboardSidebar({
                 <X className="size-5" />
               </button>
             </div>
-            <NavLinks />
-            <Footer />
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1">
+              <NavLinks />
+            </div>
+            <div className="shrink-0 pt-3">
+              <Footer />
+            </div>
           </aside>
         </div>
       ) : null}
 
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-[#E5ECF5] bg-white p-4 lg:flex">
-        <div className="mb-8">
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col overflow-hidden border-r border-[#E5ECF5] bg-white p-4 lg:flex">
+        <div className="mb-6 shrink-0">
           <Brand />
         </div>
-        <NavLinks />
-        <Footer />
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1">
+          <NavLinks />
+        </div>
+        <div className="shrink-0 pt-3">
+          <Footer />
+        </div>
       </aside>
     </>
   );

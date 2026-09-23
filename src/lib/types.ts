@@ -49,23 +49,120 @@ export interface StudentDocument {
 export type RegistrationStatus =
   | "pending"
   | "reviewing"
+  | "form_sent"
+  | "form_submitted"
   | "approved"
   | "rejected";
 
 /** Online enrollment submitted from the public registration form */
+export type RegistrationParent = {
+  id?: string;
+  name: string;
+  relationship: "mother" | "father" | "guardian";
+  phone: string;
+  email: string;
+  address: string;
+  occupation?: string;
+};
+
+export type MaritalStatus = "married" | "separated" | "divorced";
+
+/** Full paper-style registration (shared link after admin review) */
+export interface RegistrationDetailedForm {
+  student: {
+    fullName: string;
+    nickname: string;
+    tshirtSize: string;
+    gender: "male" | "female";
+    placeOfBirth: string;
+    dateOfBirth: string;
+    homeAddress: string;
+    homePhone: string;
+    cellPhone: string;
+  };
+  maritalStatus: MaritalStatus;
+  custodyNote: string;
+  father: {
+    name: string;
+    homeAddress: string;
+    email: string;
+    homePhone: string;
+    cellPhone: string;
+    occupation: string;
+    businessName: string;
+    officeAddress: string;
+    businessPhone: string;
+  };
+  mother: {
+    name: string;
+    homeAddress: string;
+    email: string;
+    homePhone: string;
+    cellPhone: string;
+    occupation: string;
+    businessName: string;
+    officeAddress: string;
+    businessPhone: string;
+  };
+  emergency: {
+    name: string;
+    homeAddress: string;
+    email: string;
+    homePhone: string;
+    cellPhone: string;
+    relationship: string;
+  };
+  childInfo: {
+    fears: string;
+    householdMembers: string;
+    playsWithOthers: string;
+    imaginaryFriend: string;
+    habits: string;
+    behaviourDifficulties: string;
+    pets: string;
+    languages: string;
+    speechDifficulties: string;
+    allergiesHealth: string;
+    beenAwayFromParents: string;
+    preschoolGoals: string;
+    otherNotes: string;
+  };
+  tuitionResponsible: {
+    name: string;
+    homeAddress: string;
+    email: string;
+    homePhone: string;
+    cellPhone: string;
+  };
+  declarationSigned: boolean;
+  declarationDate: string;
+  signedBy: string;
+  /** Drawn signature as PNG data URL */
+  signatureDataUrl?: string;
+}
+
+export interface RegistrationFeePayment {
+  amount: number;
+  method: PaymentMethod;
+  proofUrl?: string;
+  status: PaymentProofStatus | "recorded";
+  note?: string;
+  recordedAt: string;
+  recordedBy?: string;
+}
+
 export interface RegistrationApplication {
   id: string;
   status: RegistrationStatus;
   submittedAt: string;
   notes?: string;
-  parent: {
-    name: string;
-    relationship: "mother" | "father" | "guardian";
-    phone: string;
-    email: string;
-    address: string;
-    occupation?: string;
-  };
+  /** @deprecated prefer parentIds / parents — kept as primary contact */
+  parentId?: string;
+  parentIds?: string[];
+  /** Primary parent (first) — kept for public form / list compat */
+  parent: RegistrationParent;
+  /** All parents / guardians on this application */
+  parents?: RegistrationParent[];
   child: {
     name: string;
     nickname: string;
@@ -75,6 +172,14 @@ export interface RegistrationApplication {
     allergies?: string;
     notes?: string;
   };
+  /** Token for parent detailed-form link */
+  formToken?: string;
+  formSentAt?: string;
+  detailedForm?: RegistrationDetailedForm;
+  detailedFormSubmittedAt?: string;
+  registrationFee?: RegistrationFeePayment;
+  enrolledStudentId?: string;
+  enrolledAt?: string;
 }
 
 export interface ClassPlacement {
@@ -113,6 +218,9 @@ export interface SchoolClass {
   capacity: number;
   room: string;
   schedule: string;
+  /** Inclusive age range in years (e.g. 2–3) */
+  ageMinYears: number;
+  ageMaxYears: number;
 }
 
 export interface Teacher {
@@ -121,6 +229,8 @@ export interface Teacher {
   email: string;
   phone: string;
   role: "teacher" | "admin" | "owner";
+  notes?: string;
+  createdAt?: string;
 }
 
 export interface TuitionRecord {
@@ -154,9 +264,10 @@ export interface ClassActivity {
   title: string;
   description: string;
   date: string;
+  teacherId?: string;
   teacherName: string;
   images: string[];
-  /** Optional short clip from class (URL) */
+  /** Optional short clip from class (URL) — uploaded via media field */
   videoUrl?: string;
   location?: string;
 }
