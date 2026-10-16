@@ -6,20 +6,7 @@ import * as ops from "@/lib/data/ops";
 import * as finance from "@/lib/data/finance";
 import * as events from "@/lib/data/events";
 import * as rolePerms from "@/lib/data/role-permissions";
-import type {
-  ClassActivity,
-  KasEntry,
-  ParentProfile,
-  PresenceRecord,
-  RegistrationApplication,
-  SchoolClass,
-  SchoolDayOff,
-  SchoolEvent,
-  Student,
-  StudentReport,
-  Teacher,
-  TuitionRecord,
-} from "@/lib/types";
+import type { RegistrationApplication } from "@/lib/types";
 import type {
   AccessLevel,
   PermissionId,
@@ -288,19 +275,3 @@ export async function fetchDashboardBootstrap() {
 export type DashboardBootstrap = Awaited<
   ReturnType<typeof fetchDashboardBootstrap>
 >;
-
-// Re-export types for consumers
-export type {
-  Teacher,
-  SchoolClass,
-  Student,
-  ParentProfile,
-  SchoolDayOff,
-  PresenceRecord,
-  ClassActivity,
-  StudentReport,
-  TuitionRecord,
-  KasEntry,
-  SchoolEvent,
-  RegistrationApplication,
-};
