@@ -8,7 +8,7 @@ export const SITE_NAME = "BabelKids";
 export const SITE_LEGAL_NAME = "BabelKids Pangkalpinang";
 
 export const SITE_TAGLINE =
-  "TK & Kelompok Bermain Bilingual di Pangkalpinang";
+  "We play, we learn, we inspire";
 
 export const SITE_DESCRIPTION =
   "BabelKids adalah TK dan Kelompok Bermain bilingual di Pangkalpinang, Bangka Belitung. Pembelajaran student-centered, kurikulum Singapore + Diknas, karakter sejak dini. Daftar sekarang.";
