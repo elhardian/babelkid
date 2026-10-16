@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight, LogOut, Menu } from "lucide-react";
+import { logoutAction } from "@/app/actions/auth";
+import { useStaffSessionLabel } from "@/components/dashboard/StaffSessionProvider";
 
 const labels: Record<string, string> = {
   "/dashboard": "Beranda",
@@ -23,6 +24,7 @@ const labels: Record<string, string> = {
 
 export function DashboardTopBar({ onMenuClick }: { onMenuClick?: () => void }) {
   const pathname = usePathname();
+  const { email } = useStaffSessionLabel();
   const base = Object.keys(labels)
     .sort((a, b) => b.length - a.length)
     .find((key) => pathname === key || pathname.startsWith(`${key}/`));
@@ -45,16 +47,18 @@ export function DashboardTopBar({ onMenuClick }: { onMenuClick?: () => void }) {
       </div>
 
       <div className="flex shrink-0 items-center gap-3">
-        <span className="hidden text-sm text-[#8A96A8] xl:inline">
-          maya@babelkids.id
-        </span>
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 rounded-xl bg-[#F0783C] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#e06a30]"
-        >
-          <LogOut className="size-3.5" />
-          Keluar
-        </Link>
+        {email ? (
+          <span className="hidden text-sm text-[#8A96A8] xl:inline">{email}</span>
+        ) : null}
+        <form action={logoutAction}>
+          <button
+            type="submit"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-[#F0783C] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#e06a30]"
+          >
+            <LogOut className="size-3.5" />
+            Keluar
+          </button>
+        </form>
       </div>
     </header>
   );

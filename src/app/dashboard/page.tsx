@@ -138,7 +138,7 @@ export default function DashboardOverviewPage() {
             </p>
           </div>
           <Link
-            href="/parents"
+            href="/app"
             className="inline-flex w-full shrink-0 items-center justify-center rounded-full bg-[#EEF3FA] px-4 py-2 text-xs font-medium text-[#2E7DFF] sm:w-auto"
           >
             Buka Parent App

@@ -56,9 +56,8 @@ export default function ParentsReportsPage() {
             </p>
             <p className="mt-1 text-xs leading-relaxed text-[#5B6B7C]">
               Di sini guru menulis ringkasan hari anak Anda di sekolah —
-              kegiatan, mood, makan, tidur, dan catatan perkembangan. Bukan
-              untuk absensi atau foto kelas; itu ada di menu Kehadiran &
-              Kegiatan.
+              kegiatan, mood, dan catatan perkembangan. Bukan untuk absensi
+              atau foto kelas; itu ada di menu Kehadiran & Kegiatan.
             </p>
           </div>
         </div>
@@ -122,20 +121,6 @@ export default function ParentsReportsPage() {
                         Kegiatan
                       </p>
                       <p className="mt-0.5 text-[#1A2330]">{r.activities}</p>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <p className="text-xs font-medium text-[#8A96A8]">
-                          Makan
-                        </p>
-                        <p className="mt-0.5 text-[#1A2330]">{r.meals}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium text-[#8A96A8]">
-                          Tidur
-                        </p>
-                        <p className="mt-0.5 text-[#1A2330]">{r.naps}</p>
-                      </div>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {r.skills.map((sk) => (

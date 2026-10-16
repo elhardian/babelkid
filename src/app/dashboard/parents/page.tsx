@@ -1,11 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Plus, Pencil, Trash2 } from "lucide-react";
-import {
-  studentsForParent,
-  useParentsRegistry,
-} from "@/components/dashboard/ParentsProvider";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import { KeyRound, Plus, Pencil, Trash2 } from "lucide-react";
+import { useParentsRegistry } from "@/components/dashboard/ParentsProvider";
+import { useStudentsRegistry } from "@/components/dashboard/StudentsProvider";
 import {
   EmptyState,
   FilterSelect,
@@ -19,11 +17,15 @@ import {
   inputClass,
 } from "@/components/dashboard/Modal";
 import { getClass } from "@/lib/mock-data";
-import type { ParentProfile } from "@/lib/types";
+import type { ParentProfile, Student } from "@/lib/types";
 import {
   Pagination,
   usePagination,
 } from "@/components/dashboard/Pagination";
+import {
+  createParentAppAccess,
+  getParentAppAccess,
+} from "@/app/actions/parent-access";
 
 const relLabel = {
   mother: "Ibu",
@@ -31,15 +33,37 @@ const relLabel = {
   guardian: "Wali",
 } as const;
 
-type ModalMode = "add" | "edit" | null;
+type ModalMode = "add" | "edit" | "access" | null;
+
+function kidsForParent(students: Student[], parent: ParentProfile) {
+  return students.filter((s) =>
+    s.parents.some(
+      (p) =>
+        p.id === parent.id ||
+        p.email.toLowerCase() === parent.email.toLowerCase(),
+    ),
+  );
+}
 
 function ParentsPageInner() {
   const { parents, upsert, remove } = useParentsRegistry();
+  const { students } = useStudentsRegistry();
   const [search, setSearch] = useState("");
   const [relFilter, setRelFilter] = useState("all");
   const [modal, setModal] = useState<ModalMode>(null);
   const [active, setActive] = useState<ParentProfile | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
+  const [accessPending, startAccess] = useTransition();
+  const [accessError, setAccessError] = useState("");
+  const [accessResult, setAccessResult] = useState<{
+    email: string;
+    password: string;
+    created: boolean;
+    childCount: number;
+  } | null>(null);
+  const [accessStatus, setAccessStatus] = useState<
+    Record<string, { exists: boolean; childCount: number }>
+  >({});
 
   const list = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -57,6 +81,33 @@ function ParentsPageInner() {
   const { pageItems, page, setPage, totalPages, total, from, to } =
     usePagination(list);
 
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const entries = await Promise.all(
+        pageItems.map(async (p) => {
+          const status = await getParentAppAccess(p.email);
+          return [
+            p.email.toLowerCase(),
+            {
+              exists: status.exists,
+              childCount: status.exists ? status.childIds.length : 0,
+            },
+          ] as const;
+        }),
+      );
+      if (cancelled) return;
+      setAccessStatus((prev) => {
+        const next = { ...prev };
+        for (const [email, st] of entries) next[email] = st;
+        return next;
+      });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [pageItems]);
+
   function openAdd() {
     setActive(null);
     setModal("add");
@@ -65,6 +116,13 @@ function ParentsPageInner() {
   function openEdit(p: ParentProfile) {
     setActive(p);
     setModal("edit");
+  }
+
+  function openAccess(p: ParentProfile) {
+    setActive(p);
+    setAccessError("");
+    setAccessResult(null);
+    setModal("access");
   }
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -85,6 +143,41 @@ function ParentsPageInner() {
     });
     setModal(null);
     setActive(null);
+  }
+
+  function onCreateAccess(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!active) return;
+    const fd = new FormData(e.currentTarget);
+    const kids = kidsForParent(students, active);
+    const password = String(fd.get("password") || "").trim();
+    setAccessError("");
+    startAccess(async () => {
+      const result = await createParentAppAccess({
+        email: active.email,
+        name: active.name,
+        phone: active.phone,
+        childIds: kids.map((k) => k.id),
+        password: password || undefined,
+      });
+      if (!result.ok) {
+        setAccessError(result.error);
+        return;
+      }
+      setAccessResult({
+        email: result.email,
+        password: result.password,
+        created: result.created,
+        childCount: result.childCount,
+      });
+      setAccessStatus((prev) => ({
+        ...prev,
+        [result.email.toLowerCase()]: {
+          exists: true,
+          childCount: result.childCount,
+        },
+      }));
+    });
   }
 
   return (
@@ -128,8 +221,9 @@ function ParentsPageInner() {
 
       <ul className="space-y-3">
         {pageItems.map((p) => {
-          const kids = studentsForParent(p.id, p.email);
+          const kids = kidsForParent(students, p);
           const open = openId === p.id;
+          const app = accessStatus[p.email.toLowerCase()];
           return (
             <li
               key={p.id}
@@ -147,6 +241,9 @@ function ParentsPageInner() {
                       label={relLabel[p.relationship]}
                       tone="info"
                     />
+                    {app?.exists ? (
+                      <StatusBadge label="Akses app" tone="success" />
+                    ) : null}
                   </div>
                   <p className="mt-0.5 text-xs text-[#8A96A8]">
                     {p.phone} · {p.email}
@@ -156,6 +253,15 @@ function ParentsPageInner() {
                   </p>
                 </button>
                 <div className="flex shrink-0 gap-1">
+                  <button
+                    type="button"
+                    onClick={() => openAccess(p)}
+                    className="rounded-xl p-2 text-[#8A96A8] hover:bg-[#EEF3FA] hover:text-[#2E7DFF]"
+                    aria-label="Buat akses app"
+                    title="Buat akses app"
+                  >
+                    <KeyRound className="size-4" />
+                  </button>
                   <button
                     type="button"
                     onClick={() => openEdit(p)}
@@ -195,6 +301,14 @@ function ParentsPageInner() {
                       {p.notes ? (
                         <p className="mt-2 text-[#5B6B7C]">{p.notes}</p>
                       ) : null}
+                      <button
+                        type="button"
+                        onClick={() => openAccess(p)}
+                        className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#2E7DFF] px-3 py-1.5 text-xs font-medium text-white"
+                      >
+                        <KeyRound className="size-3.5" />
+                        {app?.exists ? "Perbarui akses app" : "Buat akses app"}
+                      </button>
                     </div>
                     <div>
                       <p className="text-xs font-medium uppercase tracking-wide text-[#8A96A8]">
@@ -243,7 +357,7 @@ function ParentsPageInner() {
       />
 
       <Modal
-        open={modal !== null}
+        open={modal === "add" || modal === "edit"}
         onClose={() => {
           setModal(null);
           setActive(null);
@@ -318,6 +432,116 @@ function ParentsPageInner() {
             submitLabel="Simpan"
           />
         </form>
+      </Modal>
+
+      <Modal
+        open={modal === "access"}
+        onClose={() => {
+          setModal(null);
+          setActive(null);
+          setAccessResult(null);
+          setAccessError("");
+        }}
+        title="Buat akses app"
+      >
+        {active ? (
+          accessResult ? (
+            <div className="space-y-3">
+              <p className="text-sm text-[#5B6B7C]">
+                {accessResult.created
+                  ? "Akses parent app berhasil dibuat."
+                  : "Akses parent app diperbarui (password diganti)."}{" "}
+                Terhubung ke {accessResult.childCount} anak.
+              </p>
+              <div className="rounded-2xl bg-[#F3F7FC] p-4 text-sm">
+                <p className="text-xs font-medium uppercase tracking-wide text-[#8A96A8]">
+                  Login orang tua
+                </p>
+                <p className="mt-2 font-medium text-[#1A2330]">
+                  {accessResult.email}
+                </p>
+                <p className="mt-1 font-mono text-[#2E7DFF]">
+                  {accessResult.password}
+                </p>
+              </div>
+              <p className="text-xs text-[#8A96A8]">
+                Bagikan ke orang tua · /app lalu masuk
+              </p>
+              <div className="flex justify-end pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setModal(null);
+                    setActive(null);
+                    setAccessResult(null);
+                  }}
+                  className="rounded-full bg-[#2E7DFF] px-4 py-2 text-sm font-medium text-white"
+                >
+                  Selesai
+                </button>
+              </div>
+            </div>
+          ) : (
+            <form onSubmit={onCreateAccess} className="space-y-3">
+              <p className="text-sm text-[#5B6B7C]">
+                Buat akun login untuk <strong>{active.name}</strong> dan tautkan
+                ke anak yang terhubung di data siswa.
+              </p>
+              <div className="rounded-2xl border border-[#E5ECF5] bg-[#F7FAFD] p-3 text-sm">
+                <p className="text-xs font-medium uppercase tracking-wide text-[#8A96A8]">
+                  Anak yang akan ditautkan
+                </p>
+                {kidsForParent(students, active).length === 0 ? (
+                  <p className="mt-2 text-[#F0783C]">
+                    Belum ada anak terhubung. Hubungkan orang tua di modul Siswa
+                    dulu.
+                  </p>
+                ) : (
+                  <ul className="mt-2 space-y-1">
+                    {kidsForParent(students, active).map((k) => (
+                      <li key={k.id} className="text-[#1A2330]">
+                        {k.nickname}{" "}
+                        <span className="text-[#8A96A8]">· {k.name}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <Field label="Email login">
+                <input
+                  value={active.email}
+                  readOnly
+                  className={`${inputClass} bg-[#F3F7FC]`}
+                />
+              </Field>
+              <Field label="Password sementara (opsional)">
+                <input
+                  name="password"
+                  type="text"
+                  minLength={6}
+                  placeholder="Kosongkan = dibuat otomatis"
+                  className={inputClass}
+                />
+              </Field>
+              {accessError ? (
+                <p className="rounded-xl bg-rose-50 px-3 py-2 text-sm text-rose-700">
+                  {accessError}
+                </p>
+              ) : null}
+              <ModalActions
+                onCancel={() => {
+                  setModal(null);
+                  setActive(null);
+                }}
+                submitLabel={accessPending ? "Menyimpan…" : "Buat akses app"}
+                submitDisabled={
+                  accessPending ||
+                  kidsForParent(students, active).length === 0
+                }
+              />
+            </form>
+          )
+        ) : null}
       </Modal>
     </div>
   );

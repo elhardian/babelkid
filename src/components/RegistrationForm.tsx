@@ -192,7 +192,7 @@ export function RegistrationForm({
             </Link>
           )}
           <Link
-            href="/parents"
+            href="/app"
             className={cn(
               "rounded-full px-5 py-3 text-sm font-medium",
               embed

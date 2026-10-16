@@ -314,8 +314,6 @@ export interface StudentReport {
   title: string;
   mood: "happy" | "ok" | "tired" | "upset";
   activities: string;
-  meals: string;
-  naps: string;
   notes: string;
   skills: string[];
 }

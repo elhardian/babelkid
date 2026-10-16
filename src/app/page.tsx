@@ -100,35 +100,35 @@ const journey = [
   {
     title: "Upacara Bendera",
     image:
-      "https://images.unsplash.com/photo-1509062528245-0249af9bb5b5?auto=format&fit=crop&w=800&q=80",
+      "/upacara.jpeg",
     border: "#74B9FF",
   },
   {
     title: "Senam Bersama",
     image:
-      "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=800&q=80",
+      "/senam.jpeg",
     border: "#FD79A8",
   },
   {
     title: "Sholat Bersama",
     image:
-      "https://images.unsplash.com/photo-1544776193-352d25ca82cd?auto=format&fit=crop&w=800&q=80",
+      "/sholat.jpeg",
     border: "#55EFC4",
   },
   {
     title: "Berenang",
     image:
-      "https://images.unsplash.com/photo-1560089000-7433a4ebbd64?auto=format&fit=crop&w=800&q=80",
+      "/berenang.jpeg",
     border: "#FDCB6E",
   },
   {
     title: "Belajar Sentra",
-    image: "/preschool.png",
+    image: "/belajar-sentra.jpeg",
     border: "#FF9F43",
   },
   {
     title: "Bermain Outdoor",
-    image: "/kindergarten.jpg",
+    image: "/bermain-outdoor.jpeg",
     border: "#FF7675",
   },
 ];
@@ -490,7 +490,7 @@ export default function LandingPage() {
             <div className="relative mx-auto w-full max-w-md lg:max-w-none">
               <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] border-[5px] border-[#74B9FF]">
                 <Image
-                  src="/preschool.png"
+                  src="/experiment.jpeg"
                   alt="Anak belajar di BabelKids"
                   fill
                   className="object-cover"
@@ -500,7 +500,7 @@ export default function LandingPage() {
               <div className="absolute -bottom-8 -right-2 w-[55%] overflow-hidden rounded-[1.75rem] border-[5px] border-[#FDCB6E] shadow-lg sm:-right-6">
                 <div className="relative aspect-[4/3]">
                   <Image
-                    src="/kindergarten.jpg"
+                    src="/belajar-sentra.jpeg"
                     alt="Kegiatan kelas BabelKids"
                     fill
                     className="object-cover"
@@ -818,7 +818,7 @@ export default function LandingPage() {
 
                 <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
                   <Link
-                    href="/parents"
+                    href="/app"
                     className="inline-flex items-center justify-center gap-2 rounded-full bg-[#3DB5E6] px-6 py-3.5 text-sm font-semibold text-[#1F3A56] transition hover:-translate-y-0.5 hover:bg-[#6bc9ef]"
                   >
                     Buka Parent App
@@ -988,7 +988,7 @@ export default function LandingPage() {
             <Link href="/register" className="hover:text-[#3DB5E6]">
               Daftar Segera
             </Link>
-            <Link href="/parents" className="hover:text-[#3DB5E6]">
+            <Link href="/app" className="hover:text-[#3DB5E6]">
               Parent app
             </Link>
             <Link href="/dashboard" className="hover:text-[#3DB5E6]">

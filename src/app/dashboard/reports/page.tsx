@@ -82,8 +82,6 @@ export default function ReportsPage() {
       title: String(fd.get("title") || "Perkembangan mingguan"),
       mood,
       activities: String(fd.get("activities") || ""),
-      meals: String(fd.get("meals") || ""),
-      naps: String(fd.get("naps") || ""),
       notes: String(fd.get("notes") || ""),
       skills: skillsRaw
         .split(",")
@@ -232,14 +230,6 @@ export default function ReportsPage() {
           <Field label="Kegiatan">
             <textarea name="activities" required rows={2} defaultValue={active?.activities} className={inputClass} />
           </Field>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Field label="Makan">
-              <input name="meals" required defaultValue={active?.meals} className={inputClass} />
-            </Field>
-            <Field label="Tidur siang">
-              <input name="naps" required defaultValue={active?.naps} className={inputClass} />
-            </Field>
-          </div>
           <Field label="Catatan untuk orang tua">
             <textarea name="notes" required rows={2} defaultValue={active?.notes} className={inputClass} />
           </Field>
@@ -262,8 +252,6 @@ export default function ReportsPage() {
             </p>
             <dl className="grid gap-3 sm:grid-cols-2">
               <div><dt className="text-xs text-neutral-500">Kegiatan</dt><dd>{active.activities}</dd></div>
-              <div><dt className="text-xs text-neutral-500">Makan</dt><dd>{active.meals}</dd></div>
-              <div><dt className="text-xs text-neutral-500">Tidur siang</dt><dd>{active.naps}</dd></div>
               <div><dt className="text-xs text-neutral-500">Catatan</dt><dd>{active.notes}</dd></div>
             </dl>
             <div className="flex flex-wrap gap-1.5">

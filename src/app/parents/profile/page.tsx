@@ -4,12 +4,14 @@ import Link from "next/link";
 import { ChevronRight, LogOut, Receipt } from "lucide-react";
 import { ChildAvatar } from "@/components/parents/ChildAvatar";
 import { useParentKids } from "@/components/parents/ParentKidsProvider";
+import { logoutAction } from "@/app/actions/auth";
 import { getClass } from "@/lib/mock-data";
 import { ageFromDob, formatDate } from "@/lib/format";
 
 export default function ParentsProfilePage() {
   const {
     parentName,
+    parentEmail,
     children,
     selectedChild,
     selectedChildId,
@@ -24,6 +26,7 @@ export default function ParentsProfilePage() {
         </div>
         <h1 className="mt-3 text-xl font-medium text-[#1A2330]">{parentName}</h1>
         <p className="mt-1 text-sm text-[#8A96A8]">Orang tua · BabelKids</p>
+        <p className="mt-0.5 text-xs text-[#A0AAB8]">{parentEmail}</p>
       </section>
 
       <section>
@@ -79,18 +82,20 @@ export default function ParentsProfilePage() {
           <span className="flex-1 text-sm font-medium text-[#1A2330]">SPP</span>
           <ChevronRight className="size-4 text-[#A0AAB8]" />
         </Link>
-        <Link
-          href="/"
-          className="flex items-center gap-3 px-4 py-3.5"
-        >
-          <span className="flex size-10 items-center justify-center rounded-2xl bg-[#EEF3FA] text-[#2E7DFF]">
-            <LogOut className="size-5" />
-          </span>
-          <span className="flex-1 text-sm font-medium text-[#1A2330]">
-            Keluar ke website
-          </span>
-          <ChevronRight className="size-4 text-[#A0AAB8]" />
-        </Link>
+        <form action={logoutAction}>
+          <button
+            type="submit"
+            className="flex w-full items-center gap-3 px-4 py-3.5 text-left"
+          >
+            <span className="flex size-10 items-center justify-center rounded-2xl bg-[#EEF3FA] text-[#2E7DFF]">
+              <LogOut className="size-5" />
+            </span>
+            <span className="flex-1 text-sm font-medium text-[#1A2330]">
+              Keluar
+            </span>
+            <ChevronRight className="size-4 text-[#A0AAB8]" />
+          </button>
+        </form>
       </section>
 
       <p className="text-center text-xs text-[#8A96A8]">

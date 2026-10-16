@@ -24,6 +24,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/format";
+import { logoutAction } from "@/app/actions/auth";
+import { useStaffSessionLabel } from "@/components/dashboard/StaffSessionProvider";
 
 const navGroups = [
   {
@@ -74,6 +76,7 @@ export function DashboardSidebar({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { name, role } = useStaffSessionLabel();
 
   const linkClass = (href: string) => {
     const active = isActive(pathname, href);
@@ -134,8 +137,8 @@ export function DashboardSidebar({
   const Footer = () => (
     <div className="space-y-3 border-t border-[#EEF3FA] bg-white pt-4">
       <div className="px-2">
-        <p className="text-sm font-medium text-[#1A2330]">Maya Santoso</p>
-        <p className="text-xs text-[#8A96A8]">Pemilik</p>
+        <p className="text-sm font-medium text-[#1A2330]">{name}</p>
+        <p className="text-xs text-[#8A96A8]">{role}</p>
       </div>
       <div className="grid grid-cols-2 gap-2">
         <Link
@@ -145,13 +148,15 @@ export function DashboardSidebar({
           <UserRound className="size-3.5" />
           Profil
         </Link>
-        <Link
-          href="/"
-          className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#F0783C] px-2 py-2 text-xs font-medium text-white hover:bg-[#e06a30]"
-        >
-          <LogOut className="size-3.5" />
-          Keluar
-        </Link>
+        <form action={logoutAction}>
+          <button
+            type="submit"
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#F0783C] px-2 py-2 text-xs font-medium text-white hover:bg-[#e06a30]"
+          >
+            <LogOut className="size-3.5" />
+            Keluar
+          </button>
+        </form>
       </div>
     </div>
   );
@@ -177,12 +182,14 @@ export function DashboardSidebar({
           height={32}
           className="h-8 w-auto object-contain"
         />
-        <Link
-          href="/"
-          className="rounded-xl bg-[#F0783C] px-2.5 py-1.5 text-xs font-medium text-white"
-        >
-          Keluar
-        </Link>
+        <form action={logoutAction}>
+          <button
+            type="submit"
+            className="rounded-xl bg-[#F0783C] px-2.5 py-1.5 text-xs font-medium text-white"
+          >
+            Keluar
+          </button>
+        </form>
       </header>
 
       {open ? (

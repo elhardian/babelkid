@@ -1,0 +1,40 @@
+// BabelKids — MySQL schema (Prisma 7)
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum UserRole {
+  owner
+  admin
+  teacher
+  parent
+}
+
+enum AuthPortal {
+  staff
+  parent
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique @db.VarChar(191)
+  name         String     @db.VarChar(191)
+  passwordHash String     @map("password_hash") @db.VarChar(255)
+  role         UserRole
+  portal       AuthPortal
+  phone        String?    @db.VarChar(64)
+  /// JSON array of student ids for parent accounts, e.g. ["s1","s9"]
+  childIds     Json?      @map("child_ids")
+  active       Boolean    @default(true)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  @@index([portal, role])
+  @@map("users")
+}

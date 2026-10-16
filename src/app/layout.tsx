@@ -24,10 +24,17 @@ export const metadata: Metadata = {
   title: "BabelKids — TK & Kelompok Bermain",
   description:
     "Taman Kanak-Kanak & Kelompok Bermain bilingual: student-centered, kurikulum terpadu, dan karakter sejak dini.",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "BabelKids",
+    statusBarStyle: "default",
+  },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
       { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+      { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
     ],
     apple: "/apple-icon.png",
   },

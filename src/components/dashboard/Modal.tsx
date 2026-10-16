@@ -85,9 +85,11 @@ export const inputClass =
 export function ModalActions({
   onCancel,
   submitLabel = "Simpan",
+  submitDisabled = false,
 }: {
   onCancel: () => void;
   submitLabel?: string;
+  submitDisabled?: boolean;
 }) {
   return (
     <div className="mt-4 flex flex-col-reverse gap-2 border-t border-[#EEF3FA] pt-4 sm:flex-row sm:justify-end">
@@ -100,7 +102,8 @@ export function ModalActions({
       </button>
       <button
         type="submit"
-        className="rounded-xl bg-[#2E7DFF] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#2568d9] sm:py-2"
+        disabled={submitDisabled}
+        className="rounded-xl bg-[#2E7DFF] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#2568d9] disabled:cursor-not-allowed disabled:opacity-50 sm:py-2"
       >
         {submitLabel}
       </button>
