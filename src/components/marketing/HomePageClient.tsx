@@ -439,7 +439,7 @@ export function HomePageClient() {
                 TK · Kelompok Bermain · Pangkalpinang
               </p>
               <h1 className="animate-fade-up delay-100 mt-3 font-[family-name:var(--font-fredoka)] text-4xl font-semibold leading-[1.1] tracking-tight text-white sm:text-5xl md:text-6xl">
-                TK &amp; Kelompok Bermain Bilingual di Pangkalpinang
+                We play, we learn, we inspire
               </h1>
               <p className="animate-fade-up delay-200 mx-auto mt-4 max-w-lg text-base leading-relaxed text-white/90 lg:mx-0">
                 BabelKids — sekolah anak usia dini di Pangkalpinang dengan
