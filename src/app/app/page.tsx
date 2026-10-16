@@ -53,8 +53,8 @@ const highlights = [
 ];
 
 export default async function ParentAppLandingPage() {
-  const session = await getSession();
-  if (session?.portal === "parent") redirect("/parents");
+  const session = await getSession("parent");
+  if (session) redirect("/parents");
 
   return (
     <div className="min-h-screen bg-[#0B1C2C] font-[family-name:var(--font-outfit)] text-white">
@@ -244,27 +244,6 @@ export default async function ParentAppLandingPage() {
             <Link href="/" className="font-medium text-[#3DB5E6] hover:underline">
               ← Website BabelKids
             </Link>
-            {session?.portal === "staff" ? (
-              <>
-                {" · "}
-                <Link
-                  href="/dashboard"
-                  className="font-medium text-[#3DB5E6] hover:underline"
-                >
-                  Dashboard staf
-                </Link>
-              </>
-            ) : (
-              <>
-                {" · "}
-                <Link
-                  href="/login"
-                  className="font-medium text-[#3DB5E6] hover:underline"
-                >
-                  Masuk staf
-                </Link>
-              </>
-            )}
           </p>
         </div>
       </section>

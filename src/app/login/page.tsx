@@ -9,9 +9,8 @@ export default async function StaffLoginPage({
 }: {
   searchParams: Promise<{ portal?: string; next?: string }>;
 }) {
-  const session = await getSession();
-  if (session?.portal === "staff") redirect("/dashboard");
-  if (session?.portal === "parent") redirect("/parents");
+  const session = await getSession("staff");
+  if (session) redirect("/dashboard");
 
   const params = await searchParams;
   // Legacy ?portal=parent → dedicated parent login
@@ -58,16 +57,6 @@ export default async function StaffLoginPage({
         <LoginForm portal="staff" next={next} />
 
         <p className="mt-6 text-center text-sm text-[#5B6B7C]">
-          Orang tua?{" "}
-          <Link
-            href="/app"
-            className="font-medium text-[#3DB5E6] hover:underline"
-          >
-            Aplikasi orang tua
-          </Link>
-        </p>
-
-        <p className="mt-4 text-center text-sm text-[#5B6B7C]">
           <Link href="/" className="font-medium text-[#3DB5E6] hover:underline">
             ← Kembali ke website
           </Link>

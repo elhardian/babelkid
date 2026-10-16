@@ -21,9 +21,8 @@ export default async function ParentLoginPage({
 }: {
   searchParams: Promise<{ next?: string }>;
 }) {
-  const session = await getSession();
-  if (session?.portal === "parent") redirect("/parents");
-  if (session?.portal === "staff") redirect("/dashboard");
+  const session = await getSession("parent");
+  if (session) redirect("/parents");
 
   const params = await searchParams;
   const next = params.next ?? "";
@@ -68,16 +67,6 @@ export default async function ParentLoginPage({
             className="font-medium text-[#3DB5E6] hover:underline"
           >
             Lihat Parent App
-          </Link>
-        </p>
-
-        <p className="mt-3 text-center text-sm text-[#5B6B7C]">
-          Staf sekolah?{" "}
-          <Link
-            href="/login"
-            className="font-medium text-[#3DB5E6] hover:underline"
-          >
-            Masuk dashboard
           </Link>
         </p>
 

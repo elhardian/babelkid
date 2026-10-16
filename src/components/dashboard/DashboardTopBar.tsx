@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { ChevronRight, LogOut, Menu } from "lucide-react";
-import { logoutAction } from "@/app/actions/auth";
+import { logoutStaffAction } from "@/app/actions/auth";
 import { useStaffSessionLabel } from "@/components/dashboard/StaffSessionProvider";
 
 const labels: Record<string, string> = {
@@ -52,7 +52,7 @@ export function DashboardTopBar({ onMenuClick }: { onMenuClick?: () => void }) {
         {email ? (
           <span className="hidden text-sm text-[#8A96A8] xl:inline">{email}</span>
         ) : null}
-        <form action={logoutAction}>
+        <form action={logoutStaffAction}>
           <button
             type="submit"
             className="inline-flex items-center gap-1.5 rounded-xl bg-[#F0783C] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#e06a30]"

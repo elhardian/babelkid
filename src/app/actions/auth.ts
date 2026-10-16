@@ -5,7 +5,6 @@ import {
   createSession,
   destroySession,
   findUserByCredentials,
-  getSession,
   type AuthPortal,
 } from "@/lib/auth";
 
@@ -50,11 +49,20 @@ export async function loginAction(
   redirect(next.startsWith("/dashboard") ? next : "/dashboard");
 }
 
+export async function logoutStaffAction() {
+  await destroySession("staff");
+  redirect("/login");
+}
+
+export async function logoutParentAction() {
+  await destroySession("parent");
+  redirect("/app");
+}
+
+/** @deprecated use logoutStaffAction / logoutParentAction */
 export async function logoutAction() {
-  const session = await getSession();
-  const portal = session?.portal;
-  await destroySession();
-  redirect(portal === "parent" ? "/app" : "/login");
+  await destroySession("staff");
+  redirect("/login");
 }
 
 export async function logoutToHomeAction() {

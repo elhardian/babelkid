@@ -11,8 +11,8 @@ export default async function ParentsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getSession();
-  if (!session || session.portal !== "parent") {
+  const session = await getSession("parent");
+  if (!session) {
     redirect("/app");
   }
 

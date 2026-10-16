@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/format";
-import { logoutAction } from "@/app/actions/auth";
+import { logoutStaffAction } from "@/app/actions/auth";
 import { useStaffSessionLabel } from "@/components/dashboard/StaffSessionProvider";
 import { useRolePermissions } from "@/components/dashboard/RolePermissionsProvider";
 
@@ -168,7 +168,7 @@ export function DashboardSidebar({
           <UserRound className="size-3.5" />
           Profil
         </Link>
-        <form action={logoutAction}>
+        <form action={logoutStaffAction}>
           <button
             type="submit"
             className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#F0783C] px-2 py-2 text-xs font-medium text-white hover:bg-[#e06a30]"
@@ -202,7 +202,7 @@ export function DashboardSidebar({
           height={32}
           className="h-8 w-auto object-contain"
         />
-        <form action={logoutAction}>
+        <form action={logoutStaffAction}>
           <button
             type="submit"
             className="rounded-xl bg-[#F0783C] px-2.5 py-1.5 text-xs font-medium text-white"

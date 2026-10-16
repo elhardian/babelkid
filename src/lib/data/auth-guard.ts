@@ -1,8 +1,8 @@
-import { getSession } from "@/lib/auth";
+import { getAnySession, getSession } from "@/lib/auth";
 import type { SessionPayload } from "@/lib/session-token";
 
 export async function requireStaff(): Promise<SessionPayload> {
-  const session = await getSession();
+  const session = await getSession("staff");
   if (!session || session.portal !== "staff") {
     throw new Error("Unauthorized");
   }
@@ -10,7 +10,7 @@ export async function requireStaff(): Promise<SessionPayload> {
 }
 
 export async function requireStaffOrParent(): Promise<SessionPayload> {
-  const session = await getSession();
+  const session = await getAnySession();
   if (!session) throw new Error("Unauthorized");
   return session;
 }

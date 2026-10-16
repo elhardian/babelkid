@@ -28,7 +28,7 @@ function generateTempPassword() {
 }
 
 export async function getStaffAppAccess(email: string) {
-  const session = await getSession();
+  const session = await getSession("staff");
   if (!session || session.portal !== "staff") {
     return { exists: false as const };
   }
@@ -63,7 +63,7 @@ export async function createStaffAppAccess(input: {
   role: StaffAssignableRole;
   password?: string;
 }): Promise<StaffAccessResult> {
-  const session = await getSession();
+  const session = await getSession("staff");
   if (!session || session.portal !== "staff") {
     return { ok: false, error: "Hanya staf yang dapat membuat akses." };
   }
@@ -155,7 +155,7 @@ export async function updateStaffRole(input: {
   phone?: string;
   role: StaffAssignableRole;
 }): Promise<{ ok: true } | { ok: false; error: string }> {
-  const session = await getSession();
+  const session = await getSession("staff");
   if (!session || session.portal !== "staff") {
     return { ok: false, error: "Hanya staf yang dapat mengubah peran." };
   }

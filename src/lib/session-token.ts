@@ -1,7 +1,18 @@
 import { createHmac, timingSafeEqual } from "crypto";
 import type { Role } from "@/lib/types";
 
-export const SESSION_COOKIE = "bk_session";
+/** Separate cookies so staff + parent can stay logged in together */
+export const SESSION_COOKIE_STAFF = "bk_session_staff";
+export const SESSION_COOKIE_PARENT = "bk_session_parent";
+/** Legacy single cookie — cleared on login/logout */
+export const SESSION_COOKIE_LEGACY = "bk_session";
+
+/** @deprecated use SESSION_COOKIE_STAFF / SESSION_COOKIE_PARENT */
+export const SESSION_COOKIE = SESSION_COOKIE_LEGACY;
+
+export function sessionCookieFor(portal: AuthPortal) {
+  return portal === "parent" ? SESSION_COOKIE_PARENT : SESSION_COOKIE_STAFF;
+}
 
 const AUTH_SECRET =
   process.env.AUTH_SECRET ?? "babelkids-demo-secret-change-me";

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ChevronRight, LogOut, Receipt } from "lucide-react";
 import { ChildAvatar } from "@/components/parents/ChildAvatar";
 import { useParentKids } from "@/components/parents/ParentKidsProvider";
-import { logoutAction } from "@/app/actions/auth";
+import { logoutParentAction } from "@/app/actions/auth";
 import { getClass } from "@/lib/mock-data";
 import { ageFromDob, formatDate } from "@/lib/format";
 
@@ -82,7 +82,7 @@ export default function ParentsProfilePage() {
           <span className="flex-1 text-sm font-medium text-[#1A2330]">SPP</span>
           <ChevronRight className="size-4 text-[#A0AAB8]" />
         </Link>
-        <form action={logoutAction}>
+        <form action={logoutParentAction}>
           <button
             type="submit"
             className="flex w-full items-center gap-3 px-4 py-3.5 text-left"

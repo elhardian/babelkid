@@ -5,13 +5,23 @@ import { prisma } from "@/lib/db";
 import { listStudents } from "@/lib/data/roster";
 import {
   encodeSession,
+  decodeSession,
+  sessionCookieFor,
   type AuthPortal,
   type SessionPayload,
-  SESSION_COOKIE,
+  SESSION_COOKIE_LEGACY,
+  SESSION_COOKIE_STAFF,
+  SESSION_COOKIE_PARENT,
 } from "@/lib/session-token";
 
 export type { AuthPortal, SessionPayload };
-export { SESSION_COOKIE, readSessionFromToken } from "@/lib/session-token";
+export {
+  SESSION_COOKIE_LEGACY as SESSION_COOKIE,
+  SESSION_COOKIE_STAFF,
+  SESSION_COOKIE_PARENT,
+  sessionCookieFor,
+  readSessionFromToken,
+} from "@/lib/session-token";
 export { roleLabel } from "@/lib/auth-labels";
 
 const SESSION_DAYS = 7;
@@ -31,6 +41,24 @@ function parseChildIds(value: unknown): string[] {
     return value.filter((v): v is string => typeof v === "string");
   }
   return [];
+}
+
+function cookieOptions(expires?: Date) {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    path: "/",
+    ...(expires ? { expires } : {}),
+  };
+}
+
+async function clearCookie(name: string) {
+  const jar = await cookies();
+  jar.set(name, "", {
+    ...cookieOptions(new Date(0)),
+    maxAge: 0,
+  });
 }
 
 export async function findUserByCredentials(
@@ -86,32 +114,38 @@ export async function createSession(user: AuthUser) {
   const payload = await buildSession(user);
   const token = encodeSession(payload);
   const jar = await cookies();
-  jar.set(SESSION_COOKIE, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    expires: new Date(payload.exp),
+  jar.set(sessionCookieFor(user.portal), token, cookieOptions(new Date(payload.exp)));
+  // Drop legacy shared cookie so it cannot override the other portal
+  jar.set(SESSION_COOKIE_LEGACY, "", {
+    ...cookieOptions(new Date(0)),
+    maxAge: 0,
   });
   return payload;
 }
 
-export async function destroySession() {
-  const jar = await cookies();
-  jar.set(SESSION_COOKIE, "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 0,
-    expires: new Date(0),
-  });
+export async function destroySession(portal?: AuthPortal) {
+  if (portal) {
+    await clearCookie(sessionCookieFor(portal));
+  } else {
+    await clearCookie(SESSION_COOKIE_STAFF);
+    await clearCookie(SESSION_COOKIE_PARENT);
+  }
+  await clearCookie(SESSION_COOKIE_LEGACY);
 }
 
-export async function getSession(): Promise<SessionPayload | null> {
+/** Read session for a specific portal (staff dashboard vs parent app). */
+export async function getSession(
+  portal: AuthPortal,
+): Promise<SessionPayload | null> {
   const jar = await cookies();
-  const token = jar.get(SESSION_COOKIE)?.value;
+  const token = jar.get(sessionCookieFor(portal))?.value;
   if (!token) return null;
-  const { decodeSession } = await import("@/lib/session-token");
-  return decodeSession(token);
+  const session = decodeSession(token);
+  if (!session || session.portal !== portal) return null;
+  return session;
+}
+
+/** Prefer staff, then parent — for shared data actions. */
+export async function getAnySession(): Promise<SessionPayload | null> {
+  return (await getSession("staff")) ?? (await getSession("parent"));
 }

@@ -23,7 +23,7 @@ function generateTempPassword() {
 }
 
 export async function getParentAppAccess(email: string) {
-  const session = await getSession();
+  const session = await getSession("staff");
   if (!session || session.portal !== "staff") {
     return { exists: false as const };
   }
@@ -62,7 +62,7 @@ export async function createParentAppAccess(input: {
   childIds: string[];
   password?: string;
 }): Promise<ParentAccessResult> {
-  const session = await getSession();
+  const session = await getSession("staff");
   if (!session || session.portal !== "staff") {
     return { ok: false, error: "Hanya staf yang dapat membuat akses app." };
   }
