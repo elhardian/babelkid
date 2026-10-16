@@ -1,13 +1,13 @@
 /** Safe public demo credentials for the login UI (client-safe) */
 export const DEMO_CREDENTIALS = {
   staff: {
-    email: "maya@babelkids.id",
+    email: "efinda16@gmail.com",
     password: "babelkids123",
-    label: "Maya Santoso · Pemilik",
+    label: "Efinda Saputri · Kepala Sekolah",
   },
   parent: {
-    email: "sari.rahman@email.com",
+    email: "cindy.sapitri@parent.babelkids.id",
     password: "parent123",
-    label: "Sari Rahman · Ibu Alya & Rafi",
+    label: "Cindy Sapitri · Ibu Adeeva & Adreena",
   },
 } as const;

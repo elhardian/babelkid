@@ -2,6 +2,7 @@ import "dotenv/config";
 import bcrypt from "bcryptjs";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import { PrismaClient, AuthPortal, UserRole } from "../src/generated/prisma/client";
+import { rosterStaffSeed } from "../src/lib/seed/roster";
 
 const adapter = new PrismaMariaDb({
   host: process.env.DATABASE_HOST ?? "localhost",
@@ -13,79 +14,38 @@ const adapter = new PrismaMariaDb({
 
 const prisma = new PrismaClient({ adapter });
 
-const users = [
-  {
-    id: "t1",
-    email: "maya@babelkids.id",
-    name: "Maya Santoso",
-    role: UserRole.owner,
-    portal: AuthPortal.staff,
-    password: "babelkids123",
-    phone: "+62 812-1000-1001",
-  },
-  {
-    id: "t2",
-    email: "rina@babelkids.id",
-    name: "Rina Wijaya",
-    role: UserRole.admin,
-    portal: AuthPortal.staff,
-    password: "staff123",
-    phone: "+62 812-1000-1002",
-  },
-  {
-    id: "t3",
-    email: "dewi@babelkids.id",
-    name: "Dewi Kartika",
-    role: UserRole.teacher,
-    portal: AuthPortal.staff,
-    password: "guru123",
-    phone: "+62 812-1000-1003",
-  },
-  {
-    id: "p-sari",
-    email: "sari.rahman@email.com",
-    name: "Sari Rahman",
-    role: UserRole.parent,
-    portal: AuthPortal.parent,
-    password: "parent123",
-    phone: "+62 812-2000-1001",
-    childIds: ["s1", "s9"],
-  },
-  {
-    id: "p-budi",
-    email: "budi.rahman@email.com",
-    name: "Budi Rahman",
-    role: UserRole.parent,
-    portal: AuthPortal.parent,
-    password: "parent123",
-    phone: "+62 812-2000-1002",
-    childIds: ["s1", "s9"],
-  },
-] as const;
+const roleMap: Record<string, UserRole> = {
+  owner: UserRole.owner,
+  admin: UserRole.admin,
+  teacher: UserRole.teacher,
+  parent: UserRole.parent,
+};
+
+const portalMap: Record<string, AuthPortal> = {
+  staff: AuthPortal.staff,
+  parent: AuthPortal.parent,
+};
 
 async function main() {
-  for (const u of users) {
+  // Full replace so staff/parent ids stay aligned with the roster
+  await prisma.user.deleteMany({});
+  console.log("– cleared users table");
+
+  for (const u of rosterStaffSeed) {
     const passwordHash = await bcrypt.hash(u.password, 10);
-    await prisma.user.upsert({
-      where: { email: u.email },
-      create: {
+    const childIds =
+      "childIds" in u && Array.isArray(u.childIds) ? [...u.childIds] : undefined;
+
+    await prisma.user.create({
+      data: {
         id: u.id,
         email: u.email,
         name: u.name,
-        role: u.role,
-        portal: u.portal,
+        role: roleMap[u.role],
+        portal: portalMap[u.portal],
         phone: u.phone,
         passwordHash,
-        childIds: "childIds" in u ? [...u.childIds] : undefined,
-        active: true,
-      },
-      update: {
-        name: u.name,
-        role: u.role,
-        portal: u.portal,
-        phone: u.phone,
-        passwordHash,
-        childIds: "childIds" in u ? [...u.childIds] : undefined,
+        childIds,
         active: true,
       },
     });

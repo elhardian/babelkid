@@ -5,19 +5,22 @@ import { Box, CalendarCheck, ClipboardPen, Users } from "lucide-react";
 import { useRegistrations } from "@/components/dashboard/RegistrationProvider";
 import {
   classes,
-  currentParentName,
   events,
   students,
   presenceRecords,
+  teachers,
 } from "@/lib/mock-data";
 import { todayISO } from "@/lib/format";
+import { useStaffSessionLabel } from "@/components/dashboard/StaffSessionProvider";
 
 export default function DashboardOverviewPage() {
   const { pendingCount } = useRegistrations();
+  const { name } = useStaffSessionLabel();
   const today = todayISO();
   const activeStudents = students.filter((s) => s.status === "active").length;
   const upcomingEvents = events.filter((e) => e.status === "upcoming");
   const todayPresence = presenceRecords.filter((p) => p.date === today).length;
+  const owner = teachers.find((t) => t.role === "owner");
 
   const masterSummary = [
     { label: "Siswa", value: students.length, href: "/dashboard/students" },
@@ -47,8 +50,8 @@ export default function DashboardOverviewPage() {
           Beranda
         </h1>
         <p className="mt-1 text-sm text-[#8A96A8]">
-          Selamat datang, Maya Santoso · data sinkron dengan Parent App (
-          {currentParentName} · Alya & Rafi)
+          Selamat datang, {name || owner?.name || "Staf"} ·{" "}
+          {activeStudents} siswa aktif · {classes.length} kelas
         </p>
       </div>
 

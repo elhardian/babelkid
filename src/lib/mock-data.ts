@@ -12,464 +12,22 @@ import type {
   Teacher,
   TuitionRecord,
 } from "./types";
+import {
+  rosterClasses,
+  rosterStudents,
+  rosterTeachers,
+} from "./seed/roster";
 
-export const teachers: Teacher[] = [
-  {
-    id: "t1",
-    name: "Maya Santoso",
-    email: "maya@babelkids.id",
-    phone: "+62 812-1000-1001",
-    role: "owner",
-    createdAt: "2024-01-10",
-  },
-  {
-    id: "t2",
-    name: "Rina Wijaya",
-    email: "rina@babelkids.id",
-    phone: "+62 812-1000-1002",
-    role: "admin",
-    createdAt: "2024-03-01",
-  },
-  {
-    id: "t3",
-    name: "Dewi Kartika",
-    email: "dewi@babelkids.id",
-    phone: "+62 812-1000-1003",
-    role: "teacher",
-    notes: "Wali kelas Little Sprouts",
-    createdAt: "2024-06-15",
-  },
-  {
-    id: "t4",
-    name: "Andi Pratama",
-    email: "andi@babelkids.id",
-    phone: "+62 812-1000-1004",
-    role: "teacher",
-    notes: "Wali kelas Curious Minds",
-    createdAt: "2024-08-20",
-  },
-  {
-    id: "t5",
-    name: "Budi Santoso",
-    email: "budi@babelkids.id",
-    phone: "+62 812-1000-1005",
-    role: "teacher",
-    notes: "Olahraga & outdoor",
-    createdAt: "2025-01-12",
-  },
-  {
-    id: "t6",
-    name: "Sari Melati",
-    email: "sari.guru@babelkids.id",
-    phone: "+62 812-1000-1006",
-    role: "teacher",
-    notes: "Wali kelas Explorer Path",
-    createdAt: "2025-02-01",
-  },
-];
+export const teachers: Teacher[] = rosterTeachers;
 
-export const classes: SchoolClass[] = [
-  {
-    id: "c1",
-    name: "Little Sprouts",
-    level: "preschool",
-    teacherId: "t3",
-    capacity: 12,
-    room: "Room A",
-    schedule: "Mon–Fri 08:00–12:00",
-    ageMinYears: 2,
-    ageMaxYears: 3,
-  },
-  {
-    id: "c2",
-    name: "Bright Stars",
-    level: "preschool",
-    teacherId: "t3",
-    capacity: 14,
-    room: "Room B",
-    schedule: "Mon–Fri 08:00–12:00",
-    ageMinYears: 3,
-    ageMaxYears: 4,
-  },
-  {
-    id: "c3",
-    name: "Curious Minds",
-    level: "kindergarten",
-    teacherId: "t4",
-    capacity: 16,
-    room: "Room C",
-    schedule: "Mon–Fri 08:00–14:00",
-    ageMinYears: 4,
-    ageMaxYears: 5,
-  },
-  {
-    id: "c4",
-    name: "Explorer Path",
-    level: "kindergarten",
-    teacherId: "t4",
-    capacity: 16,
-    room: "Room D",
-    schedule: "Mon–Fri 08:00–14:00",
-    ageMinYears: 5,
-    ageMaxYears: 6,
-  },
-];
+export const classes: SchoolClass[] = rosterClasses;
 
-export const students: Student[] = [
-  {
-    id: "s1",
-    name: "Alya Putri Rahman",
-    nickname: "Alya",
-    dateOfBirth: "2021-03-14",
-    gender: "female",
-    classId: "c1",
-    status: "active",
-    enrollmentDate: "2024-07-01",
-    photoColor: "#F4A261",
-    allergies: "None known",
-    notes: "",
-    classHistory: [
-      {
-        id: "ch-s1-1",
-        classId: "c2",
-        className: "Bright Stars",
-        level: "preschool",
-        teacherName: "Dewi Kartika",
-        startDate: "2024-07-01",
-        endDate: "2025-06-30",
-        note: "Moved for schedule fit",
-      },
-      {
-        id: "ch-s1-2",
-        classId: "c1",
-        className: "Little Sprouts",
-        level: "preschool",
-        teacherName: "Dewi Kartika",
-        startDate: "2025-07-01",
-      },
-    ],
-    parents: [
-      {
-        id: "p1",
-        name: "Sari Rahman",
-        relationship: "mother",
-        phone: "+62 811-2222-3333",
-        email: "sari.rahman@email.com",
-      },
-      {
-        id: "p1b",
-        name: "Budi Rahman",
-        relationship: "father",
-        phone: "+62 811-2222-3334",
-        email: "budi.rahman@email.com",
-      },
-    ],
-  },
-  {
-    id: "s9",
-    name: "Rafi Putra Rahman",
-    nickname: "Rafi",
-    dateOfBirth: "2019-08-05",
-    gender: "male",
-    classId: "c3",
-    status: "active",
-    enrollmentDate: "2023-07-01",
-    photoColor: "#00B894",
-    allergies: "None known",
-    notes: "",
-    classHistory: [
-      {
-        id: "ch-s9-1",
-        classId: "c1",
-        className: "Little Sprouts",
-        level: "preschool",
-        teacherName: "Dewi Kartika",
-        startDate: "2023-07-01",
-        endDate: "2025-06-30",
-      },
-      {
-        id: "ch-s9-2",
-        classId: "c3",
-        className: "Curious Minds",
-        level: "kindergarten",
-        teacherName: "Andi Pratama",
-        startDate: "2025-07-01",
-      },
-    ],
-    parents: [
-      {
-        id: "p1",
-        name: "Sari Rahman",
-        relationship: "mother",
-        phone: "+62 811-2222-3333",
-        email: "sari.rahman@email.com",
-      },
-      {
-        id: "p1b",
-        name: "Budi Rahman",
-        relationship: "father",
-        phone: "+62 811-2222-3334",
-        email: "budi.rahman@email.com",
-      },
-    ],
-  },
-  {
-    id: "s2",
-    name: "Kenzo Aditya",
-    nickname: "Kenzo",
-    dateOfBirth: "2020-11-02",
-    gender: "male",
-    classId: "c1",
-    status: "active",
-    enrollmentDate: "2024-07-01",
-    photoColor: "#2A9D8F",
-    allergies: "None known",
-    notes: "",
-    classHistory: [
-      {
-        id: "ch-s2-1",
-        classId: "c1",
-        className: "Little Sprouts",
-        level: "preschool",
-        teacherName: "Dewi Kartika",
-        startDate: "2024-07-01",
-      },
-    ],
-    parents: [
-      {
-        id: "p2",
-        name: "Lisa Aditya",
-        relationship: "mother",
-        phone: "+62 811-3333-4444",
-        email: "lisa.aditya@email.com",
-      },
-    ],
-  },
-  {
-    id: "s3",
-    name: "Mika Anggraini",
-    nickname: "Mika",
-    dateOfBirth: "2021-07-22",
-    gender: "female",
-    classId: "c2",
-    status: "active",
-    enrollmentDate: "2024-08-15",
-    photoColor: "#E76F51",
-    allergies: "None known",
-    notes: "",
-    classHistory: [
-      {
-        id: "ch-s3-1",
-        classId: "c2",
-        className: "Bright Stars",
-        level: "preschool",
-        teacherName: "Dewi Kartika",
-        startDate: "2024-07-01",
-      },
-    ],
-    parents: [
-      {
-        id: "p3",
-        name: "Nina Anggraini",
-        relationship: "mother",
-        phone: "+62 811-4444-5555",
-        email: "nina.ang@email.com",
-      },
-    ],
-  },
-  {
-    id: "s4",
-    name: "Raka Firmansyah",
-    nickname: "Raka",
-    dateOfBirth: "2020-05-08",
-    gender: "male",
-    classId: "c2",
-    status: "active",
-    enrollmentDate: "2024-07-01",
-    photoColor: "#457B9D",
-    allergies: "None known",
-    notes: "",
-    classHistory: [
-      {
-        id: "ch-s4-1",
-        classId: "c2",
-        className: "Bright Stars",
-        level: "preschool",
-        teacherName: "Dewi Kartika",
-        startDate: "2024-07-01",
-      },
-    ],
-    parents: [
-      {
-        id: "p4",
-        name: "Hendra Firmansyah",
-        relationship: "father",
-        phone: "+62 811-5555-6666",
-        email: "hendra.f@email.com",
-      },
-    ],
-  },
-  {
-    id: "s5",
-    name: "Sofia Chen",
-    nickname: "Sofia",
-    dateOfBirth: "2019-09-30",
-    gender: "female",
-    classId: "c3",
-    status: "active",
-    enrollmentDate: "2023-07-01",
-    photoColor: "#9B5DE5",
-    allergies: "None known",
-    notes: "",
-    classHistory: [
-      {
-        id: "ch-s5-1",
-        classId: "c2",
-        className: "Bright Stars",
-        level: "preschool",
-        teacherName: "Dewi Kartika",
-        startDate: "2023-07-01",
-        endDate: "2024-06-30",
-      },
-      {
-        id: "ch-s5-2",
-        classId: "c3",
-        className: "Curious Minds",
-        level: "kindergarten",
-        teacherName: "Andi Pratama",
-        startDate: "2024-07-01",
-      },
-    ],
-    parents: [
-      {
-        id: "p5",
-        name: "Mei Chen",
-        relationship: "mother",
-        phone: "+62 811-6666-7777",
-        email: "mei.chen@email.com",
-      },
-    ],
-  },
-  {
-    id: "s6",
-    name: "Arjun Patel",
-    nickname: "Arjun",
-    dateOfBirth: "2019-12-12",
-    gender: "male",
-    classId: "c3",
-    status: "active",
-    enrollmentDate: "2023-07-01",
-    photoColor: "#00BBF9",
-    allergies: "None known",
-    notes: "",
-    classHistory: [
-      {
-        id: "ch-s6-1",
-        classId: "c1",
-        className: "Little Sprouts",
-        level: "preschool",
-        teacherName: "Dewi Kartika",
-        startDate: "2023-07-01",
-        endDate: "2024-06-30",
-      },
-      {
-        id: "ch-s6-2",
-        classId: "c3",
-        className: "Curious Minds",
-        level: "kindergarten",
-        teacherName: "Andi Pratama",
-        startDate: "2024-07-01",
-      },
-    ],
-    parents: [
-      {
-        id: "p6",
-        name: "Priya Patel",
-        relationship: "mother",
-        phone: "+62 811-7777-8888",
-        email: "priya.p@email.com",
-      },
-    ],
-  },
-  {
-    id: "s7",
-    name: "Elena Putri",
-    nickname: "Elena",
-    dateOfBirth: "2019-04-18",
-    gender: "female",
-    classId: "c4",
-    status: "active",
-    enrollmentDate: "2023-08-01",
-    photoColor: "#F15BB5",
-    allergies: "None known",
-    notes: "",
-    classHistory: [
-      {
-        id: "ch-s7-1",
-        classId: "c1",
-        className: "Little Sprouts",
-        level: "preschool",
-        teacherName: "Dewi Kartika",
-        startDate: "2023-07-01",
-        endDate: "2024-06-30",
-      },
-      {
-        id: "ch-s7-2",
-        classId: "c4",
-        className: "Explorer Path",
-        level: "kindergarten",
-        teacherName: "Andi Pratama",
-        startDate: "2024-07-01",
-      },
-    ],
-    parents: [
-      {
-        id: "p7",
-        name: "Wulan Putri",
-        relationship: "mother",
-        phone: "+62 811-8888-9999",
-        email: "wulan.putri@email.com",
-      },
-    ],
-  },
-  {
-    id: "s8",
-    name: "Leo Santoso",
-    nickname: "Leo",
-    dateOfBirth: "2020-01-25",
-    gender: "male",
-    classId: "c4",
-    status: "inactive",
-    enrollmentDate: "2024-01-10",
-    photoColor: "#FEE440",
-    allergies: "None known",
-    notes: "",
-    classHistory: [
-      {
-        id: "ch-s8-1",
-        classId: "c4",
-        className: "Explorer Path",
-        level: "kindergarten",
-        teacherName: "Andi Pratama",
-        startDate: "2024-07-01",
-      },
-    ],
-    parents: [
-      {
-        id: "p8",
-        name: "Agus Santoso",
-        relationship: "father",
-        phone: "+62 811-9999-0000",
-        email: "agus.s@email.com",
-      },
-    ],
-  },
-];
+export const students: Student[] = rosterStudents;
 
 export const tuitionRecords: TuitionRecord[] = [
   {
     id: "tu1",
-    studentId: "s1",
+    studentId: "k2a-01",
     month: "2026-07",
     amount: 2500000,
     status: "paid",
@@ -482,7 +40,7 @@ export const tuitionRecords: TuitionRecord[] = [
   },
   {
     id: "tu2",
-    studentId: "s2",
+    studentId: "k2a-02",
     month: "2026-07",
     amount: 2500000,
     status: "submitted",
@@ -495,7 +53,7 @@ export const tuitionRecords: TuitionRecord[] = [
   },
   {
     id: "tu3",
-    studentId: "s3",
+    studentId: "k2a-03",
     month: "2026-07",
     amount: 2500000,
     status: "pending",
@@ -503,7 +61,7 @@ export const tuitionRecords: TuitionRecord[] = [
   },
   {
     id: "tu4",
-    studentId: "s4",
+    studentId: "k2a-04",
     month: "2026-07",
     amount: 2500000,
     status: "overdue",
@@ -511,7 +69,7 @@ export const tuitionRecords: TuitionRecord[] = [
   },
   {
     id: "tu5",
-    studentId: "s5",
+    studentId: "k2a-05",
     month: "2026-07",
     amount: 2800000,
     status: "paid",
@@ -520,11 +78,11 @@ export const tuitionRecords: TuitionRecord[] = [
     paymentMethod: "tunai",
     proofStatus: "approved",
     note: "Bayar tunai di sekolah",
-    recordedBy: "Rina Wijaya",
+    recordedBy: "Sega Weldia Safitri",
   },
   {
     id: "tu6",
-    studentId: "s6",
+    studentId: "k2a-06",
     month: "2026-07",
     amount: 2800000,
     status: "paid",
@@ -533,11 +91,11 @@ export const tuitionRecords: TuitionRecord[] = [
     paymentMethod: "whatsapp",
     proofStatus: "approved",
     note: "Konfirmasi via WA ke Bu Maya",
-    recordedBy: "Maya Santoso",
+    recordedBy: "Efinda Saputri",
   },
   {
     id: "tu7",
-    studentId: "s7",
+    studentId: "k2a-07",
     month: "2026-07",
     amount: 2800000,
     status: "submitted",
@@ -549,7 +107,7 @@ export const tuitionRecords: TuitionRecord[] = [
   },
   {
     id: "tu8",
-    studentId: "s1",
+    studentId: "k2a-01",
     month: "2026-06",
     amount: 2500000,
     status: "paid",
@@ -562,7 +120,7 @@ export const tuitionRecords: TuitionRecord[] = [
   },
   {
     id: "tu9",
-    studentId: "s2",
+    studentId: "k2a-02",
     month: "2026-06",
     amount: 2500000,
     status: "paid",
@@ -570,11 +128,11 @@ export const tuitionRecords: TuitionRecord[] = [
     paidAt: "2026-06-04",
     paymentMethod: "tunai",
     proofStatus: "approved",
-    recordedBy: "Dewi Kartika",
+    recordedBy: "Fitriyani",
   },
   {
     id: "tu10",
-    studentId: "s5",
+    studentId: "k2a-05",
     month: "2026-06",
     amount: 2800000,
     status: "paid",
@@ -585,7 +143,7 @@ export const tuitionRecords: TuitionRecord[] = [
   },
   {
     id: "tu11",
-    studentId: "s1",
+    studentId: "k2a-01",
     month: "2026-05",
     amount: 2500000,
     status: "paid",
@@ -596,11 +154,11 @@ export const tuitionRecords: TuitionRecord[] = [
       "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=800&q=80",
     proofStatus: "approved",
     note: "Kirim bukti via WA",
-    recordedBy: "Maya Santoso",
+    recordedBy: "Efinda Saputri",
   },
   {
     id: "tu12",
-    studentId: "s9",
+    studentId: "k2a-09",
     month: "2026-07",
     amount: 2800000,
     status: "paid",
@@ -613,7 +171,7 @@ export const tuitionRecords: TuitionRecord[] = [
   },
   {
     id: "tu13",
-    studentId: "s9",
+    studentId: "k2a-09",
     month: "2026-06",
     amount: 2800000,
     status: "paid",
@@ -626,7 +184,7 @@ export const tuitionRecords: TuitionRecord[] = [
   },
   {
     id: "tu14",
-    studentId: "s1",
+    studentId: "k2a-01",
     month: "2025-12",
     amount: 2500000,
     status: "paid",
@@ -639,7 +197,7 @@ export const tuitionRecords: TuitionRecord[] = [
   },
   {
     id: "tu15",
-    studentId: "s9",
+    studentId: "k2a-09",
     month: "2025-11",
     amount: 2800000,
     status: "paid",
@@ -652,7 +210,7 @@ export const tuitionRecords: TuitionRecord[] = [
   /* Last 2 months (Aug–Sep 2026) */
   {
     id: "tu16",
-    studentId: "s1",
+    studentId: "k2a-01",
     month: "2026-08",
     amount: 2500000,
     status: "paid",
@@ -666,7 +224,7 @@ export const tuitionRecords: TuitionRecord[] = [
   },
   {
     id: "tu17",
-    studentId: "s1",
+    studentId: "k2a-01",
     month: "2026-09",
     amount: 2500000,
     status: "pending",
@@ -674,7 +232,7 @@ export const tuitionRecords: TuitionRecord[] = [
   },
   {
     id: "tu18",
-    studentId: "s9",
+    studentId: "k2a-09",
     month: "2026-08",
     amount: 2800000,
     status: "paid",
@@ -685,11 +243,11 @@ export const tuitionRecords: TuitionRecord[] = [
       "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=800&q=80",
     proofStatus: "approved",
     note: "Konfirmasi via WA",
-    recordedBy: "Maya Santoso",
+    recordedBy: "Efinda Saputri",
   },
   {
     id: "tu19",
-    studentId: "s9",
+    studentId: "k2a-09",
     month: "2026-09",
     amount: 2800000,
     status: "pending",
@@ -1197,7 +755,7 @@ export const events: SchoolEvent[] = [
     coverGradient: "linear-gradient(135deg, #2A9D8F 0%, #E9C46A 100%)",
     coverImage:
       "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=1200&q=80",
-    attendees: ["s1", "s2", "s3", "s5", "s9"],
+    attendees: ["k2a-01", "k2a-02", "k2a-03", "k2a-05", "k2a-09"],
     documentation: [],
   },
   {
@@ -1212,7 +770,7 @@ export const events: SchoolEvent[] = [
     coverGradient: "linear-gradient(135deg, #E76F51 0%, #F4A261 100%)",
     coverImage:
       "https://images.unsplash.com/photo-1507048331197-7d4ac70811cf?auto=format&fit=crop&w=1200&q=80",
-    attendees: ["s1", "s4", "s6", "s7", "s9"],
+    attendees: ["k2a-01", "k2a-04", "k2a-06", "k2a-07", "k2a-09"],
     documentation: [],
   },
   {
@@ -1228,7 +786,7 @@ export const events: SchoolEvent[] = [
     coverGradient: "linear-gradient(135deg, #457B9D 0%, #A8DADC 100%)",
     coverImage:
       "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=1200&q=80",
-    attendees: ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s9"],
+    attendees: ["k2a-01", "k2a-02", "k2a-03", "k2a-04", "k2a-05", "k2a-06", "k2a-07", "k2a-09"],
     documentation: [
       {
         id: "d1",
@@ -1270,7 +828,7 @@ export const events: SchoolEvent[] = [
     coverGradient: "linear-gradient(135deg, #264653 0%, #2A9D8F 100%)",
     coverImage:
       "https://images.unsplash.com/photo-1472162072942-cd5147eb3902?auto=format&fit=crop&w=1200&q=80",
-    attendees: ["s1", "s2", "s5", "s6", "s7", "s9"],
+    attendees: ["k2a-01", "k2a-02", "k2a-05", "k2a-06", "k2a-07", "k2a-09"],
     documentation: [
       {
         id: "d4",
@@ -1339,7 +897,7 @@ export function isSchoolClosed(
 export const presenceRecords: PresenceRecord[] = [
   {
     id: "pr1",
-    studentId: "s1",
+    studentId: "k2a-01",
     classId: "c1",
     date: "2026-07-21",
     status: "present",
@@ -1347,7 +905,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr2",
-    studentId: "s2",
+    studentId: "k2a-02",
     classId: "c1",
     date: "2026-07-21",
     status: "late",
@@ -1356,7 +914,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr3",
-    studentId: "s3",
+    studentId: "k2a-03",
     classId: "c2",
     date: "2026-07-21",
     status: "present",
@@ -1364,7 +922,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr4",
-    studentId: "s4",
+    studentId: "k2a-04",
     classId: "c2",
     date: "2026-07-21",
     status: "absent",
@@ -1373,7 +931,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr5",
-    studentId: "s5",
+    studentId: "k2a-05",
     classId: "c3",
     date: "2026-07-21",
     status: "present",
@@ -1381,7 +939,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr6",
-    studentId: "s6",
+    studentId: "k2a-06",
     classId: "c3",
     date: "2026-07-21",
     status: "present",
@@ -1389,7 +947,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr7",
-    studentId: "s7",
+    studentId: "k2a-07",
     classId: "c4",
     date: "2026-07-21",
     status: "present",
@@ -1397,7 +955,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr11",
-    studentId: "s9",
+    studentId: "k2a-09",
     classId: "c3",
     date: "2026-07-21",
     status: "present",
@@ -1405,7 +963,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr12",
-    studentId: "s9",
+    studentId: "k2a-09",
     classId: "c3",
     date: "2026-07-18",
     status: "late",
@@ -1414,7 +972,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr8",
-    studentId: "s1",
+    studentId: "k2a-01",
     classId: "c1",
     date: "2026-07-18",
     status: "present",
@@ -1422,7 +980,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr9",
-    studentId: "s1",
+    studentId: "k2a-01",
     classId: "c1",
     date: "2026-07-17",
     status: "present",
@@ -1430,7 +988,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr10",
-    studentId: "s1",
+    studentId: "k2a-01",
     classId: "c1",
     date: "2026-07-16",
     status: "excused",
@@ -1439,7 +997,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr13",
-    studentId: "s1",
+    studentId: "k2a-01",
     classId: "c1",
     date: "2026-09-15",
     status: "present",
@@ -1447,7 +1005,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr14",
-    studentId: "s1",
+    studentId: "k2a-01",
     classId: "c1",
     date: "2026-09-12",
     status: "present",
@@ -1455,7 +1013,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr15",
-    studentId: "s1",
+    studentId: "k2a-01",
     classId: "c1",
     date: "2026-09-11",
     status: "absent",
@@ -1464,7 +1022,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr16",
-    studentId: "s1",
+    studentId: "k2a-01",
     classId: "c1",
     date: "2026-09-10",
     status: "excused",
@@ -1473,7 +1031,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr17",
-    studentId: "s1",
+    studentId: "k2a-01",
     classId: "c1",
     date: "2026-09-09",
     status: "late",
@@ -1481,7 +1039,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr18",
-    studentId: "s1",
+    studentId: "k2a-01",
     classId: "c1",
     date: "2026-09-08",
     status: "present",
@@ -1489,7 +1047,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr19",
-    studentId: "s9",
+    studentId: "k2a-09",
     classId: "c3",
     date: "2026-09-15",
     status: "present",
@@ -1497,7 +1055,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr20",
-    studentId: "s9",
+    studentId: "k2a-09",
     classId: "c3",
     date: "2026-09-12",
     status: "absent",
@@ -1505,7 +1063,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr21",
-    studentId: "s9",
+    studentId: "k2a-09",
     classId: "c3",
     date: "2026-09-11",
     status: "present",
@@ -1514,7 +1072,7 @@ export const presenceRecords: PresenceRecord[] = [
   /* Sep 17–23 2026 */
   {
     id: "pr22",
-    studentId: "s1",
+    studentId: "k2a-01",
     classId: "c1",
     date: "2026-09-17",
     status: "present",
@@ -1522,7 +1080,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr23",
-    studentId: "s2",
+    studentId: "k2a-02",
     classId: "c1",
     date: "2026-09-17",
     status: "present",
@@ -1530,7 +1088,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr24",
-    studentId: "s9",
+    studentId: "k2a-09",
     classId: "c3",
     date: "2026-09-17",
     status: "late",
@@ -1539,7 +1097,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr25",
-    studentId: "s5",
+    studentId: "k2a-05",
     classId: "c3",
     date: "2026-09-17",
     status: "present",
@@ -1547,7 +1105,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr26",
-    studentId: "s1",
+    studentId: "k2a-01",
     classId: "c1",
     date: "2026-09-18",
     status: "present",
@@ -1555,7 +1113,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr27",
-    studentId: "s2",
+    studentId: "k2a-02",
     classId: "c1",
     date: "2026-09-18",
     status: "excused",
@@ -1564,7 +1122,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr28",
-    studentId: "s9",
+    studentId: "k2a-09",
     classId: "c3",
     date: "2026-09-18",
     status: "present",
@@ -1572,7 +1130,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr29",
-    studentId: "s7",
+    studentId: "k2a-07",
     classId: "c4",
     date: "2026-09-18",
     status: "present",
@@ -1580,7 +1138,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr30",
-    studentId: "s1",
+    studentId: "k2a-01",
     classId: "c1",
     date: "2026-09-21",
     status: "present",
@@ -1588,7 +1146,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr31",
-    studentId: "s2",
+    studentId: "k2a-02",
     classId: "c1",
     date: "2026-09-21",
     status: "present",
@@ -1596,7 +1154,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr32",
-    studentId: "s9",
+    studentId: "k2a-09",
     classId: "c3",
     date: "2026-09-21",
     status: "absent",
@@ -1605,7 +1163,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr33",
-    studentId: "s3",
+    studentId: "k2a-03",
     classId: "c2",
     date: "2026-09-21",
     status: "present",
@@ -1613,7 +1171,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr34",
-    studentId: "s1",
+    studentId: "k2a-01",
     classId: "c1",
     date: "2026-09-22",
     status: "late",
@@ -1622,7 +1180,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr35",
-    studentId: "s2",
+    studentId: "k2a-02",
     classId: "c1",
     date: "2026-09-22",
     status: "present",
@@ -1630,7 +1188,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr36",
-    studentId: "s9",
+    studentId: "k2a-09",
     classId: "c3",
     date: "2026-09-22",
     status: "present",
@@ -1638,7 +1196,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr37",
-    studentId: "s5",
+    studentId: "k2a-05",
     classId: "c3",
     date: "2026-09-22",
     status: "present",
@@ -1646,7 +1204,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr38",
-    studentId: "s4",
+    studentId: "k2a-04",
     classId: "c2",
     date: "2026-09-22",
     status: "present",
@@ -1654,7 +1212,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr39",
-    studentId: "s1",
+    studentId: "k2a-01",
     classId: "c1",
     date: "2026-09-23",
     status: "present",
@@ -1662,7 +1220,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr40",
-    studentId: "s2",
+    studentId: "k2a-02",
     classId: "c1",
     date: "2026-09-23",
     status: "present",
@@ -1670,7 +1228,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr41",
-    studentId: "s9",
+    studentId: "k2a-09",
     classId: "c3",
     date: "2026-09-23",
     status: "present",
@@ -1678,7 +1236,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr42",
-    studentId: "s5",
+    studentId: "k2a-05",
     classId: "c3",
     date: "2026-09-23",
     status: "late",
@@ -1686,7 +1244,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr43",
-    studentId: "s7",
+    studentId: "k2a-07",
     classId: "c4",
     date: "2026-09-23",
     status: "present",
@@ -1694,7 +1252,7 @@ export const presenceRecords: PresenceRecord[] = [
   },
   {
     id: "pr44",
-    studentId: "s8",
+    studentId: "k2a-08",
     classId: "c4",
     date: "2026-09-23",
     status: "present",
@@ -1705,7 +1263,7 @@ export const presenceRecords: PresenceRecord[] = [
 export const studentReports: StudentReport[] = [
   {
     id: "r1",
-    studentId: "s1",
+    studentId: "k2a-01",
     teacherId: "t3",
     date: "2026-07-18",
     title: "Weekly progress",
@@ -1716,7 +1274,7 @@ export const studentReports: StudentReport[] = [
   },
   {
     id: "r2",
-    studentId: "s1",
+    studentId: "k2a-01",
     teacherId: "t3",
     date: "2026-07-11",
     title: "Weekly progress",
@@ -1727,7 +1285,7 @@ export const studentReports: StudentReport[] = [
   },
   {
     id: "r3",
-    studentId: "s2",
+    studentId: "k2a-02",
     teacherId: "t3",
     date: "2026-07-18",
     title: "Weekly progress",
@@ -1738,7 +1296,7 @@ export const studentReports: StudentReport[] = [
   },
   {
     id: "r4",
-    studentId: "s5",
+    studentId: "k2a-05",
     teacherId: "t4",
     date: "2026-07-18",
     title: "Weekly progress",
@@ -1749,7 +1307,7 @@ export const studentReports: StudentReport[] = [
   },
   {
     id: "r5",
-    studentId: "s9",
+    studentId: "k2a-09",
     teacherId: "t4",
     date: "2026-07-18",
     title: "Weekly progress",
@@ -1760,7 +1318,7 @@ export const studentReports: StudentReport[] = [
   },
   {
     id: "r6",
-    studentId: "s1",
+    studentId: "k2a-01",
     teacherId: "t3",
     date: "2026-09-18",
     title: "Laporan minggu ini",
@@ -1771,7 +1329,7 @@ export const studentReports: StudentReport[] = [
   },
   {
     id: "r7",
-    studentId: "s1",
+    studentId: "k2a-01",
     teacherId: "t3",
     date: "2026-09-23",
     title: "Catatan harian",
@@ -1782,7 +1340,7 @@ export const studentReports: StudentReport[] = [
   },
   {
     id: "r8",
-    studentId: "s9",
+    studentId: "k2a-09",
     teacherId: "t4",
     date: "2026-09-23",
     title: "Catatan harian",
@@ -1840,7 +1398,7 @@ export const kasEntries: KasEntry[] = [
     source: "tuition",
     amount: 5300000,
     note: "Tuition July — bank / transfer",
-    recordedBy: "Rina Wijaya",
+    recordedBy: "Sega Weldia Safitri",
   },
   {
     id: "k1b",
@@ -1850,7 +1408,7 @@ export const kasEntries: KasEntry[] = [
     source: "tuition",
     amount: 2800000,
     note: "Tuition July — tunai",
-    recordedBy: "Rina Wijaya",
+    recordedBy: "Sega Weldia Safitri",
     tuitionId: "tu5",
   },
   {
@@ -1861,7 +1419,7 @@ export const kasEntries: KasEntry[] = [
     source: "donation",
     amount: 5000000,
     note: "Alumni parent fund — playground mats",
-    recordedBy: "Maya Santoso",
+    recordedBy: "Efinda Saputri",
   },
   {
     id: "k3",
@@ -1871,7 +1429,7 @@ export const kasEntries: KasEntry[] = [
     source: "gift",
     amount: 1500000,
     note: "Cash gift for library books",
-    recordedBy: "Maya Santoso",
+    recordedBy: "Efinda Saputri",
   },
   {
     id: "k4",
@@ -1881,7 +1439,7 @@ export const kasEntries: KasEntry[] = [
     source: "sponsor",
     amount: 3000000,
     note: "Local bakery sponsor for snack week",
-    recordedBy: "Rina Wijaya",
+    recordedBy: "Sega Weldia Safitri",
   },
   {
     id: "k5",
@@ -1891,7 +1449,7 @@ export const kasEntries: KasEntry[] = [
     source: "expense",
     amount: 3200000,
     note: "July operating expenses (transfer)",
-    recordedBy: "Rina Wijaya",
+    recordedBy: "Sega Weldia Safitri",
   },
   {
     id: "k5b",
@@ -1901,7 +1459,7 @@ export const kasEntries: KasEntry[] = [
     source: "expense",
     amount: 1000000,
     note: "Petty cash — supplies",
-    recordedBy: "Rina Wijaya",
+    recordedBy: "Sega Weldia Safitri",
   },
   {
     id: "k6",
@@ -1911,7 +1469,7 @@ export const kasEntries: KasEntry[] = [
     source: "event",
     amount: 300000,
     note: "Event fee deposits",
-    recordedBy: "Dewi Kartika",
+    recordedBy: "Fitriyani",
   },
   {
     id: "k7",
@@ -1921,7 +1479,7 @@ export const kasEntries: KasEntry[] = [
     source: "donation",
     amount: 2000000,
     note: "Anonymous community donation",
-    recordedBy: "Maya Santoso",
+    recordedBy: "Efinda Saputri",
   },
   {
     id: "k8",
@@ -1931,7 +1489,7 @@ export const kasEntries: KasEntry[] = [
     source: "tuition",
     amount: 2500000,
     note: "Tuition June — Kenzo (tunai)",
-    recordedBy: "Dewi Kartika",
+    recordedBy: "Fitriyani",
     tuitionId: "tu9",
   },
   {
@@ -1942,7 +1500,7 @@ export const kasEntries: KasEntry[] = [
     source: "tuition",
     amount: 2500000,
     note: "SPP Agustus — Alya (transfer)",
-    recordedBy: "Maya Santoso",
+    recordedBy: "Efinda Saputri",
     tuitionId: "tu16",
   },
   {
@@ -1953,7 +1511,7 @@ export const kasEntries: KasEntry[] = [
     source: "expense",
     amount: 450000,
     note: "ATK & cat kegiatan seni",
-    recordedBy: "Rina Wijaya",
+    recordedBy: "Sega Weldia Safitri",
   },
   {
     id: "k11",
@@ -1963,7 +1521,7 @@ export const kasEntries: KasEntry[] = [
     source: "donation",
     amount: 1500000,
     note: "Donasi orang tua — peralatan bermain",
-    recordedBy: "Maya Santoso",
+    recordedBy: "Efinda Saputri",
   },
   {
     id: "k12",
@@ -1973,7 +1531,7 @@ export const kasEntries: KasEntry[] = [
     source: "expense",
     amount: 275000,
     note: "Snack bersama & stiker kelas",
-    recordedBy: "Dewi Kartika",
+    recordedBy: "Fitriyani",
   },
 ];
 
@@ -1994,10 +1552,10 @@ export function getKasBalances(entries: KasEntry[] = kasEntries) {
   };
 }
 
-/** Demo parent session — Sari Rahman has Alya (s1) + Rafi (s9) */
-export const currentParentChildIds = ["s1", "s9"];
+/** Demo parent session — Irza (Shakeel) / Cindy (Adeeva + Adreena) */
+export const currentParentChildIds = ["k2a-01"];
 export const currentParentChildId = currentParentChildIds[0];
-export const currentParentName = "Sari Rahman";
+export const currentParentName = "Irza Pebriyani";
 
 export function getStudent(id: string) {
   return students.find((s) => s.id === id);

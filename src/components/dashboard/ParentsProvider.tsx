@@ -8,70 +8,13 @@ import {
   useSyncExternalStore,
 } from "react";
 import { students } from "@/lib/mock-data";
+import { rosterParentProfiles } from "@/lib/seed/roster";
 import type { ParentProfile } from "@/lib/types";
 
 function seedFromStudents(): ParentProfile[] {
-  const map = new Map<string, ParentProfile>();
-  for (const s of students) {
-    for (const p of s.parents) {
-      if (map.has(p.id)) continue;
-      map.set(p.id, {
-        ...p,
-        address: undefined,
-        occupation: undefined,
-        notes: undefined,
-        createdAt: s.enrollmentDate,
-      });
-    }
-  }
-  // enrich known demo parents
-  const sari = map.get("p1");
-  if (sari) {
-    sari.address = "Jl. Cendana No. 8, Bandung";
-    sari.occupation = "Ibu rumah tangga";
-  }
-  const budi = map.get("p1b");
-  if (budi) {
-    budi.address = "Jl. Cendana No. 8, Bandung";
-    budi.occupation = "Karyawan swasta";
-  }
-  const extra: ParentProfile[] = [
-    {
-      id: "p-demo-1",
-      name: "Rina Wijaya",
-      relationship: "mother",
-      phone: "081298765432",
-      email: "rina.wijaya@email.com",
-      address: "Jl. Melati No. 5, Pangkalpinang",
-      occupation: "Guru",
-      createdAt: "2025-06-01",
-    },
-    {
-      id: "p-demo-2",
-      name: "Andi Pratama",
-      relationship: "father",
-      phone: "081355512345",
-      email: "andi.pratama@email.com",
-      address: "Jl. Merdeka No. 21, Pangkalpinang",
-      occupation: "Wiraswasta",
-      createdAt: "2025-08-12",
-    },
-    {
-      id: "p-demo-3",
-      name: "Siti Nurhaliza",
-      relationship: "guardian",
-      phone: "082112223333",
-      email: "siti.nur@email.com",
-      address: "Komplek Bumi Asri Blok B2",
-      occupation: "Pegawai negeri",
-      notes: "Wali dari sepupu",
-      createdAt: "2026-01-20",
-    },
-  ];
-  for (const p of extra) {
-    if (!map.has(p.id)) map.set(p.id, p);
-  }
-  return [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
+  return [...rosterParentProfiles].sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
 }
 
 let store: ParentProfile[] = seedFromStudents();
