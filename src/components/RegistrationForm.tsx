@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Check, ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react";
 import { submitRegistration } from "@/components/dashboard/RegistrationProvider";
 import { Select } from "@/components/dashboard/Select";
-import { classes } from "@/lib/mock-data";
+import { fetchPublicClasses } from "@/app/actions/school-data";
 import { cn } from "@/lib/format";
-import type { RegistrationParent } from "@/lib/types";
+import type { RegistrationParent, SchoolClass } from "@/lib/types";
 
 type Step = 1 | 2 | 3;
 
@@ -83,13 +83,18 @@ export function RegistrationForm({
   const [child, setChild] = useState(emptyChild);
   const [doneId, setDoneId] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [classes, setClasses] = useState<SchoolClass[]>([]);
+
+  useEffect(() => {
+    void fetchPublicClasses().then(setClasses);
+  }, []);
 
   const preschool = useMemo(
     () =>
       classes.filter(
         (c) => c.level === "preschool" || c.level === "kindergarten",
       ),
-    [],
+    [classes],
   );
 
   const canParent = parents.length > 0 && parents.every(isParentComplete);

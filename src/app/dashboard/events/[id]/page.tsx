@@ -13,7 +13,7 @@ import {
   inputClass,
 } from "@/components/dashboard/Modal";
 import { formatDate, formatIDR } from "@/lib/format";
-import { getEvent } from "@/lib/mock-data";
+import { getEvent } from "@/lib/runtime-registry";
 import type { EventDoc, SchoolEvent } from "@/lib/types";
 import { ImagePlus, Trash2 } from "lucide-react";
 

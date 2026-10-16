@@ -12,7 +12,13 @@ import { TeachersProvider } from "@/components/dashboard/TeachersProvider";
 import { StaffSessionProvider } from "@/components/dashboard/StaffSessionProvider";
 import { RolePermissionsProvider } from "@/components/dashboard/RolePermissionsProvider";
 import { DashboardRoleGuard } from "@/components/dashboard/DashboardRoleGuard";
+import { HydrateOpsRegistry } from "@/components/dashboard/HydrateOpsRegistry";
 import { getSession } from "@/lib/auth";
+import * as roster from "@/lib/data/roster";
+import * as ops from "@/lib/data/ops";
+import * as finance from "@/lib/data/finance";
+import * as events from "@/lib/data/events";
+import * as rolePerms from "@/lib/data/role-permissions";
 
 export default async function DashboardLayout({
   children,
@@ -24,17 +30,53 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
+  const [
+    teachers,
+    classes,
+    students,
+    parents,
+    dayOffs,
+    activities,
+    kas,
+    rolePermissions,
+    registrations,
+    presence,
+    tuition,
+    reports,
+    schoolEvents,
+  ] = await Promise.all([
+    roster.listTeachers(),
+    roster.listClasses(),
+    roster.listStudents(),
+    roster.listParents(),
+    ops.listDayOffs(),
+    ops.listActivities(),
+    finance.listKas(),
+    rolePerms.getRolePermissionMatrix(),
+    events.listRegistrations(),
+    ops.listPresence(),
+    finance.listTuition(),
+    ops.listReports(),
+    events.listEvents(),
+  ]);
+
   return (
     <StaffSessionProvider session={session}>
-      <RolePermissionsProvider>
-        <KasProvider>
-          <DayOffProvider>
-            <ParentsProvider>
-              <TeachersProvider>
-                <ClassesProvider>
-                  <StudentsProvider>
-                    <RegistrationProvider>
-                      <ClassActivityProvider>
+      <RolePermissionsProvider initial={rolePermissions}>
+        <KasProvider initial={kas}>
+          <DayOffProvider initial={dayOffs}>
+            <ParentsProvider initial={parents}>
+              <TeachersProvider initial={teachers}>
+                <ClassesProvider initial={classes}>
+                  <StudentsProvider initial={students}>
+                    <RegistrationProvider initial={registrations}>
+                      <ClassActivityProvider initial={activities}>
+                        <HydrateOpsRegistry
+                          presence={presence}
+                          tuition={tuition}
+                          reports={reports}
+                          events={schoolEvents}
+                        />
                         <div className="dashboard-shell flex h-dvh flex-col overflow-hidden bg-[#F3F7FC] font-[family-name:var(--font-outfit)] font-light text-[#1A2330] lg:flex-row">
                           <DashboardSidebar />
                           <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">

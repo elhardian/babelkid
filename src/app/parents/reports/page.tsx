@@ -5,7 +5,8 @@ import { BookOpen, MessageCircle, Sparkles } from "lucide-react";
 import { ParentsKidsRow } from "@/components/parents/ParentsKidsRow";
 import { useParentKids } from "@/components/parents/ParentKidsProvider";
 import { formatDate } from "@/lib/format";
-import { getTeacher, studentReports } from "@/lib/mock-data";
+import { getTeacher, registry } from "@/lib/runtime-registry";
+const studentReports = registry.reports;
 
 const moodLabel = {
   happy: { emoji: "😊", text: "Senang" },

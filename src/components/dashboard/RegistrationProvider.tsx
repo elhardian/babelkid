@@ -10,7 +10,8 @@ import {
 import { enrollStudentFromRegistration } from "@/components/dashboard/StudentsProvider";
 import { upsertParentFromStore } from "@/components/dashboard/ParentsProvider";
 import { getTeacherFromStore } from "@/components/dashboard/TeachersProvider";
-import { classes as seedClasses } from "@/lib/mock-data";
+import { saveRegistration } from "@/app/actions/school-data";
+import { registry } from "@/lib/runtime-registry";
 import type {
   RegistrationApplication,
   RegistrationDetailedForm,
@@ -18,8 +19,6 @@ import type {
   RegistrationStatus,
   Student,
 } from "@/lib/types";
-
-const STORAGE_KEY = "babelkids.registrations.v2";
 
 const seed: RegistrationApplication[] = [
   {
@@ -160,62 +159,24 @@ const seed: RegistrationApplication[] = [
   },
 ];
 
-const SERVER_SNAPSHOT: RegistrationApplication[] = seed;
-
-function readStorage(): RegistrationApplication[] | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as RegistrationApplication[];
-    return Array.isArray(parsed) ? parsed : null;
-  } catch {
-    return null;
-  }
-}
-
-function writeStorage(rows: RegistrationApplication[]) {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(rows));
-  } catch {
-    /* ignore */
-  }
-}
-
-let store: RegistrationApplication[] = [...seed];
-let hydrated = false;
+let store: RegistrationApplication[] = [];
 const listeners = new Set<() => void>();
 
 function emit() {
   for (const l of listeners) l();
 }
 
-function hydrateFromStorage() {
-  if (hydrated || typeof window === "undefined") return;
-  hydrated = true;
-  const saved = readStorage();
-  if (saved) store = saved;
-  else writeStorage(store);
-}
-
 function subscribe(listener: () => void) {
   listeners.add(listener);
-  hydrateFromStorage();
-  queueMicrotask(() => {
-    hydrateFromStorage();
-    listener();
-  });
   return () => listeners.delete(listener);
 }
 
 function getSnapshot() {
-  hydrateFromStorage();
   return store;
 }
 
 function getServerSnapshot() {
-  return SERVER_SNAPSHOT;
+  return store;
 }
 
 function setStore(
@@ -223,10 +184,17 @@ function setStore(
     | RegistrationApplication[]
     | ((prev: RegistrationApplication[]) => RegistrationApplication[]),
 ) {
-  hydrateFromStorage();
+  const prev = store;
   store = typeof next === "function" ? next(store) : next;
-  writeStorage(store);
   emit();
+  // Persist changed/new rows to MySQL
+  const prevIds = new Map(prev.map((a) => [a.id, a]));
+  for (const row of store) {
+    const before = prevIds.get(row.id);
+    if (before !== row) {
+      void saveRegistration(row);
+    }
+  }
 }
 
 function createApplication(
@@ -284,9 +252,14 @@ const RegistrationContext = createContext<RegistrationContextValue | null>(
 
 export function RegistrationProvider({
   children,
+  initial = [],
 }: {
   children: React.ReactNode;
+  initial?: RegistrationApplication[];
 }) {
+  if (initial.length && store.length === 0) {
+    store = initial;
+  }
   const applications = useSyncExternalStore(
     subscribe,
     getSnapshot,
@@ -400,8 +373,8 @@ export function RegistrationProvider({
     );
 
     const clsId =
-      classId || app.child.preferredClassId || seedClasses[0]?.id || "c1";
-    const cls = seedClasses.find((c) => c.id === clsId);
+      classId || app.child.preferredClassId || registry.classes[0]?.id || "c1";
+    const cls = registry.classes.find((c) => c.id === clsId);
     const teacher = cls ? getTeacherFromStore(cls.teacherId) : undefined;
     const enrollmentDate = new Date().toISOString().slice(0, 10);
     const colors = ["#F4A261", "#2E7DFF", "#E9C46A", "#2A9D8F", "#E76F51"];
@@ -508,7 +481,6 @@ export function submitRegistration(
 }
 
 export function getRegistrationByToken(token: string) {
-  hydrateFromStorage();
   return store.find((a) => a.formToken === token);
 }
 
@@ -516,7 +488,6 @@ export function submitDetailedFormByToken(
   token: string,
   form: RegistrationDetailedForm,
 ) {
-  hydrateFromStorage();
   const app = store.find((a) => a.formToken === token);
   if (!app) return null;
   if (

@@ -2413,21 +2413,26 @@ export const rosterParentProfiles: ParentProfile[] = [
   },
 ];
 
-/** Demo parent login: mother of Shakeel (Kiddy 2A) */
-export const DEMO_PARENT_EMAIL = "irza.pebriyani@parent.babelkids.id";
-export const DEMO_PARENT_CHILD_IDS = ["k2a-01"] as const;
-
+/** Only owner + admin receive login passwords in seed */
 export const rosterStaffSeed = [
-  { id: "t1", email: "efinda16@gmail.com", name: "Efinda Saputri", role: "owner" as const, portal: "staff" as const, password: "babelkids123", phone: "082280354776" },
-  { id: "t2", email: "segaweldia@gmail.com", name: "Sega Weldia Safitri", role: "admin" as const, portal: "staff" as const, password: "admin123", phone: "082286906337" },
-  { id: "t3", email: "fitriyani240496@gmail.com", name: "Fitriyani", role: "teacher" as const, portal: "staff" as const, password: "guru123", phone: "085346813681" },
-  { id: "t4", email: "riskaardiningsih98@gmail.com", name: "Riska Ardiningsih", role: "teacher" as const, portal: "staff" as const, password: "guru123", phone: "081377724287" },
-  { id: "t5", email: "tant897@gmail.com", name: "Tanti", role: "teacher" as const, portal: "staff" as const, password: "guru123", phone: "083175048521" },
-  { id: "t6", email: "missrezaseptiani@gmail.com", name: "Reza Septiani", role: "teacher" as const, portal: "staff" as const, password: "guru123", phone: "081271620210" },
-  { id: "t7", email: "megitafitri17@gmail.com", name: "Megita Fitri Amalia", role: "teacher" as const, portal: "staff" as const, password: "guru123", phone: "081379737615" },
-  { id: "t8", email: "nrmeitianaz11@gmail.com", name: "Nur Meitiana Zalianti", role: "teacher" as const, portal: "staff" as const, password: "guru123", phone: "081369960815" },
-  { id: "t9", email: "sela.abdalin@gmail.com", name: "Sella Abdalin", role: "teacher" as const, portal: "staff" as const, password: "guru123", phone: "081273539482" },
-  { id: "t10", email: "merdianaoktaria5@gmail.com", name: "Mardiana Oktaria", role: "teacher" as const, portal: "staff" as const, password: "guru123", phone: "085369428727" },
-  { id: "p-irza", email: "irza.pebriyani@parent.babelkids.id", name: "Irza Pebriyani", role: "parent" as const, portal: "parent" as const, password: "parent123", phone: "082183897089", childIds: ["k2a-01"] },
-  { id: "p-cindy", email: "cindy.sapitri@parent.babelkids.id", name: "Cindy Sapitri", role: "parent" as const, portal: "parent" as const, password: "parent123", phone: "081296767636", childIds: ["k1-01", "k2a-14"] },
+  {
+    id: "t1",
+    email: "efinda16@gmail.com",
+    name: "Efinda Saputri",
+    role: "owner" as const,
+    portal: "staff" as const,
+    password: "babelkids123",
+    phone: "082280354776",
+    jabatan: "Kepala Sekolah",
+  },
+  {
+    id: "t2",
+    email: "segaweldia@gmail.com",
+    name: "Sega Weldia Safitri",
+    role: "admin" as const,
+    portal: "staff" as const,
+    password: "admin123",
+    phone: "082286906337",
+    jabatan: "Admin",
+  },
 ];

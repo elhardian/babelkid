@@ -1552,33 +1552,12 @@ export function getKasBalances(entries: KasEntry[] = kasEntries) {
   };
 }
 
-/** Demo parent session — Irza (Shakeel) / Cindy (Adeeva + Adreena) */
-export const currentParentChildIds = ["k2a-01"];
-export const currentParentChildId = currentParentChildIds[0];
-export const currentParentName = "Irza Pebriyani";
 
-export function getStudent(id: string) {
-  return students.find((s) => s.id === id);
-}
-
-export function getStudentsByParentEmail(email: string) {
-  return students.filter((s) =>
-    s.parents.some((p) => p.email.toLowerCase() === email.toLowerCase()),
-  );
-}
-
-export function getClass(id: string) {
-  return classes.find((c) => c.id === id);
-}
-
-export function getTeacher(id: string) {
-  return teachers.find((t) => t.id === id);
-}
-
-export function getEvent(id: string) {
-  return events.find((e) => e.id === id);
-}
-
-export function studentsInClass(classId: string) {
-  return students.filter((s) => s.classId === classId && s.status === "active");
-}
+export {
+  getStudent,
+  getStudentsByParentEmail,
+  getClass,
+  getTeacher,
+  getEvent,
+  studentsInClass,
+} from "@/lib/runtime-registry";

@@ -7,7 +7,8 @@ import { CalendarDays, ChevronRight, MapPin, Search } from "lucide-react";
 import { ChildAvatar } from "@/components/parents/ChildAvatar";
 import { useParentKids } from "@/components/parents/ParentKidsProvider";
 import { formatDate, formatIDR } from "@/lib/format";
-import { events, getStudent } from "@/lib/mock-data";
+import { getStudent, registry } from "@/lib/runtime-registry";
+const events = registry.events;
 
 const tabLabel = {
   upcoming: "Mendatang",

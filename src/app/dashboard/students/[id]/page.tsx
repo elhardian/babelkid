@@ -9,10 +9,12 @@ import {
   getClass,
   getStudent,
   getTeacher,
-  presenceRecords,
-  studentReports,
-  tuitionRecords,
-} from "@/lib/mock-data";
+  registry,
+} from "@/lib/runtime-registry";
+
+const presenceRecords = registry.presence;
+const studentReports = registry.reports;
+const tuitionRecords = registry.tuition;
 
 export default function StudentDetailPage() {
   const params = useParams();

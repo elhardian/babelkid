@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useParentKids } from "@/components/parents/ParentKidsProvider";
 import { formatIDR, formatMonth } from "@/lib/format";
-import { tuitionRecords } from "@/lib/mock-data";
+import { registry } from "@/lib/runtime-registry";
+const tuitionRecords = registry.tuition;
 
 export default function ParentsPayPage() {
   const router = useRouter();

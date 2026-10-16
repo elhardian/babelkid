@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChildAvatar } from "@/components/parents/ChildAvatar";
@@ -10,6 +11,18 @@ import {
   ParentKidsProvider,
   useParentKids,
 } from "@/components/parents/ParentKidsProvider";
+import { DayOffProvider } from "@/components/dashboard/DayOffProvider";
+import { ClassActivityProvider } from "@/components/dashboard/ClassActivityProvider";
+import { registry } from "@/lib/runtime-registry";
+import type {
+  ClassActivity,
+  PresenceRecord,
+  SchoolClass,
+  SchoolDayOff,
+  SchoolEvent,
+  Student,
+  TuitionRecord,
+} from "@/lib/types";
 
 function ParentsShell({ children }: { children: React.ReactNode }) {
   const { parentName, selectedChild } = useParentKids();
@@ -94,19 +107,46 @@ export function ParentsLayoutClient({
   parentName,
   parentEmail,
   childIds,
+  students,
+  registry: data,
 }: {
   children: React.ReactNode;
   parentName: string;
   parentEmail: string;
   childIds: string[];
+  students: Student[];
+  registry: {
+    students: Student[];
+    classes: SchoolClass[];
+    dayOffs: SchoolDayOff[];
+    activities: ClassActivity[];
+    presence: PresenceRecord[];
+    tuition: TuitionRecord[];
+    events: SchoolEvent[];
+  };
 }) {
+  useEffect(() => {
+    registry.students = data.students;
+    registry.classes = data.classes;
+    registry.dayOffs = data.dayOffs;
+    registry.activities = data.activities;
+    registry.presence = data.presence;
+    registry.tuition = data.tuition;
+    registry.events = data.events;
+  }, [data]);
+
   return (
-    <ParentKidsProvider
-      parentName={parentName}
-      parentEmail={parentEmail}
-      childIds={childIds}
-    >
-      <ParentsShell>{children}</ParentsShell>
-    </ParentKidsProvider>
+    <DayOffProvider initial={data.dayOffs}>
+      <ClassActivityProvider initial={data.activities}>
+        <ParentKidsProvider
+          parentName={parentName}
+          parentEmail={parentEmail}
+          childIds={childIds}
+          students={students}
+        >
+          <ParentsShell>{children}</ParentsShell>
+        </ParentKidsProvider>
+      </ClassActivityProvider>
+    </DayOffProvider>
   );
 }

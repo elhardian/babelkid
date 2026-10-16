@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import { fetchReports, saveReport } from "@/app/actions/school-data";
 import {
   EmptyState,
   FilterSelect,
@@ -22,11 +23,8 @@ import {
   usePagination,
 } from "@/components/dashboard/Pagination";
 import { formatDate } from "@/lib/format";
-import {
-  getStudent,
-  studentReports as initialReports,
-  students,
-} from "@/lib/mock-data";
+import { getStudent, registry } from "@/lib/runtime-registry";
+import { useStudentsRegistry } from "@/components/dashboard/StudentsProvider";
 import type { StudentReport } from "@/lib/types";
 
 type ModalMode = "add" | "edit" | "view" | null;
@@ -40,7 +38,16 @@ const moodLabel: Record<StudentReport["mood"], string> = {
 
 export default function ReportsPage() {
   const { teachers, getById: getTeacher } = useTeachersRegistry();
-  const [rows, setRows] = useState<StudentReport[]>(initialReports);
+  const { students } = useStudentsRegistry();
+  const [rows, setRows] = useState<StudentReport[]>(registry.reports);
+  const [, start] = useTransition();
+
+  useEffect(() => {
+    void fetchReports().then((data) => {
+      setRows(data);
+      registry.reports = data;
+    });
+  }, []);
   const [search, setSearch] = useState("");
   const [studentFilter, setStudentFilter] = useState("all");
   const [modal, setModal] = useState<ModalMode>(null);
@@ -93,6 +100,21 @@ export default function ReportsPage() {
     } else {
       setRows((prev) => [payload, ...prev]);
     }
+    start(async () => {
+      const saved = await saveReport(payload);
+      setRows((prev) => {
+        const rest = prev.filter(
+          (r) => r.id !== payload.id && r.id !== saved.id,
+        );
+        return [saved, ...rest];
+      });
+      registry.reports = [
+        saved,
+        ...registry.reports.filter(
+          (r) => r.id !== saved.id && r.id !== payload.id,
+        ),
+      ];
+    });
     setModal(null);
   }
 

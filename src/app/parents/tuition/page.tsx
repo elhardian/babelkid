@@ -14,7 +14,8 @@ import {
   todayISO,
   tuitionStatusLabel,
 } from "@/lib/format";
-import { tuitionRecords } from "@/lib/mock-data";
+import { registry } from "@/lib/runtime-registry";
+const tuitionRecords = registry.tuition;
 import type { TuitionRecord } from "@/lib/types";
 
 function ProofModal({

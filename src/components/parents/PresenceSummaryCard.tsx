@@ -4,7 +4,8 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { id } from "date-fns/locale";
-import { presenceRecords } from "@/lib/mock-data";
+import { registry } from "@/lib/runtime-registry";
+const presenceRecords = registry.presence;
 import type { PresenceStatus } from "@/lib/types";
 import { cn, todayISO } from "@/lib/format";
 

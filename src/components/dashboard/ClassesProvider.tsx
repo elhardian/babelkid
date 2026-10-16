@@ -4,34 +4,18 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
-  useSyncExternalStore,
+  useState,
+  useTransition,
 } from "react";
-import { classes as seed } from "@/lib/mock-data";
+import {
+  deleteClass,
+  saveClass,
+  saveClassTeacher,
+} from "@/app/actions/school-data";
+import { registry } from "@/lib/runtime-registry";
 import type { SchoolClass } from "@/lib/types";
-
-let store: SchoolClass[] = seed.map((c) => ({ ...c }));
-const listeners = new Set<() => void>();
-
-function emit() {
-  for (const l of listeners) l();
-}
-
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-}
-
-function getSnapshot() {
-  return store;
-}
-
-function setStore(
-  next: SchoolClass[] | ((prev: SchoolClass[]) => SchoolClass[]),
-) {
-  store = typeof next === "function" ? next(store) : next;
-  emit();
-}
 
 export type ClassInput = Omit<SchoolClass, "id"> & { id?: string };
 
@@ -39,35 +23,31 @@ interface ClassesContextValue {
   classes: SchoolClass[];
   upsert: (input: ClassInput) => SchoolClass;
   remove: (id: string) => void;
-  getById: (id: string) => SchoolClass | undefined;
   assignTeacher: (classId: string, teacherId: string) => void;
   classesForTeacher: (teacherId: string) => SchoolClass[];
+  getById: (id: string) => SchoolClass | undefined;
 }
 
 const ClassesContext = createContext<ClassesContextValue | null>(null);
 
-function upsertClass(input: ClassInput): SchoolClass {
-  let saved: SchoolClass | null = null;
-  setStore((prev) => {
-    if (input.id) {
-      const next = prev.map((c) => {
-        if (c.id !== input.id) return c;
-        saved = {
-          ...c,
-          name: input.name,
-          level: input.level,
-          teacherId: input.teacherId,
-          capacity: input.capacity,
-          room: input.room,
-          schedule: input.schedule,
-          ageMinYears: input.ageMinYears,
-          ageMaxYears: input.ageMaxYears,
-        };
-        return saved!;
-      });
-      if (saved) return next;
-    }
-    saved = {
+export function ClassesProvider({
+  children,
+  initial = [],
+}: {
+  children: React.ReactNode;
+  initial?: SchoolClass[];
+}) {
+  const [classes, setClasses] = useState<SchoolClass[]>(initial);
+  const [, start] = useTransition();
+
+  useEffect(() => {
+    setClasses(initial);
+  }, [initial]);
+
+  registry.classes = classes;
+
+  const upsert = useCallback((input: ClassInput) => {
+    const optimistic: SchoolClass = {
       id: input.id ?? `c-${Date.now()}`,
       name: input.name,
       level: input.level,
@@ -78,33 +58,46 @@ function upsertClass(input: ClassInput): SchoolClass {
       ageMinYears: input.ageMinYears,
       ageMaxYears: input.ageMaxYears,
     };
-    return [saved, ...prev];
-  });
-  return saved!;
-}
-
-export function ClassesProvider({ children }: { children: React.ReactNode }) {
-  const classes = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
-
-  const upsert = useCallback((input: ClassInput) => upsertClass(input), []);
-
-  const remove = useCallback((id: string) => {
-    setStore((prev) => prev.filter((c) => c.id !== id));
+    setClasses((prev) => {
+      const exists = prev.some((c) => c.id === optimistic.id);
+      return exists
+        ? prev.map((c) => (c.id === optimistic.id ? optimistic : c))
+        : [optimistic, ...prev];
+    });
+    start(async () => {
+      const saved = await saveClass(input);
+      setClasses((prev) => {
+        const rest = prev.filter((c) => c.id !== optimistic.id && c.id !== saved.id);
+        return [saved, ...rest];
+      });
+    });
+    return optimistic;
   }, []);
 
-  const getById = useCallback(
-    (id: string) => classes.find((c) => c.id === id),
-    [classes],
-  );
+  const remove = useCallback((id: string) => {
+    setClasses((prev) => prev.filter((c) => c.id !== id));
+    start(async () => {
+      await deleteClass(id);
+    });
+  }, []);
 
   const assignTeacher = useCallback((classId: string, teacherId: string) => {
-    setStore((prev) =>
+    setClasses((prev) =>
       prev.map((c) => (c.id === classId ? { ...c, teacherId } : c)),
     );
+    start(async () => {
+      const saved = await saveClassTeacher(classId, teacherId);
+      setClasses((prev) => prev.map((c) => (c.id === saved.id ? saved : c)));
+    });
   }, []);
 
   const classesForTeacher = useCallback(
     (teacherId: string) => classes.filter((c) => c.teacherId === teacherId),
+    [classes],
+  );
+
+  const getById = useCallback(
+    (id: string) => classes.find((c) => c.id === id),
     [classes],
   );
 
@@ -113,11 +106,11 @@ export function ClassesProvider({ children }: { children: React.ReactNode }) {
       classes,
       upsert,
       remove,
-      getById,
       assignTeacher,
       classesForTeacher,
+      getById,
     }),
-    [classes, upsert, remove, getById, assignTeacher, classesForTeacher],
+    [classes, upsert, remove, assignTeacher, classesForTeacher, getById],
   );
 
   return (
@@ -131,20 +124,4 @@ export function useClassesRegistry() {
     throw new Error("useClassesRegistry must be used within ClassesProvider");
   }
   return ctx;
-}
-
-export function useClassesStore() {
-  const classes = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
-  return {
-    classes,
-    getById: (id: string) => classes.find((c) => c.id === id),
-    upsert: upsertClass,
-    assignTeacher: (classId: string, teacherId: string) => {
-      setStore((prev) =>
-        prev.map((c) => (c.id === classId ? { ...c, teacherId } : c)),
-      );
-    },
-    classesForTeacher: (teacherId: string) =>
-      classes.filter((c) => c.teacherId === teacherId),
-  };
 }

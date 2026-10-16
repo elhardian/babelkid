@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import { fetchEvents, saveEvent } from "@/app/actions/school-data";
 import {
   EmptyState,
   FilterSelect,
@@ -20,13 +21,21 @@ import {
   usePagination,
 } from "@/components/dashboard/Pagination";
 import { formatDate, formatIDR } from "@/lib/format";
-import { events as initialEvents } from "@/lib/mock-data";
+import { registry } from "@/lib/runtime-registry";
 import type { EventStatus, SchoolEvent } from "@/lib/types";
 
 type ModalMode = "add" | "edit" | null;
 
 export default function EventsPage() {
-  const [rows, setRows] = useState<SchoolEvent[]>(initialEvents);
+  const [rows, setRows] = useState<SchoolEvent[]>(registry.events);
+  const [, start] = useTransition();
+
+  useEffect(() => {
+    void fetchEvents().then((data) => {
+      setRows(data);
+      registry.events = data;
+    });
+  }, []);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [modal, setModal] = useState<ModalMode>(null);
@@ -74,6 +83,21 @@ export default function EventsPage() {
     } else {
       setRows((prev) => [payload, ...prev]);
     }
+    start(async () => {
+      const saved = await saveEvent(payload);
+      setRows((prev) => {
+        const rest = prev.filter(
+          (ev) => ev.id !== payload.id && ev.id !== saved.id,
+        );
+        return [saved, ...rest];
+      });
+      registry.events = [
+        saved,
+        ...registry.events.filter(
+          (ev) => ev.id !== saved.id && ev.id !== payload.id,
+        ),
+      ];
+    });
     setModal(null);
   }
 

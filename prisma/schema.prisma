@@ -21,6 +21,120 @@ enum AuthPortal {
   parent
 }
 
+enum ClassLevel {
+  preschool
+  kindergarten
+}
+
+enum StudentStatus {
+  active
+  inactive
+  alumni
+}
+
+enum Gender {
+  male
+  female
+}
+
+enum ParentRelationship {
+  mother
+  father
+  guardian
+}
+
+enum RegistrationStatus {
+  pending
+  reviewing
+  form_sent
+  form_submitted
+  approved
+  rejected
+}
+
+enum DayOffType {
+  holiday
+  school_off
+  other
+}
+
+enum PresenceStatus {
+  present
+  absent
+  late
+  excused
+}
+
+enum ReportMood {
+  happy
+  ok
+  tired
+  upset
+}
+
+enum TuitionStatus {
+  paid
+  pending
+  overdue
+  submitted
+}
+
+enum PaymentMethod {
+  transfer
+  tunai
+  whatsapp
+}
+
+enum PaymentProofStatus {
+  pending
+  approved
+  rejected
+}
+
+enum KasAccount {
+  cash
+  bank
+}
+
+enum KasEntryType {
+  in
+  out
+}
+
+enum KasSource {
+  tuition
+  event
+  donation
+  gift
+  sponsor
+  expense
+  other
+}
+
+enum EventStatus {
+  upcoming
+  ongoing
+  past
+}
+
+enum EventDocType {
+  photo
+  note
+  video
+}
+
+enum AccessLevel {
+  none
+  read
+  write
+}
+
+enum StaffRoleKey {
+  owner
+  admin
+  teacher
+}
+
 model User {
   id           String     @id @default(cuid())
   email        String     @unique @db.VarChar(191)
@@ -29,12 +143,337 @@ model User {
   role         UserRole
   portal       AuthPortal
   phone        String?    @db.VarChar(64)
-  /// JSON array of student ids for parent accounts, e.g. ["s1","s9"]
+  jabatan      String?    @db.VarChar(191)
+  notes        String?    @db.Text
+  /// JSON array of student ids for parent accounts
   childIds     Json?      @map("child_ids")
   active       Boolean    @default(true)
   createdAt    DateTime   @default(now()) @map("created_at")
   updatedAt    DateTime   @updatedAt @map("updated_at")
 
+  classesTaught   SchoolClass[]    @relation("ClassTeacher")
+  classActivities ClassActivity[]
+  studentReports  StudentReport[]
+  presenceRecords PresenceRecord[] @relation("PresenceRecorder")
+
   @@index([portal, role])
   @@map("users")
+}
+
+model SchoolClass {
+  id          String     @id @default(cuid())
+  name        String     @db.VarChar(191)
+  level       ClassLevel
+  teacherId   String     @map("teacher_id")
+  capacity    Int
+  room        String     @db.VarChar(64)
+  schedule    String     @db.VarChar(191)
+  ageMinYears Int        @map("age_min_years")
+  ageMaxYears Int        @map("age_max_years")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  teacher         User              @relation("ClassTeacher", fields: [teacherId], references: [id])
+  students        Student[]
+  presenceRecords PresenceRecord[]
+  classActivities ClassActivity[]
+  placements      ClassPlacement[]
+
+  @@index([teacherId])
+  @@map("school_classes")
+}
+
+model ParentProfile {
+  id           String             @id @default(cuid())
+  name         String             @db.VarChar(191)
+  relationship ParentRelationship
+  phone        String             @db.VarChar(64)
+  email        String             @db.VarChar(191)
+  address      String?            @db.Text
+  occupation   String?            @db.VarChar(191)
+  notes        String?            @db.Text
+  createdAt    DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @updatedAt @map("updated_at")
+
+  students StudentParent[]
+
+  @@index([email])
+  @@map("parent_profiles")
+}
+
+model Student {
+  id                String        @id @default(cuid())
+  name              String        @db.VarChar(191)
+  nickname          String        @db.VarChar(191)
+  dateOfBirth       DateTime      @map("date_of_birth") @db.Date
+  placeOfBirth      String?       @map("place_of_birth") @db.VarChar(191)
+  religion          String?       @db.VarChar(64)
+  gender            Gender
+  classId           String        @map("class_id")
+  status            StudentStatus @default(active)
+  enrollmentDate    DateTime      @map("enrollment_date") @db.Date
+  photoColor        String        @map("photo_color") @db.VarChar(64)
+  allergies         String?       @db.Text
+  additionalContact String?       @map("additional_contact") @db.VarChar(255)
+  notes             String?       @db.Text
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+
+  class           SchoolClass        @relation(fields: [classId], references: [id])
+  parents         StudentParent[]
+  placements      ClassPlacement[]
+  documents       StudentDocument[]
+  presenceRecords PresenceRecord[]
+  reports         StudentReport[]
+  tuitionRecords  TuitionRecord[]
+  eventAttendees  EventAttendee[]
+
+  @@index([classId])
+  @@index([status])
+  @@map("students")
+}
+
+model StudentParent {
+  id           String             @id @default(cuid())
+  studentId    String             @map("student_id")
+  parentId     String             @map("parent_id")
+  relationship ParentRelationship
+
+  student Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  parent  ParentProfile @relation(fields: [parentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, parentId])
+  @@index([parentId])
+  @@map("student_parents")
+}
+
+model ClassPlacement {
+  id         String      @id @default(cuid())
+  studentId  String      @map("student_id")
+  classId    String      @map("class_id")
+  className  String      @map("class_name") @db.VarChar(191)
+  level      ClassLevel
+  teacherName String     @map("teacher_name") @db.VarChar(191)
+  startDate  DateTime    @map("start_date") @db.Date
+  endDate    DateTime?   @map("end_date") @db.Date
+  note       String?     @db.Text
+
+  student Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  class   SchoolClass @relation(fields: [classId], references: [id])
+
+  @@index([studentId])
+  @@map("class_placements")
+}
+
+model StudentDocument {
+  id         String   @id @default(cuid())
+  studentId  String   @map("student_id")
+  title      String   @db.VarChar(191)
+  fileName   String   @map("file_name") @db.VarChar(255)
+  uploadedAt DateTime @map("uploaded_at")
+  kind       String   @default("generic") @db.VarChar(32)
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@map("student_documents")
+}
+
+model RegistrationApplication {
+  id                      String             @id @default(cuid())
+  status                  RegistrationStatus @default(pending)
+  submittedAt             DateTime           @map("submitted_at")
+  notes                   String?            @db.Text
+  parentId                String?            @map("parent_id") @db.VarChar(64)
+  parentIds               Json?              @map("parent_ids")
+  parent                  Json
+  parents                 Json?
+  child                   Json
+  formToken               String?            @unique @map("form_token") @db.VarChar(64)
+  formSentAt              DateTime?          @map("form_sent_at")
+  detailedForm            Json?              @map("detailed_form")
+  detailedFormSubmittedAt DateTime?          @map("detailed_form_submitted_at")
+  registrationFee         Json?              @map("registration_fee")
+  enrolledStudentId       String?            @map("enrolled_student_id") @db.VarChar(64)
+  enrolledAt              DateTime?          @map("enrolled_at")
+  createdAt               DateTime           @default(now()) @map("created_at")
+  updatedAt               DateTime           @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@map("registration_applications")
+}
+
+model SchoolDayOff {
+  id          String     @id @default(cuid())
+  date        DateTime   @db.Date
+  title       String     @db.VarChar(191)
+  description String?    @db.Text
+  type        DayOffType
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  @@unique([date])
+  @@map("school_day_offs")
+}
+
+model PresenceRecord {
+  id         String         @id @default(cuid())
+  studentId  String         @map("student_id")
+  classId    String         @map("class_id")
+  date       DateTime       @db.Date
+  status     PresenceStatus
+  note       String?        @db.Text
+  recordedBy String         @map("recorded_by")
+  createdAt  DateTime       @default(now()) @map("created_at")
+  updatedAt  DateTime       @updatedAt @map("updated_at")
+
+  student  Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  class    SchoolClass @relation(fields: [classId], references: [id])
+  recorder User        @relation("PresenceRecorder", fields: [recordedBy], references: [id])
+
+  @@unique([studentId, date])
+  @@index([classId, date])
+  @@map("presence_records")
+}
+
+model ClassActivity {
+  id          String   @id @default(cuid())
+  classId     String   @map("class_id")
+  title       String   @db.VarChar(191)
+  description String   @db.Text
+  date        DateTime @db.Date
+  teacherId   String?  @map("teacher_id")
+  teacherName String   @map("teacher_name") @db.VarChar(191)
+  images      Json
+  videoUrl    String?  @map("video_url") @db.VarChar(512)
+  location    String?  @db.VarChar(191)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  class   SchoolClass @relation(fields: [classId], references: [id])
+  teacher User?       @relation(fields: [teacherId], references: [id])
+
+  @@index([classId, date])
+  @@map("class_activities")
+}
+
+model StudentReport {
+  id         String     @id @default(cuid())
+  studentId  String     @map("student_id")
+  teacherId  String     @map("teacher_id")
+  date       DateTime   @db.Date
+  title      String     @db.VarChar(191)
+  mood       ReportMood
+  activities String     @db.Text
+  notes      String     @db.Text
+  skills     Json
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  teacher User    @relation(fields: [teacherId], references: [id])
+
+  @@index([studentId, date])
+  @@map("student_reports")
+}
+
+model TuitionRecord {
+  id            String              @id @default(cuid())
+  studentId     String              @map("student_id")
+  month         String              @db.VarChar(7)
+  amount        Int
+  status        TuitionStatus
+  dueDate       DateTime            @map("due_date") @db.Date
+  paidAt        DateTime?           @map("paid_at")
+  paymentMethod PaymentMethod?      @map("payment_method")
+  proofUrl      String?             @map("proof_url") @db.VarChar(512)
+  proofStatus   PaymentProofStatus? @map("proof_status")
+  note          String?             @db.Text
+  recordedBy    String?             @map("recorded_by") @db.VarChar(191)
+  createdAt     DateTime            @default(now()) @map("created_at")
+  updatedAt     DateTime            @updatedAt @map("updated_at")
+
+  student   Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  kasEntries KasEntry[]
+
+  @@index([studentId, month])
+  @@index([status])
+  @@map("tuition_records")
+}
+
+model KasEntry {
+  id         String      @id @default(cuid())
+  date       DateTime    @db.Date
+  type       KasEntryType
+  account    KasAccount
+  source     KasSource
+  amount     Int
+  note       String      @db.Text
+  recordedBy String      @map("recorded_by") @db.VarChar(191)
+  tuitionId  String?     @map("tuition_id")
+  createdAt  DateTime    @default(now()) @map("created_at")
+  updatedAt  DateTime    @updatedAt @map("updated_at")
+
+  tuition TuitionRecord? @relation(fields: [tuitionId], references: [id])
+
+  @@index([date])
+  @@index([tuitionId])
+  @@map("kas_entries")
+}
+
+model SchoolEvent {
+  id            String      @id @default(cuid())
+  title         String      @db.VarChar(191)
+  description   String      @db.Text
+  date          DateTime    @db.Date
+  endDate       DateTime?   @map("end_date") @db.Date
+  location      String      @db.VarChar(191)
+  feePerChild   Int         @map("fee_per_child")
+  status        EventStatus
+  coverGradient String      @map("cover_gradient") @db.VarChar(255)
+  coverImage    String      @map("cover_image") @db.VarChar(512)
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  documentation EventDoc[]
+  attendees     EventAttendee[]
+
+  @@map("school_events")
+}
+
+model EventDoc {
+  id        String       @id @default(cuid())
+  eventId   String       @map("event_id")
+  caption   String       @db.VarChar(255)
+  type      EventDocType
+  color     String       @db.VarChar(64)
+  imageUrl  String?      @map("image_url") @db.VarChar(512)
+  createdAt DateTime     @map("created_at")
+
+  event SchoolEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@map("event_docs")
+}
+
+model EventAttendee {
+  id        String @id @default(cuid())
+  eventId   String @map("event_id")
+  studentId String @map("student_id")
+
+  event   SchoolEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  student Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, studentId])
+  @@map("event_attendees")
+}
+
+model RolePermission {
+  id           String       @id @default(cuid())
+  role         StaffRoleKey
+  permissionId String       @map("permission_id") @db.VarChar(64)
+  accessLevel  AccessLevel  @map("access_level")
+
+  @@unique([role, permissionId])
+  @@map("role_permissions")
 }

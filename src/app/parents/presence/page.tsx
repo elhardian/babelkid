@@ -11,7 +11,8 @@ import {
   presenceStatusLabel,
   todayISO,
 } from "@/lib/format";
-import { isWeekend, presenceRecords } from "@/lib/mock-data";
+import { isWeekend, registry } from "@/lib/runtime-registry";
+const presenceRecords = registry.presence;
 import type { PresenceStatus } from "@/lib/types";
 
 export default function ParentsPresencePage() {

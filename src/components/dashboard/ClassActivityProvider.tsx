@@ -4,34 +4,14 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
-  useSyncExternalStore,
+  useState,
+  useTransition,
 } from "react";
-import { classActivities as seed } from "@/lib/mock-data";
+import { deleteActivity, saveActivity } from "@/app/actions/school-data";
+import { registry } from "@/lib/runtime-registry";
 import type { ClassActivity } from "@/lib/types";
-
-let store: ClassActivity[] = [...seed];
-const listeners = new Set<() => void>();
-
-function emit() {
-  for (const l of listeners) l();
-}
-
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-}
-
-function getSnapshot() {
-  return store;
-}
-
-function setStore(
-  next: ClassActivity[] | ((prev: ClassActivity[]) => ClassActivity[]),
-) {
-  store = typeof next === "function" ? next(store) : next;
-  emit();
-}
 
 export type ClassActivityInput = Omit<ClassActivity, "id"> & { id?: string };
 
@@ -49,59 +29,58 @@ const ClassActivityContext = createContext<ClassActivityContextValue | null>(
   null,
 );
 
-function upsertActivity(input: ClassActivityInput): ClassActivity {
-  let result: ClassActivity;
-  setStore((prev) => {
-    if (input.id) {
-      const existing = prev.find((a) => a.id === input.id);
-      if (existing) {
-        result = {
-          ...existing,
-          classId: input.classId,
-          title: input.title,
-          description: input.description,
-          date: input.date,
-          teacherName: input.teacherName,
-          images: input.images,
-          videoUrl: input.videoUrl,
-          location: input.location,
-        };
-        return prev.map((a) => (a.id === existing.id ? result : a));
-      }
-    }
-    result = {
+export function ClassActivityProvider({
+  children,
+  initial = [],
+}: {
+  children: React.ReactNode;
+  initial?: ClassActivity[];
+}) {
+  const [activities, setActivities] = useState<ClassActivity[]>(initial);
+  const [, start] = useTransition();
+
+  useEffect(() => {
+    setActivities(initial);
+  }, [initial]);
+
+  registry.activities = activities;
+
+  const upsert = useCallback((input: ClassActivityInput) => {
+    const optimistic: ClassActivity = {
       id: input.id ?? `ca-${Date.now()}`,
       classId: input.classId,
       title: input.title,
       description: input.description,
       date: input.date,
+      teacherId: input.teacherId,
       teacherName: input.teacherName,
       images: input.images,
       videoUrl: input.videoUrl,
       location: input.location,
     };
-    return [result, ...prev];
-  });
-  return result!;
-}
-
-export function ClassActivityProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const activities = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getSnapshot,
-  );
-
-  const upsert = useCallback((input: ClassActivityInput) => {
-    return upsertActivity(input);
+    setActivities((prev) => {
+      const exists = prev.some((a) => a.id === optimistic.id);
+      return exists
+        ? prev.map((a) => (a.id === optimistic.id ? optimistic : a))
+        : [optimistic, ...prev];
+    });
+    start(async () => {
+      const saved = await saveActivity(input);
+      setActivities((prev) => {
+        const rest = prev.filter(
+          (a) => a.id !== optimistic.id && a.id !== saved.id,
+        );
+        return [saved, ...rest];
+      });
+    });
+    return optimistic;
   }, []);
 
   const remove = useCallback((id: string) => {
-    setStore((prev) => prev.filter((a) => a.id !== id));
+    setActivities((prev) => prev.filter((a) => a.id !== id));
+    start(async () => {
+      await deleteActivity(id);
+    });
   }, []);
 
   const forClass = useCallback(
@@ -126,7 +105,10 @@ export function ClassActivityProvider({
         .filter(
           (a) => a.classId === classId && a.date.startsWith(monthPrefix),
         )
-        .sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title)),
+        .sort(
+          (a, b) =>
+            b.date.localeCompare(a.date) || a.title.localeCompare(b.title),
+        ),
     [activities],
   );
 
@@ -165,23 +147,26 @@ export function useClassActivities() {
   return ctx;
 }
 
-/** Parents / shared — syncs with dashboard store without requiring provider */
 export function useClassActivitiesStore() {
-  const activities = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getSnapshot,
-  );
   return {
-    activities,
+    activities: registry.activities,
     forClass: (classId: string) =>
-      activities
+      registry.activities
         .filter((a) => a.classId === classId)
         .sort((a, b) => b.date.localeCompare(a.date)),
-    getById: (id: string) => activities.find((a) => a.id === id),
+    getById: (id: string) => registry.activities.find((a) => a.id === id),
   };
 }
 
 export function upsertClassActivity(input: ClassActivityInput) {
-  return upsertActivity(input);
+  const optimistic: ClassActivity = {
+    id: input.id ?? `ca-${Date.now()}`,
+    ...input,
+  };
+  registry.activities = [
+    optimistic,
+    ...registry.activities.filter((a) => a.id !== optimistic.id),
+  ];
+  void saveActivity(input);
+  return optimistic;
 }

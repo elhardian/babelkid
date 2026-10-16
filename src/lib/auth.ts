@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
 import type { Role } from "@/lib/types";
-import { getStudentsByParentEmail } from "@/lib/mock-data";
 import { prisma } from "@/lib/db";
+import { listStudents } from "@/lib/data/roster";
 import {
   encodeSession,
   type AuthPortal,
@@ -61,15 +61,15 @@ export async function findUserByCredentials(
   };
 }
 
-export function buildSession(user: AuthUser): SessionPayload {
-  const fromRegistry =
-    user.portal === "parent"
-      ? getStudentsByParentEmail(user.email).map((s) => s.id)
-      : [];
-  const childIds =
-    user.childIds && user.childIds.length > 0
-      ? user.childIds
-      : fromRegistry;
+export async function buildSession(user: AuthUser): Promise<SessionPayload> {
+  let childIds = user.childIds ?? [];
+  if (user.portal === "parent" && childIds.length === 0) {
+    const students = await listStudents();
+    const q = user.email.toLowerCase();
+    childIds = students
+      .filter((s) => s.parents.some((p) => p.email.toLowerCase() === q))
+      .map((s) => s.id);
+  }
 
   return {
     userId: user.id,
@@ -83,7 +83,7 @@ export function buildSession(user: AuthUser): SessionPayload {
 }
 
 export async function createSession(user: AuthUser) {
-  const payload = buildSession(user);
+  const payload = await buildSession(user);
   const token = encodeSession(payload);
   const jar = await cookies();
   jar.set(SESSION_COOKIE, token, {

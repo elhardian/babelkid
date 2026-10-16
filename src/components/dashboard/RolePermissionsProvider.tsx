@@ -6,11 +6,16 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useSyncExternalStore,
+  useState,
+  useTransition,
 } from "react";
 import { usePathname } from "next/navigation";
 import type { Role } from "@/lib/types";
 import { useStaffSession } from "@/components/dashboard/StaffSessionProvider";
+import {
+  resetRolePermissionsAction,
+  saveRoleAccessLevel,
+} from "@/app/actions/school-data";
 import {
   DEFAULT_ROLE_PERMISSIONS,
   canAccessPathWithMatrix,
@@ -25,48 +30,6 @@ import {
   type RolePermissionMap,
   type StaffRoleKey,
 } from "@/lib/role-permissions";
-
-const STORAGE_KEY = "babelkids.role-permissions.v2";
-const LEGACY_STORAGE_KEY = "babelkids.role-permissions.v1";
-
-let store: RolePermissionMap = normalizeRolePermissions(
-  DEFAULT_ROLE_PERMISSIONS,
-);
-let hydrated = false;
-const listeners = new Set<() => void>();
-
-function emit() {
-  for (const l of listeners) l();
-}
-
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-}
-
-function getSnapshot() {
-  return store;
-}
-
-function setStore(next: RolePermissionMap) {
-  store = normalizeRolePermissions(next);
-  if (typeof window !== "undefined") {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
-  }
-  emit();
-}
-
-function readFromStorage(): RolePermissionMap | null {
-  try {
-    const raw =
-      window.localStorage.getItem(STORAGE_KEY) ??
-      window.localStorage.getItem(LEGACY_STORAGE_KEY);
-    if (!raw) return null;
-    return normalizeRolePermissions(JSON.parse(raw));
-  } catch {
-    return null;
-  }
-}
 
 interface RolePermissionsContextValue {
   matrix: RolePermissionMap;
@@ -91,36 +54,44 @@ const RolePermissionsContext =
 
 export function RolePermissionsProvider({
   children,
+  initial,
 }: {
   children: React.ReactNode;
+  initial?: RolePermissionMap;
 }) {
-  const matrix = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  const [matrix, setMatrix] = useState<RolePermissionMap>(
+    normalizeRolePermissions(initial ?? DEFAULT_ROLE_PERMISSIONS),
+  );
+  const [, start] = useTransition();
 
   useEffect(() => {
-    if (hydrated) return;
-    hydrated = true;
-    const saved = readFromStorage();
-    if (saved) {
-      store = saved;
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
-      emit();
-    }
-  }, []);
+    if (initial) setMatrix(normalizeRolePermissions(initial));
+  }, [initial]);
 
   const setAccessLevel = useCallback(
     (role: StaffRoleKey, id: PermissionId, level: AccessLevel) => {
       if (role === "owner") return;
       if (id === "beranda" && level === "none") return;
-      setStore({
-        ...store,
-        [role]: { ...store[role], [id]: level },
+      setMatrix((prev) =>
+        normalizeRolePermissions({
+          ...prev,
+          [role]: { ...prev[role], [id]: level },
+        }),
+      );
+      start(async () => {
+        const next = await saveRoleAccessLevel(role, id, level);
+        setMatrix(next);
       });
     },
     [],
   );
 
   const resetDefaults = useCallback(() => {
-    setStore(DEFAULT_ROLE_PERMISSIONS);
+    setMatrix(DEFAULT_ROLE_PERMISSIONS);
+    start(async () => {
+      const next = await resetRolePermissionsAction();
+      setMatrix(next);
+    });
   }, []);
 
   const canAccessPath = useCallback(
@@ -193,7 +164,6 @@ export function useRolePermissions() {
   return ctx;
 }
 
-/** Access level for the current staff session on a given permission. */
 export function usePermissionAccess(permissionId: PermissionId) {
   const session = useStaffSession();
   const { getLevel, canRead, canWrite } = useRolePermissions();
@@ -204,7 +174,6 @@ export function usePermissionAccess(permissionId: PermissionId) {
   };
 }
 
-/** Access level for the current dashboard path. */
 export function usePathPermissionAccess() {
   const session = useStaffSession();
   const pathname = usePathname();

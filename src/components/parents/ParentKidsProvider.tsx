@@ -7,7 +7,6 @@ import {
   useMemo,
   useState,
 } from "react";
-import { getStudent } from "@/lib/mock-data";
 import type { Student } from "@/lib/types";
 
 interface ParentKidsContextValue {
@@ -28,19 +27,20 @@ export function ParentKidsProvider({
   parentName,
   parentEmail,
   childIds,
+  students,
 }: {
   children: React.ReactNode;
   parentName: string;
   parentEmail: string;
   childIds: string[];
+  students: Student[];
 }) {
-  const kids = useMemo(
-    () =>
-      childIds
-        .map((id) => getStudent(id))
-        .filter((s): s is Student => Boolean(s)),
-    [childIds],
-  );
+  const kids = useMemo(() => {
+    const byId = new Map(students.map((s) => [s.id, s]));
+    return childIds
+      .map((id) => byId.get(id))
+      .filter((s): s is Student => Boolean(s));
+  }, [childIds, students]);
 
   const [selectedChildId, setSelectedChildIdState] = useState(
     kids[0]?.id ?? childIds[0] ?? "",

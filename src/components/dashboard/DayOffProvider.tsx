@@ -4,32 +4,14 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
-  useSyncExternalStore,
+  useState,
+  useTransition,
 } from "react";
-import { schoolDayOffs as initialDayOffs } from "@/lib/mock-data";
+import { deleteDayOff, saveDayOff } from "@/app/actions/school-data";
+import { registry } from "@/lib/runtime-registry";
 import type { DayOffType, SchoolDayOff } from "@/lib/types";
-
-let store: SchoolDayOff[] = [...initialDayOffs];
-const listeners = new Set<() => void>();
-
-function emit() {
-  for (const l of listeners) l();
-}
-
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-}
-
-function getSnapshot() {
-  return store;
-}
-
-function setStore(next: SchoolDayOff[] | ((prev: SchoolDayOff[]) => SchoolDayOff[])) {
-  store = typeof next === "function" ? next(store) : next;
-  emit();
-}
 
 interface DayOffContextValue {
   dayOffs: SchoolDayOff[];
@@ -46,8 +28,21 @@ interface DayOffContextValue {
 
 const DayOffContext = createContext<DayOffContextValue | null>(null);
 
-export function DayOffProvider({ children }: { children: React.ReactNode }) {
-  const dayOffs = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+export function DayOffProvider({
+  children,
+  initial = [],
+}: {
+  children: React.ReactNode;
+  initial?: SchoolDayOff[];
+}) {
+  const [dayOffs, setDayOffs] = useState<SchoolDayOff[]>(initial);
+  const [, start] = useTransition();
+
+  useEffect(() => {
+    setDayOffs(initial);
+  }, [initial]);
+
+  registry.dayOffs = dayOffs;
 
   const upsertDayOff = useCallback(
     (input: {
@@ -57,40 +52,42 @@ export function DayOffProvider({ children }: { children: React.ReactNode }) {
       description?: string;
       type: DayOffType;
     }) => {
-      setStore((prev) => {
+      const optimistic: SchoolDayOff = {
+        id: input.id ?? `off-${Date.now()}`,
+        date: input.date,
+        title: input.title,
+        description: input.description,
+        type: input.type,
+      };
+      setDayOffs((prev) => {
         const existing = input.id
           ? prev.find((o) => o.id === input.id)
           : prev.find((o) => o.date === input.date);
         if (existing) {
           return prev.map((o) =>
-            o.id === existing.id
-              ? {
-                  ...o,
-                  date: input.date,
-                  title: input.title,
-                  description: input.description,
-                  type: input.type,
-                }
-              : o,
+            o.id === existing.id ? { ...existing, ...optimistic, id: existing.id } : o,
           );
         }
-        return [
-          {
-            id: `off-${Date.now()}`,
-            date: input.date,
-            title: input.title,
-            description: input.description,
-            type: input.type,
-          },
-          ...prev,
-        ];
+        return [optimistic, ...prev];
+      });
+      start(async () => {
+        const saved = await saveDayOff(input);
+        setDayOffs((prev) => {
+          const rest = prev.filter(
+            (o) => o.id !== optimistic.id && o.id !== saved.id && o.date !== saved.date,
+          );
+          return [saved, ...rest];
+        });
       });
     },
     [],
   );
 
   const removeDayOff = useCallback((id: string) => {
-    setStore((prev) => prev.filter((o) => o.id !== id));
+    setDayOffs((prev) => prev.filter((o) => o.id !== id));
+    start(async () => {
+      await deleteDayOff(id);
+    });
   }, []);
 
   const getByDate = useCallback(
@@ -114,11 +111,9 @@ export function useDayOffs() {
   return ctx;
 }
 
-/** Read-only hook for parents — syncs with dashboard day-off store */
 export function useDayOffsStore() {
-  const dayOffs = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
   return {
-    dayOffs,
-    getByDate: (date: string) => dayOffs.find((o) => o.date === date),
+    dayOffs: registry.dayOffs,
+    getByDate: (date: string) => registry.dayOffs.find((o) => o.date === date),
   };
 }

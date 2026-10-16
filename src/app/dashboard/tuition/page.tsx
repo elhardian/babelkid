@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import { fetchTuition, saveTuition } from "@/app/actions/school-data";
 import {
   EmptyState,
   FilterSelect,
@@ -26,11 +27,10 @@ import {
   paymentMethodLabel,
   tuitionStatusLabel,
 } from "@/lib/format";
-import { getStudent, students, tuitionRecords as initial } from "@/lib/mock-data";
+import { getStudent, registry } from "@/lib/runtime-registry";
+import { useStudentsRegistry } from "@/components/dashboard/StudentsProvider";
 import type { PaymentMethod, TuitionRecord, TuitionStatus } from "@/lib/types";
 import { useKas } from "@/components/dashboard/KasProvider";
-
-const months = Array.from(new Set(initial.map((t) => t.month))).sort().reverse();
 
 function toneFor(status: TuitionStatus) {
   if (status === "paid") return "success" as const;
@@ -43,9 +43,42 @@ type ModalMode = "record" | "edit" | "view" | "add" | null;
 
 export default function TuitionPage() {
   const { postTuitionToKas } = useKas();
-  const [rows, setRows] = useState<TuitionRecord[]>(initial);
+  const { students } = useStudentsRegistry();
+  const [rows, setRows] = useState<TuitionRecord[]>(registry.tuition);
+  const [, start] = useTransition();
+
+  function persist(row: TuitionRecord) {
+    registry.tuition = [
+      row,
+      ...registry.tuition.filter((t) => t.id !== row.id),
+    ];
+    start(async () => {
+      const saved = await saveTuition(row);
+      setRows((prev) => {
+        const next = prev.map((t) => (t.id === row.id || t.id === saved.id ? saved : t));
+        if (!next.some((t) => t.id === saved.id)) return [saved, ...next];
+        return next;
+      });
+      registry.tuition = [
+        saved,
+        ...registry.tuition.filter((t) => t.id !== saved.id && t.id !== row.id),
+      ];
+    });
+  }
+  const months = useMemo(
+    () => Array.from(new Set(rows.map((t) => t.month))).sort().reverse(),
+    [rows],
+  );
   const [search, setSearch] = useState("");
   const [month, setMonth] = useState(months[0] ?? "2026-07");
+
+  useEffect(() => {
+    void fetchTuition().then((data) => {
+      setRows(data);
+      registry.tuition = data;
+      if (data[0]) setMonth((m) => m || data[0].month);
+    });
+  }, []);
   const [statusFilter, setStatusFilter] = useState("all");
   const [methodFilter, setMethodFilter] = useState("all");
   const [modal, setModal] = useState<ModalMode>(null);
@@ -87,6 +120,7 @@ export default function TuitionPage() {
       paymentMethod: method,
     };
     setRows((prev) => prev.map((t) => (t.id === id ? updated : t)));
+    persist(updated);
     postTuitionToKas(updated, method);
   }
 
@@ -109,21 +143,20 @@ export default function TuitionPage() {
         recordedBy: "Maya Santoso",
       };
       setRows((prev) => prev.map((t) => (t.id === active.id ? updated : t)));
+      persist(updated);
       postTuitionToKas(updated, method);
     } else if (modal === "edit" && active) {
+      const updated: TuitionRecord = {
+        ...active,
+        amount,
+        status: String(fd.get("status")) as TuitionStatus,
+        paymentMethod: method || active.paymentMethod,
+        note,
+      };
       setRows((prev) =>
-        prev.map((t) =>
-          t.id === active.id
-            ? {
-                ...t,
-                amount,
-                status: String(fd.get("status")) as TuitionStatus,
-                paymentMethod: method || t.paymentMethod,
-                note,
-              }
-            : t,
-        ),
+        prev.map((t) => (t.id === active.id ? updated : t)),
       );
+      persist(updated);
     } else if (modal === "add") {
       if (!sid) return;
       const newMonth = String(fd.get("month") || month);
@@ -139,9 +172,10 @@ export default function TuitionPage() {
         paymentMethod: method || undefined,
         proofStatus: markPaid ? "approved" : undefined,
         note,
-        recordedBy: markPaid ? "Maya Santoso" : undefined,
+        recordedBy: markPaid ? "Staf" : undefined,
       };
       setRows((prev) => [created, ...prev]);
+      persist(created);
       if (markPaid) postTuitionToKas(created, method);
     }
     setModal(null);

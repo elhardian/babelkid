@@ -1,17 +1,19 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { Check, CheckCheck } from "lucide-react";
 import { useDayOffs } from "@/components/dashboard/DayOffProvider";
+import { useClassesRegistry } from "@/components/dashboard/ClassesProvider";
+import { useStaffSession } from "@/components/dashboard/StaffSessionProvider";
 import { EmptyState } from "@/components/dashboard/SearchFilterBar";
+import { savePresenceBatch } from "@/app/actions/school-data";
 import {
-  isWeekend,
-  classes,
   getClass,
-  presenceRecords,
+  isWeekend,
+  registry,
   studentsInClass,
-} from "@/lib/mock-data";
+} from "@/lib/runtime-registry";
 import { cn, formatDate, presenceStatusLabel, todayISO } from "@/lib/format";
 import type { PresenceStatus } from "@/lib/types";
 
@@ -53,7 +55,7 @@ function loadMarks(
 ): Record<string, PresenceStatus> {
   const next: Record<string, PresenceStatus> = {};
   for (const s of studentsInClass(classId)) {
-    const rec = presenceRecords.find(
+    const rec = registry.presence.find(
       (p) => p.studentId === s.id && p.date === date && p.classId === classId,
     );
     next[s.id] = rec?.status ?? "present";
@@ -63,6 +65,9 @@ function loadMarks(
 
 export default function AbsensiPage() {
   const { getByDate } = useDayOffs();
+  const { classes } = useClassesRegistry();
+  const session = useStaffSession();
+  const [, start] = useTransition();
   const [classId, setClassId] = useState(classes[0]?.id ?? "c1");
   const [search, setSearch] = useState("");
   const [date, setDate] = useState(todayISO);
@@ -146,8 +151,19 @@ export default function AbsensiPage() {
   }
 
   function save() {
-    setSavedFlash(true);
-    window.setTimeout(() => setSavedFlash(false), 2000);
+    const rows = Object.entries(marks).map(([studentId, status]) => ({
+      studentId,
+      classId,
+      date,
+      status,
+      recordedBy: session.userId,
+    }));
+    start(async () => {
+      const all = await savePresenceBatch(rows);
+      registry.presence = all;
+      setSavedFlash(true);
+      window.setTimeout(() => setSavedFlash(false), 2000);
+    });
   }
 
   return (
