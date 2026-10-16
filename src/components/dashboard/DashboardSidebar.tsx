@@ -16,16 +16,18 @@ import {
   LogOut,
   Menu,
   Receipt,
+  Shield,
   Sparkles,
   UserRound,
   Users,
   Wallet,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { cn } from "@/lib/format";
 import { logoutAction } from "@/app/actions/auth";
 import { useStaffSessionLabel } from "@/components/dashboard/StaffSessionProvider";
+import { useRolePermissions } from "@/components/dashboard/RolePermissionsProvider";
 
 const navGroups = [
   {
@@ -44,7 +46,7 @@ const navGroups = [
     title: "Akademik",
     items: [
       { href: "/dashboard/students", label: "Siswa", icon: Baby },
-      { href: "/dashboard/users", label: "Users", icon: Users },
+      { href: "/dashboard/guru", label: "Guru", icon: Users },
       { href: "/dashboard/classes", label: "Kelas", icon: GraduationCap },
       { href: "/dashboard/kegiatan", label: "Kegiatan", icon: Sparkles },
       { href: "/dashboard/presence", label: "Tanggal", icon: CalendarDays },
@@ -59,6 +61,12 @@ const navGroups = [
       { href: "/dashboard/kas", label: "Kas", icon: Landmark },
       { href: "/dashboard/finance", label: "Keuangan", icon: Wallet },
       { href: "/dashboard/events", label: "Acara", icon: CalendarRange },
+    ],
+  },
+  {
+    title: "Sistem",
+    items: [
+      { href: "/dashboard/roles", label: "Peran & izin", icon: Shield },
     ],
   },
 ];
@@ -76,7 +84,19 @@ export function DashboardSidebar({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const { name, role } = useStaffSessionLabel();
+  const { name, role, roleKey } = useStaffSessionLabel();
+  const { filterNav } = useRolePermissions();
+
+  const visibleGroups = useMemo(
+    () =>
+      navGroups
+        .map((group) => ({
+          ...group,
+          items: filterNav(group.items, roleKey),
+        }))
+        .filter((group) => group.items.length > 0),
+    [roleKey, filterNav],
+  );
 
   const linkClass = (href: string) => {
     const active = isActive(pathname, href);
@@ -90,7 +110,7 @@ export function DashboardSidebar({
 
   const NavLinks = () => (
     <nav className="flex flex-col gap-5">
-      {navGroups.map((group) => (
+      {visibleGroups.map((group) => (
         <div key={group.title}>
           <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#A0AAB8]">
             {group.title}
@@ -105,7 +125,7 @@ export function DashboardSidebar({
                   onClick={() => setOpen(false)}
                   className={linkClass(item.href)}
                 >
-                  <Icon className="size-4 shrink-0 opacity-80" aria-hidden />
+                  <Icon className="size-4 shrink-0 opacity-90" />
                   {item.label}
                 </Link>
               );
@@ -117,26 +137,26 @@ export function DashboardSidebar({
   );
 
   const Brand = () => (
-    <div className="flex items-center gap-3 px-2">
+    <Link href="/dashboard" className="flex items-center gap-2.5">
       <Image
         src="/logo.png"
         alt="BabelKids"
-        width={40}
-        height={36}
-        className="h-10 w-auto object-contain"
+        width={36}
+        height={32}
+        className="h-8 w-auto object-contain"
       />
-      <div className="min-w-0">
-        <p className="truncate text-sm font-semibold tracking-tight text-[#1A2330]">
+      <div>
+        <p className="text-sm font-semibold tracking-tight text-[#1A2330]">
           BabelKids
         </p>
-        <p className="truncate text-[11px] text-[#8A96A8]">Staf · Operasional</p>
+        <p className="text-[10px] text-[#8A96A8]">Dashboard staf</p>
       </div>
-    </div>
+    </Link>
   );
 
   const Footer = () => (
-    <div className="space-y-3 border-t border-[#EEF3FA] bg-white pt-4">
-      <div className="px-2">
+    <div className="space-y-3 border-t border-[#EEF3FA] pt-3">
+      <div>
         <p className="text-sm font-medium text-[#1A2330]">{name}</p>
         <p className="text-xs text-[#8A96A8]">{role}</p>
       </div>
@@ -222,7 +242,7 @@ export function DashboardSidebar({
         </div>
       ) : null}
 
-      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col overflow-hidden border-r border-[#E5ECF5] bg-white p-4 lg:flex">
+      <aside className="hidden h-full w-64 shrink-0 flex-col overflow-hidden border-r border-[#E5ECF5] bg-white p-4 lg:flex">
         <div className="mb-6 shrink-0">
           <Brand />
         </div>

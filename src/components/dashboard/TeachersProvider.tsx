@@ -58,6 +58,7 @@ function upsertTeacher(input: TeacherInput): Teacher {
           email: input.email,
           phone: input.phone,
           role: input.role,
+          jabatan: input.jabatan,
           notes: input.notes,
         };
         return saved!;
@@ -70,6 +71,7 @@ function upsertTeacher(input: TeacherInput): Teacher {
       email: input.email,
       phone: input.phone,
       role: input.role,
+      jabatan: input.jabatan,
       notes: input.notes,
       createdAt: input.createdAt ?? new Date().toISOString().slice(0, 10),
     };

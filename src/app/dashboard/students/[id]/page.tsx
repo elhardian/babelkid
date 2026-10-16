@@ -199,22 +199,37 @@ export default function StudentDetailPage() {
         </div>
       </section>
 
-      {(student.allergies || student.notes) && (
-        <section className="grid gap-4 sm:grid-cols-2">
-          {student.allergies ? (
-            <div className="rounded-lg border border-neutral-200 bg-white p-5">
-              <h2 className="text-sm font-semibold">Alergi</h2>
-              <p className="mt-2 text-sm text-neutral-700">{student.allergies}</p>
-            </div>
-          ) : null}
-          {student.notes ? (
-            <div className="rounded-lg border border-neutral-200 bg-white p-5">
-              <h2 className="text-sm font-semibold">Catatan</h2>
-              <p className="mt-2 text-sm text-neutral-700">{student.notes}</p>
-            </div>
-          ) : null}
-        </section>
-      )}
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-lg border border-neutral-200 bg-white p-5">
+          <h2 className="text-sm font-semibold">Agama</h2>
+          <p className="mt-2 text-sm text-neutral-700">
+            {student.religion || "—"}
+          </p>
+        </div>
+        <div className="rounded-lg border border-neutral-200 bg-white p-5">
+          <h2 className="text-sm font-semibold">TTL</h2>
+          <p className="mt-2 text-sm text-neutral-700">
+            {student.placeOfBirth
+              ? `${student.placeOfBirth}, ${formatDate(student.dateOfBirth)}`
+              : formatDate(student.dateOfBirth)}
+          </p>
+        </div>
+        <div className="rounded-lg border border-neutral-200 bg-white p-5">
+          <h2 className="text-sm font-semibold">Kontak tambahan</h2>
+          <p className="mt-2 text-sm text-neutral-700">
+            {student.additionalContact || "—"}
+          </p>
+        </div>
+        {student.allergies || student.notes ? (
+          <div className="rounded-lg border border-neutral-200 bg-white p-5">
+            <h2 className="text-sm font-semibold">Catatan</h2>
+            <p className="mt-2 text-sm text-neutral-700">
+              {[student.allergies, student.notes].filter(Boolean).join(" · ") ||
+                "—"}
+            </p>
+          </div>
+        ) : null}
+      </section>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <section className="rounded-lg border border-neutral-200 bg-white">

@@ -3,6 +3,7 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/auth";
+import { canManageParentAccess } from "@/lib/staff-access";
 
 export type ParentAccessResult =
   | {
@@ -64,6 +65,12 @@ export async function createParentAppAccess(input: {
   const session = await getSession();
   if (!session || session.portal !== "staff") {
     return { ok: false, error: "Hanya staf yang dapat membuat akses app." };
+  }
+  if (!canManageParentAccess(session.role)) {
+    return {
+      ok: false,
+      error: "Hanya admin / kepala sekolah yang dapat membuat akses orang tua.",
+    };
   }
 
   const email = input.email.trim().toLowerCase();

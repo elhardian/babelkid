@@ -24,6 +24,7 @@ import { useParentsRegistry } from "@/components/dashboard/ParentsProvider";
 import { useClassesRegistry } from "@/components/dashboard/ClassesProvider";
 import { useTeachersRegistry } from "@/components/dashboard/TeachersProvider";
 import { useStudentsRegistry } from "@/components/dashboard/StudentsProvider";
+import { RosterTransferButtons } from "@/components/dashboard/RosterTransferButtons";
 import { ageFromDob, formatDate } from "@/lib/format";
 import type { Parent, Student, StudentStatus } from "@/lib/types";
 
@@ -133,11 +134,16 @@ export default function StudentsPage() {
       name: String(fd.get("name") || ""),
       nickname: String(fd.get("nickname") || ""),
       dateOfBirth: String(fd.get("dateOfBirth") || ""),
+      placeOfBirth: String(fd.get("placeOfBirth") || "").trim() || undefined,
+      religion: String(fd.get("religion") || "").trim() || undefined,
       gender,
       classId,
       status,
       enrollmentDate,
       photoColor: active?.photoColor ?? "#F4A261",
+      additionalContact:
+        String(fd.get("additionalContact") || "").trim() || undefined,
+      notes: String(fd.get("notes") || "").trim() || undefined,
       parents: linked,
       classHistory:
         active?.classHistory ??
@@ -172,13 +178,20 @@ export default function StudentsPage() {
             Profil siswa · orang tua dari daftar registry
           </p>
         </div>
-        <button
-          type="button"
-          onClick={openAdd}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#2E7DFF] px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-[#2E7DFF]/25 sm:w-auto"
-        >
-          Tambah siswa
-        </button>
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-start">
+          <RosterTransferButtons
+            kind="students"
+            students={rows}
+            classes={classes}
+          />
+          <button
+            type="button"
+            onClick={openAdd}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#2E7DFF] px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-[#2E7DFF]/25 sm:w-auto"
+          >
+            Tambah siswa
+          </button>
+        </div>
       </div>
 
       <SearchFilterBar
@@ -373,6 +386,24 @@ export default function StudentsPage() {
             </Field>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Field label="Tempat lahir">
+              <input
+                name="placeOfBirth"
+                defaultValue={active?.placeOfBirth ?? ""}
+                className={inputClass}
+                placeholder="Pangkalpinang"
+              />
+            </Field>
+            <Field label="Agama">
+              <input
+                name="religion"
+                defaultValue={active?.religion ?? ""}
+                className={inputClass}
+                placeholder="Islam"
+              />
+            </Field>
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field label="Jenis kelamin">
               <Select
                 value={gender}
@@ -400,6 +431,22 @@ export default function StudentsPage() {
               value={formClassId}
               onChange={setFormClassId}
               options={classes.map((c) => ({ value: c.id, label: c.name }))}
+            />
+          </Field>
+          <Field label="Kontak tambahan">
+            <input
+              name="additionalContact"
+              defaultValue={active?.additionalContact ?? ""}
+              className={inputClass}
+              placeholder="Nenek · 0812…"
+            />
+          </Field>
+          <Field label="Catatan">
+            <textarea
+              name="notes"
+              rows={2}
+              defaultValue={active?.notes ?? ""}
+              className={inputClass}
             />
           </Field>
           <Field label="Orang tua / wali">

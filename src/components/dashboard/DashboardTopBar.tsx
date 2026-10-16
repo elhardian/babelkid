@@ -9,7 +9,8 @@ const labels: Record<string, string> = {
   "/dashboard": "Beranda",
   "/dashboard/registration": "Pendaftaran",
   "/dashboard/students": "Siswa",
-  "/dashboard/users": "Users",
+  "/dashboard/users": "Guru",
+  "/dashboard/guru": "Guru",
   "/dashboard/classes": "Kelas",
   "/dashboard/kegiatan": "Kegiatan",
   "/dashboard/tuition": "SPP",
@@ -20,6 +21,7 @@ const labels: Record<string, string> = {
   "/dashboard/absensi": "Absensi",
   "/dashboard/reports": "Laporan",
   "/dashboard/parents": "Orang tua",
+  "/dashboard/roles": "Peran & izin",
 };
 
 export function DashboardTopBar({ onMenuClick }: { onMenuClick?: () => void }) {

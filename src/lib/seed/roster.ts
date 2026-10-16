@@ -3,16 +3,16 @@ import type { ParentProfile, SchoolClass, Student, Teacher } from "@/lib/types";
 /** BabelKids real roster — staff, classes, students (AY 2025/2026) */
 
 export const rosterTeachers: Teacher[] = [
-  { id: "t1", name: "Efinda Saputri", email: "efinda16@gmail.com", phone: "082280354776", role: "owner", notes: "Kepala Sekolah", createdAt: "2025-07-01" },
-  { id: "t2", name: "Sega Weldia Safitri", email: "segaweldia@gmail.com", phone: "082286906337", role: "admin", notes: "Admin", createdAt: "2025-07-01" },
-  { id: "t3", name: "Fitriyani", email: "fitriyani240496@gmail.com", phone: "085346813681", role: "teacher", notes: "Guru Kiddy 2A · Wali kelas", createdAt: "2025-07-01" },
-  { id: "t4", name: "Riska Ardiningsih", email: "riskaardiningsih98@gmail.com", phone: "081377724287", role: "teacher", notes: "Guru Kiddy 2B · Wali kelas", createdAt: "2025-07-01" },
-  { id: "t5", name: "Tanti", email: "tant897@gmail.com", phone: "083175048521", role: "teacher", notes: "Guru Kiddy 1 · Wali kelas", createdAt: "2025-07-01" },
-  { id: "t6", name: "Reza Septiani", email: "missrezaseptiani@gmail.com", phone: "081271620210", role: "teacher", notes: "Guru Prekiddy", createdAt: "2025-07-01" },
-  { id: "t7", name: "Megita Fitri Amalia", email: "megitafitri17@gmail.com", phone: "081379737615", role: "teacher", notes: "Guru Toddler", createdAt: "2025-07-01" },
-  { id: "t8", name: "Nur Meitiana Zalianti", email: "nrmeitianaz11@gmail.com", phone: "081369960815", role: "teacher", notes: "Asisten Guru Kiddy 1", createdAt: "2025-07-01" },
-  { id: "t9", name: "Sella Abdalin", email: "sela.abdalin@gmail.com", phone: "081273539482", role: "teacher", notes: "Asisten Guru Prekiddy", createdAt: "2025-07-01" },
-  { id: "t10", name: "Mardiana Oktaria", email: "merdianaoktaria5@gmail.com", phone: "085369428727", role: "teacher", notes: "Asisten Guru Kiddy 2B", createdAt: "2025-07-01" },
+  { id: "t1", name: "Efinda Saputri", email: "efinda16@gmail.com", phone: "082280354776", role: "owner", jabatan: "Kepala Sekolah", createdAt: "2025-07-01" },
+  { id: "t2", name: "Sega Weldia Safitri", email: "segaweldia@gmail.com", phone: "082286906337", role: "admin", jabatan: "Admin", createdAt: "2025-07-01" },
+  { id: "t3", name: "Fitriyani", email: "fitriyani240496@gmail.com", phone: "085346813681", role: "teacher", jabatan: "Guru Kiddy 2A · Wali kelas", createdAt: "2025-07-01" },
+  { id: "t4", name: "Riska Ardiningsih", email: "riskaardiningsih98@gmail.com", phone: "081377724287", role: "teacher", jabatan: "Guru Kiddy 2B · Wali kelas", createdAt: "2025-07-01" },
+  { id: "t5", name: "Tanti", email: "tant897@gmail.com", phone: "083175048521", role: "teacher", jabatan: "Guru Kiddy 1 · Wali kelas", createdAt: "2025-07-01" },
+  { id: "t6", name: "Reza Septiani", email: "missrezaseptiani@gmail.com", phone: "081271620210", role: "teacher", jabatan: "Guru Prekiddy", createdAt: "2025-07-01" },
+  { id: "t7", name: "Megita Fitri Amalia", email: "megitafitri17@gmail.com", phone: "081379737615", role: "teacher", jabatan: "Guru Toddler", createdAt: "2025-07-01" },
+  { id: "t8", name: "Nur Meitiana Zalianti", email: "nrmeitianaz11@gmail.com", phone: "081369960815", role: "teacher", jabatan: "Asisten Guru Kiddy 1", createdAt: "2025-07-01" },
+  { id: "t9", name: "Sella Abdalin", email: "sela.abdalin@gmail.com", phone: "081273539482", role: "teacher", jabatan: "Asisten Guru Prekiddy", createdAt: "2025-07-01" },
+  { id: "t10", name: "Mardiana Oktaria", email: "merdianaoktaria5@gmail.com", phone: "085369428727", role: "teacher", jabatan: "Asisten Guru Kiddy 2B", createdAt: "2025-07-01" },
 ];
 
 export const rosterClasses: SchoolClass[] = [
@@ -35,7 +35,10 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#F4A261",
     allergies: "",
-    notes: "Agama: Islam · TTL: Bangka Tengah, 01 November 2021 · Kontak tambahan: Nenek",
+    religion: "Islam",
+    placeOfBirth: "Bangka Tengah",
+    additionalContact: "Nenek · 085371337244",
+    notes: "",
     classHistory: [
       {
         id: "ch-k1-01-1",
@@ -62,7 +65,10 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#2A9D8F",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 18 April 2022 · Kontak tambahan: Baharudin",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    additionalContact: "Baharudin · 081273310033",
+    notes: "",
     classHistory: [
       {
         id: "ch-k1-02-1",
@@ -89,7 +95,10 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#E76F51",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 16 September 2021 · Kontak tambahan: Oma",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    additionalContact: "Oma · 082181669248",
+    notes: "",
     classHistory: [
       {
         id: "ch-k1-03-1",
@@ -116,7 +125,10 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#457B9D",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 29 Maret 2022 · Kontak tambahan: Nenek",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    additionalContact: "Nenek · 082186291988",
+    notes: "",
     classHistory: [
       {
         id: "ch-k1-04-1",
@@ -143,7 +155,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#9B5DE5",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 29 September 2021",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k1-05-1",
@@ -170,7 +184,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#00BBF9",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 05 November 2022",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k1-06-1",
@@ -197,7 +213,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#F15BB5",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 06 Agustus 2022",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k1-07-1",
@@ -224,7 +242,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#FEE440",
     allergies: "",
-    notes: "Agama: Islam · TTL: Bangka, 16 Desember 2021",
+    religion: "Islam",
+    placeOfBirth: "Bangka",
+    notes: "",
     classHistory: [
       {
         id: "ch-k1-08-1",
@@ -250,7 +270,10 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#00B894",
     allergies: "",
-    notes: "Agama: Islam · TTL: Bangka Tengah, 13 Mei 2022 · Kontak tambahan: Nenek",
+    religion: "Islam",
+    placeOfBirth: "Bangka Tengah",
+    additionalContact: "Nenek · 082373703601",
+    notes: "",
     classHistory: [
       {
         id: "ch-k1-09-1",
@@ -277,7 +300,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#74B9FF",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 04 Februari 2022",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k1-10-1",
@@ -304,7 +329,10 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#FD79A8",
     allergies: "",
-    notes: "Agama: Islam · TTL: Bangka, 07 Juli 2022 · Kontak tambahan: Tante",
+    religion: "Islam",
+    placeOfBirth: "Bangka",
+    additionalContact: "Tante · 081367638647",
+    notes: "",
     classHistory: [
       {
         id: "ch-k1-11-1",
@@ -331,7 +359,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#55EFC4",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 19 Mei 2022",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k1-12-1",
@@ -358,7 +388,10 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#FDCB6E",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 20 April 2022 · Kontak tambahan: Paman",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    additionalContact: "Paman · 081284991780",
+    notes: "",
     classHistory: [
       {
         id: "ch-k1-13-1",
@@ -385,7 +418,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#FF7675",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 20 Juli 2022",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k1-14-1",
@@ -412,7 +447,10 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#A29BFE",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 07 Desember 2020 · Kontak tambahan: Nenek",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    additionalContact: "Nenek · 082182556448",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2a-01-1",
@@ -439,7 +477,10 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#81ECEC",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 5 Mei 2021 · Kontak tambahan: Nenek",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    additionalContact: "Nenek · 082299127473",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2a-02-1",
@@ -466,7 +507,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#F4A261",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 01 Mei 2021",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2a-03-1",
@@ -493,7 +536,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#2A9D8F",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 15 Juni 2020",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2a-04-1",
@@ -520,7 +565,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#E76F51",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 15 July 2021",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2a-05-1",
@@ -547,7 +594,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#457B9D",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 11 April 2021",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2a-06-1",
@@ -574,7 +623,10 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#9B5DE5",
     allergies: "",
-    notes: "Agama: Islam · TTL: Bekasi, 08 Oktober 2020 · Kontak tambahan: Budhe",
+    religion: "Islam",
+    placeOfBirth: "Bekasi",
+    additionalContact: "Budhe · 081391907907",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2a-07-1",
@@ -601,7 +653,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#00BBF9",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 24 Juli 2021",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2a-08-1",
@@ -628,7 +682,10 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#F15BB5",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 19 September 2020 · Kontak tambahan: Paman",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    additionalContact: "Paman · 085267847710",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2a-09-1",
@@ -655,7 +712,10 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#FEE440",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 01 Oktober 2020 · Kontak tambahan: Nenek",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    additionalContact: "Nenek · 081373289598",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2a-10-1",
@@ -682,7 +742,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#00B894",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 02 Mei 2021",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2a-11-1",
@@ -709,7 +771,10 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#74B9FF",
     allergies: "",
-    notes: "Agama: Islam · TTL: Bangka Tengah, 05 Oktober 2020 · Kontak tambahan: Paman",
+    religion: "Islam",
+    placeOfBirth: "Bangka Tengah",
+    additionalContact: "Paman · 081379319210",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2a-12-1",
@@ -736,7 +801,10 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#FD79A8",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 19 Maret 2021 · Kontak tambahan: Saudara",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    additionalContact: "Saudara · 081266006347",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2a-13-1",
@@ -763,7 +831,10 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#55EFC4",
     allergies: "",
-    notes: "Agama: Islam · TTL: Bangka Tengah, 29 Agustus 2020 · Kontak tambahan: Nenek",
+    religion: "Islam",
+    placeOfBirth: "Bangka Tengah",
+    additionalContact: "Nenek · 085371337244",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2a-14-1",
@@ -790,7 +861,10 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#FDCB6E",
     allergies: "",
-    notes: "Agama: Islam · TTL: Bangka Tengah, 01 Juni 2021 · Kontak tambahan: Nenek",
+    religion: "Islam",
+    placeOfBirth: "Bangka Tengah",
+    additionalContact: "Nenek · 082181662130",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2a-15-1",
@@ -817,7 +891,10 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#FF7675",
     allergies: "",
-    notes: "Agama: Islam · TTL: Mojosari, 10 Februari 2021 · Kontak tambahan: Nenek",
+    religion: "Islam",
+    placeOfBirth: "Mojosari",
+    additionalContact: "Nenek · 082281497033",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2a-16-1",
@@ -844,7 +921,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#A29BFE",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 30 November 2020",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2b-01-1",
@@ -871,7 +950,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#81ECEC",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 19 Februari 2021",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2b-02-1",
@@ -898,7 +979,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#F4A261",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 11 November 2021",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2b-03-1",
@@ -925,7 +1008,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#2A9D8F",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 08 July 2020",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2b-04-1",
@@ -952,7 +1037,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#E76F51",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 08 Januari 2021",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2b-05-1",
@@ -979,7 +1066,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#457B9D",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 05 Agustus 2020",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2b-06-1",
@@ -1006,7 +1095,10 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#9B5DE5",
     allergies: "",
-    notes: "Agama: Islam · TTL: Bangka, 14 Maret 2021 · Kontak tambahan: Nenek",
+    religion: "Islam",
+    placeOfBirth: "Bangka",
+    additionalContact: "Nenek · 082372306182",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2b-07-1",
@@ -1033,7 +1125,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#00BBF9",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 23 Maret 2021",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2b-08-1",
@@ -1060,7 +1154,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#F15BB5",
     allergies: "",
-    notes: "Agama: Islam · TTL: Bangka Tengah, 12 Maret 2021",
+    religion: "Islam",
+    placeOfBirth: "Bangka Tengah",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2b-09-1",
@@ -1087,7 +1183,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#FEE440",
     allergies: "",
-    notes: "Agama: Islam · TTL: Kabupaten Bangka, 26 Oktober 2021",
+    religion: "Islam",
+    placeOfBirth: "Kabupaten Bangka",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2b-10-1",
@@ -1114,7 +1212,10 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#00B894",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 03 Mei 2021 · Kontak tambahan: Kakak sepupu",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    additionalContact: "Kakak sepupu · 082282075868",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2b-11-1",
@@ -1141,7 +1242,10 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#74B9FF",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 05 Agustus 2021 · Kontak tambahan: Nenek",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    additionalContact: "Nenek · 082180666414",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2b-12-1",
@@ -1168,7 +1272,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#FD79A8",
     allergies: "",
-    notes: "Agama: Islam · TTL: Jakarta, 06 Oktober 2020",
+    religion: "Islam",
+    placeOfBirth: "Jakarta",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2b-13-1",
@@ -1195,7 +1301,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#55EFC4",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 22 Desember 2020",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2b-14-1",
@@ -1222,7 +1330,10 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#FDCB6E",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 21 Juli 2021 · Kontak tambahan: Kakak",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    additionalContact: "Kakak · 081995550341",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2b-15-1",
@@ -1249,7 +1360,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#FF7675",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 08 Februari 2021",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2b-16-1",
@@ -1276,7 +1389,9 @@ export const rosterStudents: Student[] = [
     enrollmentDate: "2025-07-01",
     photoColor: "#A29BFE",
     allergies: "",
-    notes: "Agama: Islam · TTL: Pangkalpinang, 02 Desember 2020",
+    religion: "Islam",
+    placeOfBirth: "Pangkalpinang",
+    notes: "",
     classHistory: [
       {
         id: "ch-k2b-17-1",

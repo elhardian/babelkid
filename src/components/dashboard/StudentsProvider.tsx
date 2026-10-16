@@ -10,7 +10,7 @@ import {
 import { students as seed } from "@/lib/mock-data";
 import type { Student } from "@/lib/types";
 
-const STORAGE_KEY = "babelkids.students.v1";
+const STORAGE_KEY = "babelkids.students.v3";
 
 function readStorage(): Student[] | null {
   if (typeof window === "undefined") return null;
@@ -102,6 +102,8 @@ function upsertStudent(input: StudentInput): Student {
       name: input.name,
       nickname: input.nickname,
       dateOfBirth: input.dateOfBirth,
+      placeOfBirth: input.placeOfBirth,
+      religion: input.religion,
       gender: input.gender,
       classId: input.classId,
       status: input.status,
@@ -109,6 +111,7 @@ function upsertStudent(input: StudentInput): Student {
       parents: input.parents,
       photoColor: input.photoColor,
       allergies: input.allergies,
+      additionalContact: input.additionalContact,
       notes: input.notes,
       classHistory: input.classHistory,
       documents: input.documents,
@@ -126,6 +129,7 @@ export function StudentsProvider({ children }: { children: React.ReactNode }) {
   );
 
   const upsert = useCallback((input: StudentInput) => upsertStudent(input), []);
+
   const getById = useCallback(
     (id: string) => students.find((s) => s.id === id),
     [students],

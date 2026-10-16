@@ -26,6 +26,9 @@ import {
   createParentAppAccess,
   getParentAppAccess,
 } from "@/app/actions/parent-access";
+import { useStaffSession } from "@/components/dashboard/StaffSessionProvider";
+import { usePermissionAccess } from "@/components/dashboard/RolePermissionsProvider";
+import { canManageParentAccess } from "@/lib/staff-access";
 
 const relLabel = {
   mother: "Ibu",
@@ -46,6 +49,9 @@ function kidsForParent(students: Student[], parent: ParentProfile) {
 }
 
 function ParentsPageInner() {
+  const session = useStaffSession();
+  const { canWrite } = usePermissionAccess("parents");
+  const canManageAccess = canManageParentAccess(session.role) && canWrite;
   const { parents, upsert, remove } = useParentsRegistry();
   const { students } = useStudentsRegistry();
   const [search, setSearch] = useState("");
@@ -82,6 +88,7 @@ function ParentsPageInner() {
     usePagination(list);
 
   useEffect(() => {
+    if (!canManageAccess) return;
     let cancelled = false;
     (async () => {
       const entries = await Promise.all(
@@ -106,7 +113,7 @@ function ParentsPageInner() {
     return () => {
       cancelled = true;
     };
-  }, [pageItems]);
+  }, [pageItems, canManageAccess]);
 
   function openAdd() {
     setActive(null);
@@ -189,16 +196,19 @@ function ParentsPageInner() {
           </h1>
           <p className="mt-1 text-sm text-[#8A96A8]">
             Kelola data orang tua / wali · {parents.length} terdaftar
+            {!canWrite ? " · mode baca saja" : ""}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={openAdd}
-          className="inline-flex items-center justify-center gap-2 rounded-full bg-[#2E7DFF] px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-[#2E7DFF]/25"
-        >
-          <Plus className="size-4" />
-          Tambah orang tua
-        </button>
+        {canWrite ? (
+          <button
+            type="button"
+            onClick={openAdd}
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-[#2E7DFF] px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-[#2E7DFF]/25"
+          >
+            <Plus className="size-4" />
+            Tambah orang tua
+          </button>
+        ) : null}
       </div>
 
       <SearchFilterBar
@@ -241,7 +251,7 @@ function ParentsPageInner() {
                       label={relLabel[p.relationship]}
                       tone="info"
                     />
-                    {app?.exists ? (
+                    {canManageAccess && app?.exists ? (
                       <StatusBadge label="Akses app" tone="success" />
                     ) : null}
                   </div>
@@ -253,33 +263,39 @@ function ParentsPageInner() {
                   </p>
                 </button>
                 <div className="flex shrink-0 gap-1">
-                  <button
-                    type="button"
-                    onClick={() => openAccess(p)}
-                    className="rounded-xl p-2 text-[#8A96A8] hover:bg-[#EEF3FA] hover:text-[#2E7DFF]"
-                    aria-label="Buat akses app"
-                    title="Buat akses app"
-                  >
-                    <KeyRound className="size-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => openEdit(p)}
-                    className="rounded-xl p-2 text-[#8A96A8] hover:bg-[#EEF3FA] hover:text-[#2E7DFF]"
-                    aria-label="Edit"
-                  >
-                    <Pencil className="size-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (confirm(`Hapus ${p.name}?`)) remove(p.id);
-                    }}
-                    className="rounded-xl p-2 text-[#8A96A8] hover:bg-rose-50 hover:text-rose-600"
-                    aria-label="Hapus"
-                  >
-                    <Trash2 className="size-4" />
-                  </button>
+                  {canManageAccess ? (
+                    <button
+                      type="button"
+                      onClick={() => openAccess(p)}
+                      className="rounded-xl p-2 text-[#8A96A8] hover:bg-[#EEF3FA] hover:text-[#2E7DFF]"
+                      aria-label="Buat akses app"
+                      title="Buat akses app"
+                    >
+                      <KeyRound className="size-4" />
+                    </button>
+                  ) : null}
+                  {canWrite ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => openEdit(p)}
+                        className="rounded-xl p-2 text-[#8A96A8] hover:bg-[#EEF3FA] hover:text-[#2E7DFF]"
+                        aria-label="Edit"
+                      >
+                        <Pencil className="size-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (confirm(`Hapus ${p.name}?`)) remove(p.id);
+                        }}
+                        className="rounded-xl p-2 text-[#8A96A8] hover:bg-rose-50 hover:text-rose-600"
+                        aria-label="Hapus"
+                      >
+                        <Trash2 className="size-4" />
+                      </button>
+                    </>
+                  ) : null}
                 </div>
               </div>
 
@@ -301,14 +317,16 @@ function ParentsPageInner() {
                       {p.notes ? (
                         <p className="mt-2 text-[#5B6B7C]">{p.notes}</p>
                       ) : null}
-                      <button
-                        type="button"
-                        onClick={() => openAccess(p)}
-                        className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#2E7DFF] px-3 py-1.5 text-xs font-medium text-white"
-                      >
-                        <KeyRound className="size-3.5" />
-                        {app?.exists ? "Perbarui akses app" : "Buat akses app"}
-                      </button>
+                      {canManageAccess ? (
+                        <button
+                          type="button"
+                          onClick={() => openAccess(p)}
+                          className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#2E7DFF] px-3 py-1.5 text-xs font-medium text-white"
+                        >
+                          <KeyRound className="size-3.5" />
+                          {app?.exists ? "Perbarui akses app" : "Buat akses app"}
+                        </button>
+                      ) : null}
                     </div>
                     <div>
                       <p className="text-xs font-medium uppercase tracking-wide text-[#8A96A8]">

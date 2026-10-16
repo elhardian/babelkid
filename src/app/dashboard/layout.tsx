@@ -10,6 +10,8 @@ import { RegistrationProvider } from "@/components/dashboard/RegistrationProvide
 import { StudentsProvider } from "@/components/dashboard/StudentsProvider";
 import { TeachersProvider } from "@/components/dashboard/TeachersProvider";
 import { StaffSessionProvider } from "@/components/dashboard/StaffSessionProvider";
+import { RolePermissionsProvider } from "@/components/dashboard/RolePermissionsProvider";
+import { DashboardRoleGuard } from "@/components/dashboard/DashboardRoleGuard";
 import { getSession } from "@/lib/auth";
 
 export default async function DashboardLayout({
@@ -24,33 +26,37 @@ export default async function DashboardLayout({
 
   return (
     <StaffSessionProvider session={session}>
-      <KasProvider>
-        <DayOffProvider>
-          <ParentsProvider>
-            <TeachersProvider>
-              <ClassesProvider>
-                <StudentsProvider>
-                  <RegistrationProvider>
-                    <ClassActivityProvider>
-                      <div className="dashboard-shell flex min-h-screen flex-col overflow-x-hidden bg-[#F3F7FC] font-[family-name:var(--font-outfit)] font-light text-[#1A2330] lg:flex-row">
-                        <DashboardSidebar />
-                        <div className="flex min-w-0 flex-1 flex-col">
-                          <DashboardTopBar />
-                          <main className="min-w-0 flex-1 overflow-x-hidden">
-                            <div className="mx-auto w-full min-w-0 max-w-[1400px] px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
-                              {children}
-                            </div>
-                          </main>
+      <RolePermissionsProvider>
+        <KasProvider>
+          <DayOffProvider>
+            <ParentsProvider>
+              <TeachersProvider>
+                <ClassesProvider>
+                  <StudentsProvider>
+                    <RegistrationProvider>
+                      <ClassActivityProvider>
+                        <div className="dashboard-shell flex h-dvh flex-col overflow-hidden bg-[#F3F7FC] font-[family-name:var(--font-outfit)] font-light text-[#1A2330] lg:flex-row">
+                          <DashboardSidebar />
+                          <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+                            <DashboardTopBar />
+                            <main className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto">
+                              <div className="mx-auto w-full min-w-0 max-w-[1400px] px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
+                                <DashboardRoleGuard>
+                                  {children}
+                                </DashboardRoleGuard>
+                              </div>
+                            </main>
+                          </div>
                         </div>
-                      </div>
-                    </ClassActivityProvider>
-                  </RegistrationProvider>
-                </StudentsProvider>
-              </ClassesProvider>
-            </TeachersProvider>
-          </ParentsProvider>
-        </DayOffProvider>
-      </KasProvider>
+                      </ClassActivityProvider>
+                    </RegistrationProvider>
+                  </StudentsProvider>
+                </ClassesProvider>
+              </TeachersProvider>
+            </ParentsProvider>
+          </DayOffProvider>
+        </KasProvider>
+      </RolePermissionsProvider>
     </StaffSessionProvider>
   );
 }

@@ -198,6 +198,9 @@ export interface Student {
   name: string;
   nickname: string;
   dateOfBirth: string;
+  /** Place of birth (kota/kabupaten) — with dateOfBirth forms TTL */
+  placeOfBirth?: string;
+  religion?: string;
   gender: "male" | "female";
   classId: string;
   status: StudentStatus;
@@ -205,6 +208,8 @@ export interface Student {
   parents: Parent[];
   photoColor: string;
   allergies?: string;
+  /** Extra emergency contact, e.g. "Nenek · 0812…" */
+  additionalContact?: string;
   notes?: string;
   classHistory: ClassPlacement[];
   documents?: StudentDocument[];
@@ -229,6 +234,8 @@ export interface Teacher {
   email: string;
   phone: string;
   role: "teacher" | "admin" | "owner";
+  /** Job title, e.g. Guru Kiddy 2A · Wali kelas */
+  jabatan?: string;
   notes?: string;
   createdAt?: string;
 }

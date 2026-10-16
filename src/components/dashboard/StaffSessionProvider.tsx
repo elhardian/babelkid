@@ -33,6 +33,7 @@ export function useStaffSessionLabel() {
   return {
     name: session.name,
     role: roleLabel(session.role),
+    roleKey: session.role,
     email: session.email,
   };
 }
