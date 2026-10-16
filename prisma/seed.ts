@@ -27,12 +27,32 @@ import { fromDateOnly } from "../src/lib/dates";
 import { rowsFromMatrix } from "../src/lib/data/mappers";
 import { DEFAULT_ROLE_PERMISSIONS } from "../src/lib/role-permissions";
 
+function parseDatabaseUrl(url: string) {
+  const parsed = new URL(url);
+  const database = decodeURIComponent(parsed.pathname.replace(/^\//, ""));
+  if (!database) throw new Error("DATABASE_URL is missing a database name");
+  return {
+    host: parsed.hostname || "127.0.0.1",
+    port: Number(parsed.port || 3306),
+    user: decodeURIComponent(parsed.username || "root"),
+    password: decodeURIComponent(parsed.password || ""),
+    database,
+  };
+}
+
+const url = process.env.DATABASE_URL?.trim();
+if (!url) throw new Error("DATABASE_URL is required");
+const conn = parseDatabaseUrl(url);
+
 const adapter = new PrismaMariaDb({
-  host: process.env.DATABASE_HOST ?? "localhost",
-  port: Number(process.env.DATABASE_PORT ?? 3306),
-  user: process.env.DATABASE_USER ?? "root",
-  password: process.env.DATABASE_PASSWORD ?? "",
-  database: process.env.DATABASE_NAME ?? "babelkid",
+  host: conn.host === "localhost" ? "127.0.0.1" : conn.host,
+  port: conn.port,
+  user: conn.user,
+  password: conn.password,
+  database: conn.database,
+  connectionLimit: 10,
+  connectTimeout: 10_000,
+  allowPublicKeyRetrieval: true,
 });
 
 const prisma = new PrismaClient({ adapter });
